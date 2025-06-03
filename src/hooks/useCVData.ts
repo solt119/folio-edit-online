@@ -24,14 +24,14 @@ export const useCVData = () => {
   const { getDataForLanguage, autoTranslateData, forceRetranslate } = useDataTranslation();
 
   // Save custom data with auto-translation
-  const saveCustomDataWithTranslation = useCallback((newCvData: CVData) => {
-    const newCustomData = autoTranslateData(newCvData, language, customData);
+  const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
+    const newCustomData = await autoTranslateData(newCvData, language, customData);
     saveCustomData(newCustomData);
   }, [autoTranslateData, customData, language, saveCustomData]);
 
   // Force retranslation of all data
-  const forceRetranslateAll = useCallback(() => {
-    const retranslatedData = forceRetranslate(customData);
+  const forceRetranslateAll = useCallback(async () => {
+    const retranslatedData = await forceRetranslate(customData);
     saveCustomData(retranslatedData);
   }, [forceRetranslate, customData, saveCustomData]);
 

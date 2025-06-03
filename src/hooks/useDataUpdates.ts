@@ -4,7 +4,7 @@ import { CVData, PersonalInfo, Experience, Education, Skill, Language, Certifica
 import { FieldVisibility } from '@/types/visibility';
 
 interface UseDataUpdatesProps {
-  saveCustomDataWithTranslation: (newCvData: CVData) => void;
+  saveCustomDataWithTranslation: (newCvData: CVData) => Promise<void>;
   setFieldVisibility: React.Dispatch<React.SetStateAction<FieldVisibility>>;
   setCvData: React.Dispatch<React.SetStateAction<CVData>>;
 }
