@@ -3,15 +3,16 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { LogIn, Eye, EyeOff } from 'lucide-react'
+import { LogIn, Eye, EyeOff, X } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => Promise<void>
   loading: boolean
+  onCancel?: () => void
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading, onCancel }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -32,8 +33,21 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
       <Card className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-blue-400">Anmelden</CardTitle>
+        <CardHeader className="text-center relative">
+          {onCancel && (
+            <Button
+              onClick={onCancel}
+              variant="ghost"
+              size="sm"
+              className="absolute top-2 right-2 text-slate-400 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          )}
+          <CardTitle className="text-2xl text-blue-400">Anmelden zum Bearbeiten</CardTitle>
+          <p className="text-slate-400 text-sm">
+            Melden Sie sich an, um den Lebenslauf zu bearbeiten
+          </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,6 +88,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading }) => {
               <LogIn className="w-4 h-4 mr-2" />
               {loading ? 'Anmelden...' : 'Anmelden'}
             </Button>
+            {onCancel && (
+              <Button 
+                type="button"
+                variant="outline"
+                className="w-full bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                onClick={onCancel}
+              >
+                Abbrechen
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>

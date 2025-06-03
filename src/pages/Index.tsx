@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { LogOut, Edit, LogIn } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/LoginForm';
@@ -17,6 +18,7 @@ import { CertificatesSection } from '@/components/cv/CertificatesSection';
 
 const Index = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [showLogin, setShowLogin] = useState(false);
   const [supabaseConfiguredState, setSupabaseConfiguredState] = useState(false);
   const { user, loading, signIn, signOut } = useAuth();
   
@@ -54,6 +56,7 @@ const Index = () => {
         title: "Erfolgreich eingeloggt",
         description: "Sie können jetzt Ihren Lebenslauf bearbeiten.",
       });
+      setShowLogin(false);
     }
   };
 
@@ -83,6 +86,10 @@ const Index = () => {
   };
 
   const handleEdit = (section: string) => {
+    if (!user) {
+      setShowLogin(true);
+      return;
+    }
     setEditingSection(editingSection === section ? null : section);
   };
 
@@ -91,21 +98,12 @@ const Index = () => {
     return <SupabaseConfig onConfigured={handleSupabaseConfigured} />;
   }
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white">Laden...</div>
-      </div>
-    );
+  // Show login form as overlay if requested
+  if (showLogin && !user && !loading) {
+    return <LoginForm onLogin={handleLogin} loading={loading} onCancel={() => setShowLogin(false)} />;
   }
 
-  // Show login form if not authenticated
-  if (!user) {
-    return <LoginForm onLogin={handleLogin} loading={loading} />;
-  }
-
-  // Show CV editor if authenticated
+  // Always show CV content
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
@@ -113,16 +111,31 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-white">Curriculum Vitae</h1>
           <div className="flex items-center gap-4">
-            <span className="text-slate-400 text-sm">Angemeldet als: {user.email}</span>
-            <Button 
-              onClick={handleLogout}
-              variant="outline" 
-              size="sm"
-              className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Abmelden
-            </Button>
+            {user ? (
+              <>
+                <span className="text-slate-400 text-sm">Angemeldet als: {user.email}</span>
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline" 
+                  size="sm"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Abmelden
+                </Button>
+              </>
+            ) : (
+              <Button 
+                onClick={() => setShowLogin(true)}
+                variant="outline" 
+                size="sm"
+                className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                disabled={loading}
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                {loading ? 'Laden...' : 'Anmelden zum Bearbeiten'}
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -131,7 +144,7 @@ const Index = () => {
         {/* Personal Information */}
         <PersonalInfoSection
           personalInfo={cvData.personalInfo}
-          isLoggedIn={true}
+          isLoggedIn={!!user}
           isEditing={editingSection === 'personal'}
           onEdit={() => handleEdit('personal')}
           onSave={handleSave}
@@ -142,7 +155,7 @@ const Index = () => {
           {/* Experience */}
           <ExperienceSection
             experiences={cvData.experiences}
-            isLoggedIn={true}
+            isLoggedIn={!!user}
             isEditing={editingSection === 'experience'}
             onEdit={() => handleEdit('experience')}
             onSave={handleSave}
@@ -152,7 +165,7 @@ const Index = () => {
           {/* Education */}
           <EducationSection
             education={cvData.education}
-            isLoggedIn={true}
+            isLoggedIn={!!user}
             isEditing={editingSection === 'education'}
             onEdit={() => handleEdit('education')}
             onSave={handleSave}
@@ -162,7 +175,7 @@ const Index = () => {
           {/* Skills */}
           <SkillsSection
             skills={cvData.skills}
-            isLoggedIn={true}
+            isLoggedIn={!!user}
             isEditing={editingSection === 'skills'}
             onEdit={() => handleEdit('skills')}
             onSave={handleSave}
@@ -172,7 +185,7 @@ const Index = () => {
           {/* Languages */}
           <LanguagesSection
             languages={cvData.languages}
-            isLoggedIn={true}
+            isLoggedIn={!!user}
             isEditing={editingSection === 'languages'}
             onEdit={() => handleEdit('languages')}
             onSave={handleSave}
@@ -182,7 +195,7 @@ const Index = () => {
           {/* Certificates */}
           <CertificatesSection
             certificates={cvData.certificates}
-            isLoggedIn={true}
+            isLoggedIn={!!user}
             isEditing={editingSection === 'certificates'}
             onEdit={() => handleEdit('certificates')}
             onSave={handleSave}
@@ -193,7 +206,7 @@ const Index = () => {
         {/* Projects */}
         <ProjectsSection
           projects={cvData.projects}
-          isLoggedIn={true}
+          isLoggedIn={!!user}
           isEditing={editingSection === 'projects'}
           onEdit={() => handleEdit('projects')}
           onSave={handleSave}
