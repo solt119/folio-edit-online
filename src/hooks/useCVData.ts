@@ -12,38 +12,6 @@ export const useCVData = () => {
   const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>(defaultVisibility);
   const [customData, setCustomData] = useState<{ [key: string]: CVData }>({});
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedCustomData = localStorage.getItem('customCvData');
-    if (savedCustomData) {
-      const parsed = JSON.parse(savedCustomData);
-      setCustomData(parsed);
-    }
-    
-    const savedVisibility = localStorage.getItem('fieldVisibility');
-    if (savedVisibility) {
-      setFieldVisibility(JSON.parse(savedVisibility));
-    }
-  }, []);
-
-  // Update CV data when language changes
-  useEffect(() => {
-    const savedCustomData = localStorage.getItem('customCvData');
-    if (savedCustomData) {
-      const parsed = JSON.parse(savedCustomData);
-      
-      // If we have custom data for current language, use it
-      if (parsed[language]) {
-        setCvData(parsed[language]);
-      } else {
-        // If no custom data for this language, use default
-        setCvData(cvContentTranslations[language]);
-      }
-    } else {
-      setCvData(cvContentTranslations[language]);
-    }
-  }, [language]);
-
   // Save custom data to localStorage and auto-translate to other language
   const saveCustomData = useCallback((newCvData: CVData) => {
     const newCustomData = {
@@ -61,10 +29,6 @@ export const useCVData = () => {
     setCustomData(newCustomData);
     localStorage.setItem('customCvData', JSON.stringify(newCustomData));
   }, [customData, language]);
-
-  useEffect(() => {
-    localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
-  }, [fieldVisibility]);
 
   // Memoized update functions to prevent unnecessary re-renders
   const updatePersonalInfo = useCallback((field: keyof PersonalInfo, value: string) => {
@@ -165,6 +129,42 @@ export const useCVData = () => {
       }
     }));
   }, []);
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedCustomData = localStorage.getItem('customCvData');
+    if (savedCustomData) {
+      const parsed = JSON.parse(savedCustomData);
+      setCustomData(parsed);
+    }
+    
+    const savedVisibility = localStorage.getItem('fieldVisibility');
+    if (savedVisibility) {
+      setFieldVisibility(JSON.parse(savedVisibility));
+    }
+  }, []);
+
+  // Update CV data when language changes
+  useEffect(() => {
+    const savedCustomData = localStorage.getItem('customCvData');
+    if (savedCustomData) {
+      const parsed = JSON.parse(savedCustomData);
+      
+      // If we have custom data for current language, use it
+      if (parsed[language]) {
+        setCvData(parsed[language]);
+      } else {
+        // If no custom data for this language, use default
+        setCvData(cvContentTranslations[language]);
+      }
+    } else {
+      setCvData(cvContentTranslations[language]);
+    }
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
+  }, [fieldVisibility]);
 
   return {
     cvData,
