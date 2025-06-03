@@ -25,6 +25,7 @@ export const EditableText = React.memo(({
   const { language } = useLanguage();
   const [localValue, setLocalValue] = useState(value);
   const [isUserEditing, setIsUserEditing] = useState(false);
+  const [lastTranslationFrom, setLastTranslationFrom] = useState<'de' | 'en' | null>(null);
 
   // Update local value when prop value changes from parent
   useEffect(() => {
@@ -36,28 +37,51 @@ export const EditableText = React.memo(({
   // Handle translation when language changes
   useEffect(() => {
     if (enableTranslation && !isUserEditing && value && value.trim() !== '') {
-      console.log(`Translating from current language to ${language}:`, value);
+      console.log(`Current language: ${language}, Original language: ${originalLanguage}`);
+      console.log(`Value to translate: "${value}"`);
       
-      // Determine source language based on current content
-      const sourceLanguage = language === 'de' ? 'en' : 'de';
-      const translatedValue = translateText(value, sourceLanguage, language);
-      
-      console.log(`Translation result:`, translatedValue);
-      
-      if (translatedValue !== value) {
-        setLocalValue(translatedValue);
-        onChange(translatedValue);
+      // Only translate if we're switching to a different language
+      if (language !== originalLanguage) {
+        // If this is the first translation or we're switching back
+        if (!lastTranslationFrom || lastTranslationFrom !== originalLanguage) {
+          console.log(`Translating from ${originalLanguage} to ${language}`);
+          const translatedValue = translateText(value, originalLanguage, language);
+          
+          console.log(`Translation result: "${translatedValue}"`);
+          
+          if (translatedValue !== value) {
+            setLocalValue(translatedValue);
+            onChange(translatedValue);
+            setLastTranslationFrom(originalLanguage);
+          }
+        } else {
+          // We're switching back to original language, translate back
+          console.log(`Translating back from ${language === 'de' ? 'en' : 'de'} to ${language}`);
+          const translatedValue = translateText(value, language === 'de' ? 'en' : 'de', language);
+          
+          if (translatedValue !== value) {
+            setLocalValue(translatedValue);
+            onChange(translatedValue);
+            setLastTranslationFrom(language === 'de' ? 'en' : 'de');
+          }
+        }
+      } else {
+        // We're in the original language, reset translation tracking
+        setLastTranslationFrom(null);
       }
     }
-  }, [language, enableTranslation, value, isUserEditing, onChange]);
+  }, [language, enableTranslation, value, isUserEditing, onChange, originalLanguage, lastTranslationFrom]);
 
   const handleChange = (newValue: string) => {
     setIsUserEditing(true);
     setLocalValue(newValue);
     onChange(newValue);
     
-    // Reset editing flag after a short delay
-    setTimeout(() => setIsUserEditing(false), 500);
+    // Reset editing flag and translation tracking after a short delay
+    setTimeout(() => {
+      setIsUserEditing(false);
+      setLastTranslationFrom(null);
+    }, 500);
   };
 
   if (multiline) {

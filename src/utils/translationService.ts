@@ -226,9 +226,12 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
   // Trim the text first
   const trimmedText = text.trim();
   
+  // Return original if empty
+  if (!trimmedText) return text;
+  
   // Try to find exact matches first (complete sentences/phrases)
   for (const [key, value] of Object.entries(translations)) {
-    if (value[fromLang] === trimmedText) {
+    if (value[fromLang].toLowerCase() === trimmedText.toLowerCase()) {
       console.log(`Found exact match: ${value[toLang]}`);
       return value[toLang];
     }
@@ -244,10 +247,16 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
   );
   
   for (const [key, value] of sortedTranslations) {
-    if (text.includes(value[fromLang])) {
-      translatedText = translatedText.replace(value[fromLang], value[toLang]);
+    const sourceText = value[fromLang];
+    const targetText = value[toLang];
+    
+    // Case-insensitive partial match
+    if (text.toLowerCase().includes(sourceText.toLowerCase())) {
+      // Replace with case preservation
+      const regex = new RegExp(sourceText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      translatedText = translatedText.replace(regex, targetText);
       hasTranslation = true;
-      console.log(`Applied phrase translation: ${value[fromLang]} -> ${value[toLang]}`);
+      console.log(`Applied phrase translation: ${sourceText} -> ${targetText}`);
     }
   }
   
@@ -262,8 +271,14 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
       }
       
       for (const [key, value] of Object.entries(wordTranslations)) {
-        if (value[fromLang] === cleanWord) {
+        if (value[fromLang].toLowerCase() === cleanWord.toLowerCase()) {
           console.log(`Word translation: ${cleanWord} -> ${value[toLang]}`);
+          // Preserve original case
+          if (cleanWord === cleanWord.toUpperCase()) {
+            return value[toLang].toUpperCase();
+          } else if (cleanWord[0] === cleanWord[0].toUpperCase()) {
+            return value[toLang].charAt(0).toUpperCase() + value[toLang].slice(1);
+          }
           return value[toLang];
         }
       }
