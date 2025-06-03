@@ -2,7 +2,6 @@
 import { useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { translateCVData } from '@/utils/translationService';
-import { translateCVDataWithOpenAI } from '@/utils/openaiTranslation';
 import { cvContentTranslations } from '@/utils/cvContentTranslations';
 
 export const useDataTranslation = () => {
@@ -41,24 +40,13 @@ export const useDataTranslation = () => {
       [fromLanguage]: newCvData
     };
     
-    // Auto-translate to the other language using OpenAI if available
+    // Translate to the other language using the basic translation service
     const otherLanguage = fromLanguage === 'de' ? 'en' : 'de';
-    console.log('Auto-translating to', otherLanguage, 'with OpenAI');
+    console.log('Auto-translating to', otherLanguage);
     
-    try {
-      const openaiKey = localStorage.getItem('openai_api_key');
-      if (openaiKey) {
-        newCustomData[otherLanguage] = await translateCVDataWithOpenAI(newCvData, fromLanguage, otherLanguage, openaiKey);
-        console.log('OpenAI auto-translated data:', newCustomData[otherLanguage]);
-      } else {
-        // Fallback to basic translation
-        newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
-        console.log('Basic auto-translated data:', newCustomData[otherLanguage]);
-      }
-    } catch (error) {
-      console.error('OpenAI translation failed, using fallback:', error);
-      newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
-    }
+    // Use the basic translation service to translate the custom data
+    newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
+    console.log('Auto-translated data:', newCustomData[otherLanguage]);
     
     return newCustomData;
   }, []);
@@ -76,20 +64,9 @@ export const useDataTranslation = () => {
     
     const newCustomData = { ...customData };
     
-    try {
-      const openaiKey = localStorage.getItem('openai_api_key');
-      if (openaiKey) {
-        newCustomData[targetLanguage] = await translateCVDataWithOpenAI(customData[sourceLanguage], sourceLanguage, targetLanguage, openaiKey);
-        console.log('OpenAI force retranslated data:', newCustomData);
-      } else {
-        // Fallback to basic translation
-        newCustomData[targetLanguage] = translateCVData(customData[sourceLanguage], sourceLanguage, targetLanguage);
-        console.log('Basic force retranslated data:', newCustomData);
-      }
-    } catch (error) {
-      console.error('OpenAI retranslation failed, using fallback:', error);
-      newCustomData[targetLanguage] = translateCVData(customData[sourceLanguage], sourceLanguage, targetLanguage);
-    }
+    // Use basic translation service
+    newCustomData[targetLanguage] = translateCVData(customData[sourceLanguage], sourceLanguage, targetLanguage);
+    console.log('Force retranslated data:', newCustomData);
     
     return newCustomData;
   }, []);
