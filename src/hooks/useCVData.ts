@@ -23,17 +23,14 @@ export const useCVData = () => {
 
   const { getDataForLanguage, autoTranslateData, forceRetranslate } = useDataTranslation();
 
-  // Save custom data with auto-translation
+  // Save custom data without auto-translation
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    const newCustomData = await autoTranslateData(newCvData, language, customData);
+    const newCustomData = {
+      ...customData,
+      [language]: newCvData
+    };
     saveCustomData(newCustomData);
-  }, [autoTranslateData, customData, language, saveCustomData]);
-
-  // Force retranslation of all data
-  const forceRetranslateAll = useCallback(async () => {
-    const retranslatedData = await forceRetranslate(customData);
-    saveCustomData(retranslatedData);
-  }, [forceRetranslate, customData, saveCustomData]);
+  }, [customData, language, saveCustomData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
@@ -60,32 +57,6 @@ export const useCVData = () => {
   useEffect(() => {
     if (!isInitialized) return;
     
-    const openaiKey = localStorage.getItem('openai_api_key');
-    
-    // If we have custom data and OpenAI key, always try to get OpenAI translated data
-    if (Object.keys(customData).length > 0 && openaiKey) {
-      const otherLanguage = language === 'de' ? 'en' : 'de';
-      
-      // If we have data for the other language, translate it with OpenAI
-      if (customData[otherLanguage]) {
-        console.log('Auto-translating custom data with OpenAI from', otherLanguage, 'to', language);
-        autoTranslateData(customData[otherLanguage], otherLanguage, customData).then(translatedData => {
-          if (translatedData[language]) {
-            console.log('OpenAI translation successful, updating data for', language);
-            setCvData(translatedData[language]);
-            // Save the translated data
-            saveCustomData(translatedData);
-          }
-        }).catch(error => {
-          console.error('OpenAI translation failed:', error);
-          // Fallback to existing data or basic translation
-          const newData = getDataForLanguage(language, customData);
-          setCvData(newData);
-        });
-        return;
-      }
-    }
-    
     const newData = getDataForLanguage(language, customData);
     
     // If we got translated data, save it
@@ -98,24 +69,11 @@ export const useCVData = () => {
     }
     
     setCvData(newData);
-  }, [language, customData, isInitialized, getDataForLanguage, saveCustomData, autoTranslateData]);
-
-  // One-time retranslation on mount if needed
-  useEffect(() => {
-    if (isInitialized && Object.keys(customData).length > 0) {
-      // Check if we need to retranslate (e.g., if English bio still contains German text)
-      const englishData = customData.en;
-      if (englishData?.personalInfo?.bio?.includes('mit 5+ Jahren Erfahrung')) {
-        console.log('Detected untranslated text, forcing retranslation...');
-        forceRetranslateAll();
-      }
-    }
-  }, [isInitialized, customData, forceRetranslateAll]);
+  }, [language, customData, isInitialized, getDataForLanguage, saveCustomData]);
 
   return {
     cvData,
     fieldVisibility,
-    forceRetranslateAll,
     ...updateFunctions
   };
 };
