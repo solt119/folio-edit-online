@@ -1,113 +1,48 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { CVData, PersonalInfo, Experience, Education, Skill, Language, Certificate } from '@/types/cv';
 import { FieldVisibility, defaultVisibility } from '@/types/visibility';
-
-const initialCVData: CVData = {
-  personalInfo: {
-    image: undefined,
-    name: "Max Mustermann",
-    profession: "Senior Frontend Developer",
-    location: "Berlin, Deutschland",
-    email: "max.mustermann@email.de",
-    phone: "+49 123 456789",
-    linkedin: "linkedin.com/in/maxmustermann",
-    github: "github.com/maxmustermann",
-    bio: "Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung."
-  },
-  experiences: [
-    {
-      id: "1",
-      company: "Tech Solutions GmbH",
-      position: "Senior Frontend Developer",
-      duration: "2022 - Heute",
-      description: "Entwicklung und Wartung von React-Anwendungen für Enterprise-Kunden. Implementierung von Design-Systemen und Performance-Optimierungen."
-    },
-    {
-      id: "2",
-      company: "Digital Agency Berlin",
-      position: "Frontend Developer",
-      duration: "2020 - 2022",
-      description: "Erstellung responsiver Websites und Web-Anwendungen. Zusammenarbeit mit Design- und Backend-Teams in agilen Entwicklungsprozessen."
-    }
-  ],
-  education: [
-    {
-      id: "1",
-      institution: "Technische Universität Berlin",
-      degree: "Bachelor of Science - Informatik",
-      duration: "2016 - 2020",
-      description: "Schwerpunkt: Web-Entwicklung und Software Engineering. Abschlussnote: 1,5"
-    }
-  ],
-  skills: [
-    { id: "1", name: "React", level: 90 },
-    { id: "2", name: "TypeScript", level: 85 },
-    { id: "3", name: "Tailwind CSS", level: 88 },
-    { id: "4", name: "Node.js", level: 75 },
-    { id: "5", name: "Git", level: 85 },
-    { id: "6", name: "Figma", level: 70 }
-  ],
-  languages: [
-    { id: "1", name: "Deutsch", level: "Muttersprache" },
-    { id: "2", name: "Englisch", level: "Fließend (C1)" },
-    { id: "3", name: "Französisch", level: "Grundkenntnisse (A2)" }
-  ],
-  projects: [
-    {
-      id: "1",
-      name: "E-Commerce Dashboard",
-      description: "Vollständiges Dashboard für Online-Shop-Verwaltung mit React und TypeScript",
-      technologies: ["React", "TypeScript", "Tailwind CSS", "Chart.js"],
-      link: "https://demo-dashboard.example.com"
-    },
-    {
-      id: "2",
-      name: "Portfolio Website",
-      description: "Responsive Portfolio-Website mit modernem Design und Animationen",
-      technologies: ["React", "Framer Motion", "Styled Components"]
-    }
-  ],
-  certificates: [
-    {
-      id: "1",
-      name: "AWS Certified Solutions Architect",
-      issuer: "Amazon Web Services",
-      issueDate: "März 2023",
-      expiryDate: "März 2026",
-      credentialId: "AWS-SAA-123456",
-      link: "https://aws.amazon.com/verification"
-    },
-    {
-      id: "2",
-      name: "Google Analytics Certified",
-      issuer: "Google",
-      issueDate: "Januar 2023",
-      credentialId: "GA-456789"
-    }
-  ]
-};
+import { useLanguage } from '@/contexts/LanguageContext';
+import { cvContentTranslations } from '@/utils/cvContentTranslations';
 
 export const useCVData = () => {
-  const [cvData, setCvData] = useState<CVData>(initialCVData);
+  const { language } = useLanguage();
+  const [cvData, setCvData] = useState<CVData>(cvContentTranslations[language]);
   const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>(defaultVisibility);
+  const [customData, setCustomData] = useState<{ [key: string]: CVData }>({});
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem('cvData');
-    if (savedData) {
-      setCvData(JSON.parse(savedData));
+    const savedCustomData = localStorage.getItem('customCvData');
+    if (savedCustomData) {
+      const parsed = JSON.parse(savedCustomData);
+      setCustomData(parsed);
+      
+      // If we have custom data for current language, use it, otherwise use default
+      if (parsed[language]) {
+        setCvData(parsed[language]);
+      } else {
+        setCvData(cvContentTranslations[language]);
+      }
+    } else {
+      setCvData(cvContentTranslations[language]);
     }
     
     const savedVisibility = localStorage.getItem('fieldVisibility');
     if (savedVisibility) {
       setFieldVisibility(JSON.parse(savedVisibility));
     }
-  }, []);
+  }, [language]);
 
-  // Save data to localStorage whenever cvData or visibility changes
+  // Save custom data to localStorage whenever cvData changes
   useEffect(() => {
-    localStorage.setItem('cvData', JSON.stringify(cvData));
-  }, [cvData]);
+    const newCustomData = {
+      ...customData,
+      [language]: cvData
+    };
+    setCustomData(newCustomData);
+    localStorage.setItem('customCvData', JSON.stringify(newCustomData));
+  }, [cvData, language]);
 
   useEffect(() => {
     localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
