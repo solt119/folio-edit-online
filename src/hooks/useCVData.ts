@@ -62,26 +62,23 @@ export const useCVData = () => {
     
     const openaiKey = localStorage.getItem('openai_api_key');
     
-    // If we have custom data and OpenAI key, try to get translated data
+    // If we have custom data and OpenAI key, always try to get OpenAI translated data
     if (Object.keys(customData).length > 0 && openaiKey) {
       const otherLanguage = language === 'de' ? 'en' : 'de';
       
-      // If we don't have data for current language but have for other language
-      if (!customData[language] && customData[otherLanguage]) {
-        console.log('Auto-translating custom data with OpenAI for language:', language);
-        autoTranslateData(customData[otherLanguage], otherLanguage, {}).then(translatedData => {
+      // If we have data for the other language, translate it with OpenAI
+      if (customData[otherLanguage]) {
+        console.log('Auto-translating custom data with OpenAI from', otherLanguage, 'to', language);
+        autoTranslateData(customData[otherLanguage], otherLanguage, customData).then(translatedData => {
           if (translatedData[language]) {
+            console.log('OpenAI translation successful, updating data for', language);
             setCvData(translatedData[language]);
             // Save the translated data
-            const newCustomData = {
-              ...customData,
-              [language]: translatedData[language]
-            };
-            saveCustomData(newCustomData);
+            saveCustomData(translatedData);
           }
         }).catch(error => {
-          console.error('Translation failed:', error);
-          // Fallback to basic translation
+          console.error('OpenAI translation failed:', error);
+          // Fallback to existing data or basic translation
           const newData = getDataForLanguage(language, customData);
           setCvData(newData);
         });
