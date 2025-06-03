@@ -152,34 +152,24 @@ const Index = () => {
                 </Button>
               </>
             ) : (
-              <>
-                <Button 
-                  onClick={() => setShowOpenAISettings(!showOpenAISettings)}
-                  variant="outline" 
-                  size="sm"
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
-                >
-                  AI
-                </Button>
-                <Button 
-                  onClick={() => setShowLogin(true)}
-                  variant="outline" 
-                  size="sm"
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
-                  disabled={loading}
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  {loading ? t('loading') : t('login_to_edit')}
-                </Button>
-              </>
+              <Button 
+                onClick={() => setShowLogin(true)}
+                variant="outline" 
+                size="sm"
+                className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                disabled={loading}
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                {loading ? t('loading') : t('login_to_edit')}
+              </Button>
             )}
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
-        {/* OpenAI Settings */}
-        {showOpenAISettings && (
+        {/* OpenAI Settings - only show when logged in */}
+        {user && showOpenAISettings && (
           <OpenAIKeyInput onKeySet={() => setShowOpenAISettings(false)} />
         )}
 
