@@ -158,52 +158,48 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
   const sortedTranslations = Object.entries(translations).sort((a, b) => b[0].length - a[0].length);
   
   let translatedText = text;
-  let hasTranslation = false;
   
   for (const [germanText, englishText] of sortedTranslations) {
     if (text.toLowerCase().includes(germanText.toLowerCase())) {
       const regex = new RegExp(germanText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
       translatedText = translatedText.replace(regex, englishText);
-      hasTranslation = true;
       console.log(`Applied phrase translation: ${germanText} -> ${englishText}`);
     }
   }
   
-  // Falls keine Phrasenübersetzung gefunden wurde oder Text immer noch Deutsche Wörter enthält
-  if (!hasTranslation || translatedText.includes('mehr als')) {
-    console.log('Applying word-by-word translation for remaining German words');
+  // Immer Wort-für-Wort Übersetzung für alle verbleibenden deutschen Wörter anwenden
+  console.log('Applying word-by-word translation for remaining German words');
+  
+  // Spezielle Behandlung für "mehr als" - zuerst als Phrase
+  translatedText = translatedText.replace(/mehr\s+als/gi, 'more than');
+  
+  // Dann Wort-für-Wort Übersetzung für alle Wörter
+  const words = translatedText.split(/(\s+|[.,;:!?()+-])/);
+  const translatedWords = words.map(word => {
+    const cleanWord = word.trim();
+    if (!cleanWord || /^[\s.,;:!?()+-]+$/.test(word)) {
+      return word; // Punktuation und Leerzeichen beibehalten
+    }
     
-    // Spezielle Behandlung für "mehr als" - zuerst als Phrase
-    translatedText = translatedText.replace(/mehr\s+als/gi, 'more than');
+    // Prüfe sowohl den originalen als auch den lowercase Wert
+    const lowerWord = cleanWord.toLowerCase();
+    let translation = wordTranslations[cleanWord] || wordTranslations[lowerWord];
     
-    // Dann Wort-für-Wort Übersetzung für verbleibende Wörter
-    const words = translatedText.split(/(\s+|[.,;:!?()+-])/);
-    const translatedWords = words.map(word => {
-      const cleanWord = word.trim();
-      if (!cleanWord || /^[\s.,;:!?()+-]+$/.test(word)) {
-        return word; // Punktuation und Leerzeichen beibehalten
+    if (translation) {
+      console.log(`Word translation: ${cleanWord} -> ${translation}`);
+      // Groß-/Kleinschreibung beibehalten
+      if (cleanWord === cleanWord.toUpperCase()) {
+        return translation.toUpperCase();
+      } else if (cleanWord[0] === cleanWord[0].toUpperCase()) {
+        return translation.charAt(0).toUpperCase() + translation.slice(1);
       }
-      
-      // Prüfe sowohl den originalen als auch den lowercase Wert
-      const lowerWord = cleanWord.toLowerCase();
-      let translation = wordTranslations[cleanWord] || wordTranslations[lowerWord];
-      
-      if (translation) {
-        console.log(`Word translation: ${cleanWord} -> ${translation}`);
-        // Groß-/Kleinschreibung beibehalten
-        if (cleanWord === cleanWord.toUpperCase()) {
-          return translation.toUpperCase();
-        } else if (cleanWord[0] === cleanWord[0].toUpperCase()) {
-          return translation.charAt(0).toUpperCase() + translation.slice(1);
-        }
-        return translation;
-      }
-      
-      return word; // Original zurückgeben, wenn keine Übersetzung gefunden
-    });
+      return translation;
+    }
     
-    translatedText = translatedWords.join('');
-  }
+    return word; // Original zurückgeben, wenn keine Übersetzung gefunden
+  });
+  
+  translatedText = translatedWords.join('');
   
   console.log(`Translation result: "${translatedText}"`);
   return translatedText;
