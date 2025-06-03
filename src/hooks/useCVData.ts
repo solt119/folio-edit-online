@@ -26,7 +26,10 @@ export const useCVData = () => {
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
     const newCustomData = await autoTranslateData(newCvData, language, customData);
     saveCustomData(newCustomData);
-  }, [autoTranslateData, customData, language, saveCustomData]);
+    
+    // Update the current display with the new data for current language
+    setCvData(newCustomData[language]);
+  }, [autoTranslateData, customData, language, saveCustomData, setCvData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
