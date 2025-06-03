@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Code, Globe, Edit, Save, X } from 'lucide-react';
 import { Project } from '@/types/cv';
 import { EditableText } from '@/components/EditableText';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -24,12 +25,14 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   onSave,
   onUpdate
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Card className="mt-8 bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader className="relative">
         <CardTitle className="flex items-center gap-2 text-blue-400">
           <Code className="w-5 h-5" />
-          Projekte
+          {t('projects')}
         </CardTitle>
         {isLoggedIn && (
           <Button
@@ -98,7 +101,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
         {isEditing && (
           <Button onClick={onSave} className="bg-green-600 hover:bg-green-700 w-full mt-6">
             <Save className="w-4 h-4 mr-2" />
-            Speichern
+            {t('save')}
           </Button>
         )}
       </CardContent>

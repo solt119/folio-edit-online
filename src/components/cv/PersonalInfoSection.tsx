@@ -7,6 +7,7 @@ import { PersonalInfo } from '@/types/cv';
 import { FieldVisibility } from '@/types/visibility';
 import { EditableText } from '@/components/EditableText';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PersonalInfoSectionProps {
   personalInfo: PersonalInfo;
@@ -28,6 +29,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   visibility
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useLanguage();
 
   const isVisible = (field: keyof PersonalInfo) => {
     return isLoggedIn || !visibility || visibility[field];
@@ -131,7 +133,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
               </div>
               <Button onClick={onSave} className="bg-green-600 hover:bg-green-700">
                 <Save className="w-4 h-4 mr-2" />
-                Speichern
+                {t('save')}
               </Button>
             </div>
           ) : (

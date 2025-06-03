@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Code, Edit, Save, X } from 'lucide-react';
 import { Skill } from '@/types/cv';
 import { EditableText } from '@/components/EditableText';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SkillsSectionProps {
   skills: Skill[];
@@ -24,12 +25,14 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
   onSave,
   onUpdate
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader className="relative">
         <CardTitle className="flex items-center gap-2 text-blue-400">
           <Code className="w-5 h-5" />
-          Fähigkeiten
+          {t('skills')}
         </CardTitle>
         {isLoggedIn && (
           <Button
@@ -80,7 +83,7 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({
         {isEditing && (
           <Button onClick={onSave} className="bg-green-600 hover:bg-green-700 w-full">
             <Save className="w-4 h-4 mr-2" />
-            Speichern
+            {t('save')}
           </Button>
         )}
       </CardContent>

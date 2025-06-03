@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { GraduationCap, Calendar, Edit, Save, X } from 'lucide-react';
 import { Education } from '@/types/cv';
 import { EditableText } from '@/components/EditableText';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface EducationSectionProps {
   education: Education[];
@@ -23,12 +24,14 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
   onSave,
   onUpdate
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader className="relative">
         <CardTitle className="flex items-center gap-2 text-blue-400">
           <GraduationCap className="w-5 h-5" />
-          Ausbildung
+          {t('education')}
         </CardTitle>
         {isLoggedIn && (
           <Button
@@ -82,7 +85,7 @@ export const EducationSection: React.FC<EducationSectionProps> = ({
         {isEditing && (
           <Button onClick={onSave} className="bg-green-600 hover:bg-green-700 w-full">
             <Save className="w-4 h-4 mr-2" />
-            Speichern
+            {t('save')}
           </Button>
         )}
       </CardContent>

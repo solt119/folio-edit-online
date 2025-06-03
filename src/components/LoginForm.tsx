@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LogIn, Eye, EyeOff, X } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => Promise<void>
@@ -16,6 +17,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading, onCancel
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const { t } = useLanguage()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,7 +46,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading, onCancel
               <X className="w-4 h-4" />
             </Button>
           )}
-          <CardTitle className="text-2xl text-blue-400">Anmelden zum Bearbeiten</CardTitle>
+          <CardTitle className="text-2xl text-blue-400">{t('login_to_edit')}</CardTitle>
           <p className="text-slate-400 text-sm">
             Melden Sie sich an, um den Lebenslauf zu bearbeiten
           </p>
@@ -54,7 +56,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading, onCancel
             <div>
               <Input
                 type="email"
-                placeholder="E-Mail"
+                placeholder={t('email')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-slate-800 border-slate-600 text-white"
@@ -86,7 +88,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading, onCancel
               disabled={loading}
             >
               <LogIn className="w-4 h-4 mr-2" />
-              {loading ? 'Anmelden...' : 'Anmelden'}
+              {loading ? t('loading') : t('login_to_edit')}
             </Button>
             {onCancel && (
               <Button 
@@ -95,7 +97,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading, onCancel
                 className="w-full bg-transparent border-slate-600 text-white hover:bg-slate-800"
                 onClick={onCancel}
               >
-                Abbrechen
+                {t('cancel')}
               </Button>
             )}
           </form>

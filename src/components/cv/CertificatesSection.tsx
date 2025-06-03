@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Award, Calendar, ExternalLink, Edit, Save, X } from 'lucide-react';
 import { Certificate } from '@/types/cv';
 import { EditableText } from '@/components/EditableText';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CertificatesSectionProps {
   certificates: Certificate[];
@@ -24,12 +25,14 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
   onSave,
   onUpdate
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader className="relative">
         <CardTitle className="flex items-center gap-2 text-blue-400">
           <Award className="w-5 h-5" />
-          Zertifikate
+          {t('certificates')}
         </CardTitle>
         {isLoggedIn && (
           <Button
@@ -108,7 +111,7 @@ export const CertificatesSection: React.FC<CertificatesSectionProps> = ({
         {isEditing && (
           <Button onClick={onSave} className="bg-green-600 hover:bg-green-700 w-full">
             <Save className="w-4 h-4 mr-2" />
-            Speichern
+            {t('save')}
           </Button>
         )}
       </CardContent>
