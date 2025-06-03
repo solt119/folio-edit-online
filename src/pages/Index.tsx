@@ -8,6 +8,7 @@ import { LoginForm } from '@/components/LoginForm';
 import { SupabaseConfig } from '@/components/SupabaseConfig';
 import { VisibilityControls } from '@/components/VisibilityControls';
 import { LanguageSelector } from '@/components/LanguageSelector';
+import { OpenAIKeyInput } from '@/components/OpenAIKeyInput';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { useCVData } from '@/hooks/useCVData';
@@ -24,6 +25,7 @@ const Index = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showVisibilitySettings, setShowVisibilitySettings] = useState(false);
   const [supabaseConfiguredState, setSupabaseConfiguredState] = useState(false);
+  const [showOpenAISettings, setShowOpenAISettings] = useState(false);
   const { user, loading, signIn, signOut } = useAuth();
   const { t } = useLanguage();
   
@@ -123,6 +125,14 @@ const Index = () => {
               <>
                 <span className="text-slate-400 text-sm">{t('logged_in_as')}: {user.email}</span>
                 <Button 
+                  onClick={() => setShowOpenAISettings(!showOpenAISettings)}
+                  variant="outline" 
+                  size="sm"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                >
+                  AI
+                </Button>
+                <Button 
                   onClick={() => setShowVisibilitySettings(!showVisibilitySettings)}
                   variant="outline" 
                   size="sm"
@@ -142,22 +152,37 @@ const Index = () => {
                 </Button>
               </>
             ) : (
-              <Button 
-                onClick={() => setShowLogin(true)}
-                variant="outline" 
-                size="sm"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
-                disabled={loading}
-              >
-                <LogIn className="w-4 h-4 mr-2" />
-                {loading ? t('loading') : t('login_to_edit')}
-              </Button>
+              <>
+                <Button 
+                  onClick={() => setShowOpenAISettings(!showOpenAISettings)}
+                  variant="outline" 
+                  size="sm"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                >
+                  AI
+                </Button>
+                <Button 
+                  onClick={() => setShowLogin(true)}
+                  variant="outline" 
+                  size="sm"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                  disabled={loading}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  {loading ? t('loading') : t('login_to_edit')}
+                </Button>
+              </>
             )}
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
+        {/* OpenAI Settings */}
+        {showOpenAISettings && (
+          <OpenAIKeyInput onKeySet={() => setShowOpenAISettings(false)} />
+        )}
+
         {/* Visibility Controls - only show when logged in and toggled */}
         {user && showVisibilitySettings && (
           <VisibilityControls

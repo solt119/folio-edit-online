@@ -2,6 +2,7 @@
 import { useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { translateCVData } from '@/utils/translationService';
+import { translateCVDataWithOpenAI } from '@/utils/openaiTranslation';
 import { cvContentTranslations } from '@/utils/cvContentTranslations';
 
 export const useDataTranslation = () => {
@@ -30,28 +31,41 @@ export const useDataTranslation = () => {
     return cvContentTranslations[language];
   }, []);
 
-  const autoTranslateData = useCallback((
+  const autoTranslateData = useCallback(async (
     newCvData: CVData,
     fromLanguage: 'de' | 'en',
     customData: { [key: string]: CVData }
-  ): { [key: string]: CVData } => {
+  ): Promise<{ [key: string]: CVData }> => {
     const newCustomData = {
       ...customData,
       [fromLanguage]: newCvData
     };
     
-    // Auto-translate to the other language - always retranslate to ensure consistency
+    // Auto-translate to the other language using OpenAI if available
     const otherLanguage = fromLanguage === 'de' ? 'en' : 'de';
-    console.log('Auto-translating to', otherLanguage);
-    newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
-    console.log('Auto-translated data:', newCustomData[otherLanguage]);
+    console.log('Auto-translating to', otherLanguage, 'with OpenAI');
+    
+    try {
+      const openaiKey = localStorage.getItem('openai_api_key');
+      if (openaiKey) {
+        newCustomData[otherLanguage] = await translateCVDataWithOpenAI(newCvData, fromLanguage, otherLanguage, openaiKey);
+        console.log('OpenAI auto-translated data:', newCustomData[otherLanguage]);
+      } else {
+        // Fallback to basic translation
+        newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
+        console.log('Basic auto-translated data:', newCustomData[otherLanguage]);
+      }
+    } catch (error) {
+      console.error('OpenAI translation failed, using fallback:', error);
+      newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
+    }
     
     return newCustomData;
   }, []);
 
-  const forceRetranslate = useCallback((
+  const forceRetranslate = useCallback(async (
     customData: { [key: string]: CVData }
-  ): { [key: string]: CVData } => {
+  ): Promise<{ [key: string]: CVData }> => {
     if (!customData.de && !customData.en) {
       return customData;
     }
@@ -61,9 +75,22 @@ export const useDataTranslation = () => {
     const targetLanguage = sourceLanguage === 'de' ? 'en' : 'de';
     
     const newCustomData = { ...customData };
-    newCustomData[targetLanguage] = translateCVData(customData[sourceLanguage], sourceLanguage, targetLanguage);
     
-    console.log('Force retranslated data:', newCustomData);
+    try {
+      const openaiKey = localStorage.getItem('openai_api_key');
+      if (openaiKey) {
+        newCustomData[targetLanguage] = await translateCVDataWithOpenAI(customData[sourceLanguage], sourceLanguage, targetLanguage, openaiKey);
+        console.log('OpenAI force retranslated data:', newCustomData);
+      } else {
+        // Fallback to basic translation
+        newCustomData[targetLanguage] = translateCVData(customData[sourceLanguage], sourceLanguage, targetLanguage);
+        console.log('Basic force retranslated data:', newCustomData);
+      }
+    } catch (error) {
+      console.error('OpenAI retranslation failed, using fallback:', error);
+      newCustomData[targetLanguage] = translateCVData(customData[sourceLanguage], sourceLanguage, targetLanguage);
+    }
+    
     return newCustomData;
   }, []);
 
