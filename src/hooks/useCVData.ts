@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -53,21 +54,33 @@ export const useCVData = () => {
   }, [language, loadStoredData]);
 
   // Update CV data when language changes (only after initialization)
+  // This now handles real-time translation during editing
   useEffect(() => {
     if (!isInitialized) return;
     
-    const newData = getDataForLanguage(language, customData);
+    console.log('Language changed to:', language);
+    console.log('Available custom data languages:', Object.keys(customData));
     
-    // If we got translated data, save it
-    if (newData !== cvContentTranslations[language] && !customData[language]) {
-      const newCustomData = {
-        ...customData,
-        [language]: newData
-      };
-      saveCustomData(newCustomData);
+    // If we have custom data, always try to get/translate for the current language
+    if (Object.keys(customData).length > 0) {
+      const newData = getDataForLanguage(language, customData);
+      
+      // If we got translated data and it's different from what we have stored, save it
+      if (newData !== cvContentTranslations[language] && !customData[language]) {
+        console.log('Saving translated data for language:', language);
+        const newCustomData = {
+          ...customData,
+          [language]: newData
+        };
+        saveCustomData(newCustomData);
+      }
+      
+      // Always update the display with the correct language data
+      setCvData(newData);
+    } else {
+      // No custom data, use defaults
+      setCvData(cvContentTranslations[language]);
     }
-    
-    setCvData(newData);
   }, [language, customData, isInitialized, getDataForLanguage, saveCustomData]);
 
   return {
