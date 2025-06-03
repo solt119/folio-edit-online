@@ -24,40 +24,40 @@ export const EditableText = React.memo(({
 }: EditableTextProps) => {
   const { language } = useLanguage();
   const [localValue, setLocalValue] = useState(value);
-  const [lastTranslatedValue, setLastTranslatedValue] = useState('');
-  const [lastLanguage, setLastLanguage] = useState(language);
+  const [isUserEditing, setIsUserEditing] = useState(false);
+
+  // Update local value when prop value changes from parent
+  useEffect(() => {
+    if (!isUserEditing) {
+      setLocalValue(value);
+    }
+  }, [value, isUserEditing]);
 
   // Handle translation when language changes
   useEffect(() => {
-    if (enableTranslation && language !== lastLanguage && value && value.trim() !== '') {
-      console.log(`Translating EditableText from ${lastLanguage} to ${language}:`, value);
+    if (enableTranslation && !isUserEditing && value && value.trim() !== '') {
+      console.log(`Translating from current language to ${language}:`, value);
       
-      // Only translate if the current value hasn't been manually changed from the last translated value
-      if (value === lastTranslatedValue || lastTranslatedValue === '') {
-        const translatedValue = translateText(value, lastLanguage, language);
-        console.log(`Translated result:`, translatedValue);
-        
-        if (translatedValue !== value) {
-          setLocalValue(translatedValue);
-          setLastTranslatedValue(translatedValue);
-          onChange(translatedValue);
-        }
+      // Determine source language based on current content
+      const sourceLanguage = language === 'de' ? 'en' : 'de';
+      const translatedValue = translateText(value, sourceLanguage, language);
+      
+      console.log(`Translation result:`, translatedValue);
+      
+      if (translatedValue !== value) {
+        setLocalValue(translatedValue);
+        onChange(translatedValue);
       }
     }
-    setLastLanguage(language);
-  }, [language, value, enableTranslation, lastLanguage, lastTranslatedValue, onChange]);
-
-  // Update local value when prop value changes (but not during translation)
-  useEffect(() => {
-    if (value !== lastTranslatedValue) {
-      setLocalValue(value);
-    }
-  }, [value, lastTranslatedValue]);
+  }, [language, enableTranslation, value, isUserEditing, onChange]);
 
   const handleChange = (newValue: string) => {
+    setIsUserEditing(true);
     setLocalValue(newValue);
-    setLastTranslatedValue(''); // Reset translation tracking when user manually edits
     onChange(newValue);
+    
+    // Reset editing flag after a short delay
+    setTimeout(() => setIsUserEditing(false), 500);
   };
 
   if (multiline) {

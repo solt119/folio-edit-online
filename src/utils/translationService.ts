@@ -17,6 +17,14 @@ const translations: { [key: string]: { de: string; en: string } } = {
     de: 'Das ist ein Test',
     en: 'This is a test'
   },
+  'Hallo Welt': {
+    de: 'Hallo Welt',
+    en: 'Hello World'
+  },
+  'Hello World': {
+    de: 'Hallo Welt',
+    en: 'Hello World'
+  },
   
   // Personal Info - Complete phrases
   'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': {
@@ -190,7 +198,23 @@ const wordTranslations: { [key: string]: { de: string; en: string } } = {
   'ein': { de: 'ein', en: 'a' },
   'a': { de: 'ein', en: 'a' },
   'Test': { de: 'Test', en: 'test' },
-  'test': { de: 'Test', en: 'test' }
+  'test': { de: 'Test', en: 'test' },
+  'Hallo': { de: 'Hallo', en: 'Hello' },
+  'Hello': { de: 'Hallo', en: 'Hello' },
+  'Welt': { de: 'Welt', en: 'World' },
+  'World': { de: 'Welt', en: 'World' },
+  'ich': { de: 'ich', en: 'I' },
+  'I': { de: 'ich', en: 'I' },
+  'bin': { de: 'bin', en: 'am' },
+  'am': { de: 'bin', en: 'am' },
+  'sehr': { de: 'sehr', en: 'very' },
+  'very': { de: 'sehr', en: 'very' },
+  'gut': { de: 'gut', en: 'good' },
+  'good': { de: 'gut', en: 'gut' },
+  'schön': { de: 'schön', en: 'nice' },
+  'nice': { de: 'schön', en: 'nice' },
+  'heute': { de: 'heute', en: 'today' },
+  'today': { de: 'heute', en: 'today' }
 };
 
 // Smart translation function that handles sentences and phrases intelligently
