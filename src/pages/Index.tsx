@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { LogIn, LogOut } from 'lucide-react';
@@ -10,6 +9,7 @@ import { EducationSection } from '@/components/cv/EducationSection';
 import { SkillsSection } from '@/components/cv/SkillsSection';
 import { LanguagesSection } from '@/components/cv/LanguagesSection';
 import { ProjectsSection } from '@/components/cv/ProjectsSection';
+import { CertificatesSection } from '@/components/cv/CertificatesSection';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,7 +22,8 @@ const Index = () => {
     updateEducation,
     updateSkill,
     updateLanguage,
-    updateProject
+    updateProject,
+    updateCertificate
   } = useCVData();
 
   // Load login status from localStorage on component mount
@@ -145,6 +146,16 @@ const Index = () => {
             onEdit={() => handleEdit('languages')}
             onSave={handleSave}
             onUpdate={updateLanguage}
+          />
+
+          {/* Certificates */}
+          <CertificatesSection
+            certificates={cvData.certificates}
+            isLoggedIn={isLoggedIn}
+            isEditing={editingSection === 'certificates'}
+            onEdit={() => handleEdit('certificates')}
+            onSave={handleSave}
+            onUpdate={updateCertificate}
           />
         </div>
 

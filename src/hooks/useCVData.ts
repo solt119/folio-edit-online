@@ -1,6 +1,5 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import { CVData, PersonalInfo, Experience, Education, Skill, Language } from '@/types/cv';
+import { CVData, PersonalInfo, Experience, Education, Skill, Language, Certificate } from '@/types/cv';
 
 const initialCVData: CVData = {
   personalInfo: {
@@ -64,6 +63,24 @@ const initialCVData: CVData = {
       name: "Portfolio Website",
       description: "Responsive Portfolio-Website mit modernem Design und Animationen",
       technologies: ["React", "Framer Motion", "Styled Components"]
+    }
+  ],
+  certificates: [
+    {
+      id: "1",
+      name: "AWS Certified Solutions Architect",
+      issuer: "Amazon Web Services",
+      issueDate: "März 2023",
+      expiryDate: "März 2026",
+      credentialId: "AWS-SAA-123456",
+      link: "https://aws.amazon.com/verification"
+    },
+    {
+      id: "2",
+      name: "Google Analytics Certified",
+      issuer: "Google",
+      issueDate: "Januar 2023",
+      credentialId: "GA-456789"
     }
   ]
 };
@@ -137,6 +154,15 @@ export const useCVData = () => {
     }));
   }, []);
 
+  const updateCertificate = useCallback((index: number, field: keyof Certificate, value: string) => {
+    setCvData(prev => ({
+      ...prev,
+      certificates: prev.certificates.map((cert, i) => 
+        i === index ? { ...cert, [field]: value } : cert
+      )
+    }));
+  }, []);
+
   return {
     cvData,
     updatePersonalInfo,
@@ -144,6 +170,7 @@ export const useCVData = () => {
     updateEducation,
     updateSkill,
     updateLanguage,
-    updateProject
+    updateProject,
+    updateCertificate
   };
 };

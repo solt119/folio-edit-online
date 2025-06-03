@@ -1,4 +1,3 @@
-
 export interface PersonalInfo {
   name: string;
   profession: string;
@@ -46,6 +45,16 @@ export interface Project {
   link?: string;
 }
 
+export interface Certificate {
+  id: string;
+  name: string;
+  issuer: string;
+  issueDate: string;
+  expiryDate?: string;
+  credentialId?: string;
+  link?: string;
+}
+
 export interface CVData {
   personalInfo: PersonalInfo;
   experiences: Experience[];
@@ -53,4 +62,5 @@ export interface CVData {
   skills: Skill[];
   languages: Language[];
   projects: Project[];
+  certificates: Certificate[];
 }
