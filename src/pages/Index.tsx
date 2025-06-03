@@ -1,10 +1,10 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/LoginForm';
+import { SupabaseConfig } from '@/components/SupabaseConfig';
 import { useCVData } from '@/hooks/useCVData';
 import { PersonalInfoSection } from '@/components/cv/PersonalInfoSection';
 import { ExperienceSection } from '@/components/cv/ExperienceSection';
@@ -16,6 +16,7 @@ import { CertificatesSection } from '@/components/cv/CertificatesSection';
 
 const Index = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [isSupabaseConfigured, setIsSupabaseConfigured] = useState(false);
   const { user, loading, signIn, signOut } = useAuth();
   
   const {
@@ -28,6 +29,19 @@ const Index = () => {
     updateProject,
     updateCertificate
   } = useCVData();
+
+  useEffect(() => {
+    // Check if Supabase is configured
+    const hasEnvVars = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const hasLocalStorage = localStorage.getItem('VITE_SUPABASE_URL') && localStorage.getItem('VITE_SUPABASE_ANON_KEY');
+    setIsSupabaseConfigured(hasEnvVars || hasLocalStorage);
+  }, []);
+
+  const handleSupabaseConfigured = () => {
+    setIsSupabaseConfigured(true);
+    // Reload the page to reinitialize Supabase client
+    window.location.reload();
+  };
 
   const handleLogin = async (email: string, password: string) => {
     const { error } = await signIn(email, password);
@@ -73,6 +87,11 @@ const Index = () => {
   const handleEdit = (section: string) => {
     setEditingSection(editingSection === section ? null : section);
   };
+
+  // Show Supabase configuration if not configured
+  if (!isSupabaseConfigured) {
+    return <SupabaseConfig onConfigured={handleSupabaseConfigured} />;
+  }
 
   // Show loading state
   if (loading) {
