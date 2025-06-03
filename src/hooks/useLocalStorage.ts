@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { FieldVisibility, defaultVisibility } from '@/types/visibility';
@@ -38,9 +37,26 @@ export const useLocalStorage = () => {
 
   // Save custom data to localStorage
   const saveCustomData = useCallback((newCustomData: { [key: string]: CVData }) => {
+    console.log('Saving custom data:', newCustomData);
     setCustomData(newCustomData);
     localStorage.setItem('customCvData', JSON.stringify(newCustomData));
   }, []);
+
+  // Force retranslation of stored data
+  const retranslateStoredData = useCallback(() => {
+    const currentData = { ...customData };
+    if (Object.keys(currentData).length > 0) {
+      // Clear existing translations and force retranslation
+      const sourceLanguage = currentData.de ? 'de' : 'en';
+      const sourceData = currentData[sourceLanguage];
+      
+      // Keep only source data, translation will be done by the translation hook
+      const newData = { [sourceLanguage]: sourceData };
+      saveCustomData(newData);
+      return newData;
+    }
+    return currentData;
+  }, [customData, saveCustomData]);
 
   // Save field visibility to localStorage
   useEffect(() => {
@@ -52,6 +68,7 @@ export const useLocalStorage = () => {
     fieldVisibility,
     setFieldVisibility,
     loadStoredData,
-    saveCustomData
+    saveCustomData,
+    retranslateStoredData
   };
 };

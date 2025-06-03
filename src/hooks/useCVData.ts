@@ -17,16 +17,23 @@ export const useCVData = () => {
     fieldVisibility,
     setFieldVisibility,
     loadStoredData,
-    saveCustomData
+    saveCustomData,
+    retranslateStoredData
   } = useLocalStorage();
 
-  const { getDataForLanguage, autoTranslateData } = useDataTranslation();
+  const { getDataForLanguage, autoTranslateData, forceRetranslate } = useDataTranslation();
 
   // Save custom data with auto-translation
   const saveCustomDataWithTranslation = useCallback((newCvData: CVData) => {
     const newCustomData = autoTranslateData(newCvData, language, customData);
     saveCustomData(newCustomData);
   }, [autoTranslateData, customData, language, saveCustomData]);
+
+  // Force retranslation of all data
+  const forceRetranslateAll = useCallback(() => {
+    const retranslatedData = forceRetranslate(customData);
+    saveCustomData(retranslatedData);
+  }, [forceRetranslate, customData, saveCustomData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
@@ -67,9 +74,22 @@ export const useCVData = () => {
     setCvData(newData);
   }, [language, customData, isInitialized, getDataForLanguage, saveCustomData]);
 
+  // One-time retranslation on mount if needed
+  useEffect(() => {
+    if (isInitialized && Object.keys(customData).length > 0) {
+      // Check if we need to retranslate (e.g., if English bio still contains German text)
+      const englishData = customData.en;
+      if (englishData?.personalInfo?.bio?.includes('mit 5+ Jahren Erfahrung')) {
+        console.log('Detected untranslated text, forcing retranslation...');
+        forceRetranslateAll();
+      }
+    }
+  }, [isInitialized, customData, forceRetranslateAll]);
+
   return {
     cvData,
     fieldVisibility,
+    forceRetranslateAll,
     ...updateFunctions
   };
 };

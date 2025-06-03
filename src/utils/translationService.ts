@@ -7,14 +7,8 @@ const translations: { [key: string]: { de: string; en: string } } = {
   'Senior Frontend Developer': { de: 'Senior Frontend Developer', en: 'Senior Frontend Developer' },
   'Berlin, Deutschland': { de: 'Berlin, Deutschland', en: 'Berlin, Germany' },
   'Leidenschaftlicher Frontend-Entwickler': { de: 'Leidenschaftlicher Frontend-Entwickler', en: 'Passionate Frontend Developer' },
-  'Passionate Frontend Developer mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': {
-    de: 'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.',
-    en: 'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.'
-  },
-  'Ich bin Marcel Test Test': {
-    de: 'Ich bin Marcel Test Test',
-    en: 'I am Marcel Test Test'
-  },
+  'Ich bin Marcel Test Test': { de: 'Ich bin Marcel Test Test', en: 'I am Marcel Test Test' },
+  'Ich bin Marcel': { de: 'Ich bin Marcel', en: 'I am Marcel' },
   
   // Experience
   'Tech Solutions GmbH': { de: 'Tech Solutions GmbH', en: 'Tech Solutions GmbH' },
@@ -50,24 +44,70 @@ const translations: { [key: string]: { de: string; en: string } } = {
   'Januar': { de: 'Januar', en: 'January' }
 };
 
+// Enhanced word-by-word translation for better coverage
+const wordTranslations: { [key: string]: { de: string; en: string } } = {
+  'mit': { de: 'mit', en: 'with' },
+  'und': { de: 'und', en: 'and' },
+  'in': { de: 'in', en: 'in' },
+  'auf': { de: 'auf', en: 'on' },
+  'für': { de: 'für', en: 'for' },
+  'von': { de: 'von', en: 'of' },
+  'Jahren': { de: 'Jahren', en: 'years' },
+  'Erfahrung': { de: 'Erfahrung', en: 'experience' },
+  'modernen': { de: 'modernen', en: 'modern' },
+  'Spezialisiert': { de: 'Spezialisiert', en: 'Specialized' },
+  'responsive': { de: 'responsive', en: 'responsive' },
+  'Design': { de: 'Design', en: 'design' },
+  'Performance-Optimierung': { de: 'Performance-Optimierung', en: 'performance optimization' },
+  'Web-Technologies': { de: 'Web-Technologies', en: 'web technologies' }
+};
+
 export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' | 'en'): string => {
   if (fromLang === toLang) return text;
+  
+  console.log(`Translating: "${text}" from ${fromLang} to ${toLang}`);
   
   // Try to find exact matches first
   for (const [key, value] of Object.entries(translations)) {
     if (value[fromLang] === text) {
+      console.log(`Found exact match: ${value[toLang]}`);
       return value[toLang];
     }
   }
   
   // Try partial matches for longer texts
   let translatedText = text;
+  let hasTranslation = false;
+  
   for (const [key, value] of Object.entries(translations)) {
     if (text.includes(value[fromLang])) {
       translatedText = translatedText.replace(value[fromLang], value[toLang]);
+      hasTranslation = true;
     }
   }
   
+  // If no partial matches found, try word-by-word translation
+  if (!hasTranslation) {
+    const words = text.split(/(\s+|[.,;:!?()+-])/);
+    const translatedWords = words.map(word => {
+      const cleanWord = word.trim();
+      if (!cleanWord || /^[\s.,;:!?()+-]+$/.test(word)) {
+        return word; // Keep punctuation and spaces as is
+      }
+      
+      for (const [key, value] of Object.entries(wordTranslations)) {
+        if (value[fromLang] === cleanWord) {
+          return value[toLang];
+        }
+      }
+      
+      return word; // Return original if no translation found
+    });
+    
+    translatedText = translatedWords.join('');
+  }
+  
+  console.log(`Translation result: "${translatedText}"`);
   return translatedText;
 };
 

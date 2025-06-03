@@ -40,18 +40,36 @@ export const useDataTranslation = () => {
       [fromLanguage]: newCvData
     };
     
-    // Auto-translate to the other language
+    // Auto-translate to the other language - always retranslate to ensure consistency
     const otherLanguage = fromLanguage === 'de' ? 'en' : 'de';
-    if (!newCustomData[otherLanguage] || JSON.stringify(newCustomData[otherLanguage]) === JSON.stringify(cvContentTranslations[otherLanguage])) {
-      // Only auto-translate if the other language doesn't have custom data or still has default data
-      newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
+    console.log('Auto-translating to', otherLanguage);
+    newCustomData[otherLanguage] = translateCVData(newCvData, fromLanguage, otherLanguage);
+    console.log('Auto-translated data:', newCustomData[otherLanguage]);
+    
+    return newCustomData;
+  }, []);
+
+  const forceRetranslate = useCallback((
+    customData: { [key: string]: CVData }
+  ): { [key: string]: CVData } => {
+    if (!customData.de && !customData.en) {
+      return customData;
     }
     
+    // Use German as source if available, otherwise English
+    const sourceLanguage = customData.de ? 'de' : 'en';
+    const targetLanguage = sourceLanguage === 'de' ? 'en' : 'de';
+    
+    const newCustomData = { ...customData };
+    newCustomData[targetLanguage] = translateCVData(customData[sourceLanguage], sourceLanguage, targetLanguage);
+    
+    console.log('Force retranslated data:', newCustomData);
     return newCustomData;
   }, []);
 
   return {
     getDataForLanguage,
-    autoTranslateData
+    autoTranslateData,
+    forceRetranslate
   };
 };
