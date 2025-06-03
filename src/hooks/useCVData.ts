@@ -18,40 +18,49 @@ export const useCVData = () => {
     if (savedCustomData) {
       const parsed = JSON.parse(savedCustomData);
       setCustomData(parsed);
-      
-      // If we have custom data for current language, use it, otherwise use default
-      if (parsed[language]) {
-        setCvData(parsed[language]);
-      } else {
-        setCvData(cvContentTranslations[language]);
-      }
-    } else {
-      setCvData(cvContentTranslations[language]);
     }
     
     const savedVisibility = localStorage.getItem('fieldVisibility');
     if (savedVisibility) {
       setFieldVisibility(JSON.parse(savedVisibility));
     }
+  }, []);
+
+  // Update CV data when language changes
+  useEffect(() => {
+    const savedCustomData = localStorage.getItem('customCvData');
+    if (savedCustomData) {
+      const parsed = JSON.parse(savedCustomData);
+      
+      // If we have custom data for current language, use it
+      if (parsed[language]) {
+        setCvData(parsed[language]);
+      } else {
+        // If no custom data for this language, use default
+        setCvData(cvContentTranslations[language]);
+      }
+    } else {
+      setCvData(cvContentTranslations[language]);
+    }
   }, [language]);
 
   // Save custom data to localStorage and auto-translate to other language
-  useEffect(() => {
+  const saveCustomData = useCallback((newCvData: CVData) => {
     const newCustomData = {
       ...customData,
-      [language]: cvData
+      [language]: newCvData
     };
     
     // Auto-translate to the other language
     const otherLanguage = language === 'de' ? 'en' : 'de';
     if (!newCustomData[otherLanguage] || JSON.stringify(newCustomData[otherLanguage]) === JSON.stringify(cvContentTranslations[otherLanguage])) {
       // Only auto-translate if the other language doesn't have custom data or still has default data
-      newCustomData[otherLanguage] = translateCVData(cvData, language, otherLanguage);
+      newCustomData[otherLanguage] = translateCVData(newCvData, language, otherLanguage);
     }
     
     setCustomData(newCustomData);
     localStorage.setItem('customCvData', JSON.stringify(newCustomData));
-  }, [cvData, language]);
+  }, [customData, language]);
 
   useEffect(() => {
     localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
@@ -59,65 +68,93 @@ export const useCVData = () => {
 
   // Memoized update functions to prevent unnecessary re-renders
   const updatePersonalInfo = useCallback((field: keyof PersonalInfo, value: string) => {
-    setCvData(prev => ({
-      ...prev,
-      personalInfo: { ...prev.personalInfo, [field]: value }
-    }));
-  }, []);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        personalInfo: { ...prev.personalInfo, [field]: value }
+      };
+      saveCustomData(newData);
+      return newData;
+    });
+  }, [saveCustomData]);
 
   const updateExperience = useCallback((index: number, field: keyof Experience, value: string) => {
-    setCvData(prev => ({
-      ...prev,
-      experiences: prev.experiences.map((exp, i) => 
-        i === index ? { ...exp, [field]: value } : exp
-      )
-    }));
-  }, []);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        experiences: prev.experiences.map((exp, i) => 
+          i === index ? { ...exp, [field]: value } : exp
+        )
+      };
+      saveCustomData(newData);
+      return newData;
+    });
+  }, [saveCustomData]);
 
   const updateEducation = useCallback((index: number, field: keyof Education, value: string) => {
-    setCvData(prev => ({
-      ...prev,
-      education: prev.education.map((edu, i) => 
-        i === index ? { ...edu, [field]: value } : edu
-      )
-    }));
-  }, []);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        education: prev.education.map((edu, i) => 
+          i === index ? { ...edu, [field]: value } : edu
+        )
+      };
+      saveCustomData(newData);
+      return newData;
+    });
+  }, [saveCustomData]);
 
   const updateSkill = useCallback((index: number, field: keyof Skill, value: string | number) => {
-    setCvData(prev => ({
-      ...prev,
-      skills: prev.skills.map((skill, i) => 
-        i === index ? { ...skill, [field]: value } : skill
-      )
-    }));
-  }, []);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        skills: prev.skills.map((skill, i) => 
+          i === index ? { ...skill, [field]: value } : skill
+        )
+      };
+      saveCustomData(newData);
+      return newData;
+    });
+  }, [saveCustomData]);
 
   const updateLanguage = useCallback((index: number, field: keyof Language, value: string) => {
-    setCvData(prev => ({
-      ...prev,
-      languages: prev.languages.map((lang, i) => 
-        i === index ? { ...lang, [field]: value } : lang
-      )
-    }));
-  }, []);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        languages: prev.languages.map((lang, i) => 
+          i === index ? { ...lang, [field]: value } : lang
+        )
+      };
+      saveCustomData(newData);
+      return newData;
+    });
+  }, [saveCustomData]);
 
   const updateProject = useCallback((index: number, field: string, value: string | string[]) => {
-    setCvData(prev => ({
-      ...prev,
-      projects: prev.projects.map((project, i) => 
-        i === index ? { ...project, [field]: value } : project
-      )
-    }));
-  }, []);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        projects: prev.projects.map((project, i) => 
+          i === index ? { ...project, [field]: value } : project
+        )
+      };
+      saveCustomData(newData);
+      return newData;
+    });
+  }, [saveCustomData]);
 
   const updateCertificate = useCallback((index: number, field: keyof Certificate, value: string) => {
-    setCvData(prev => ({
-      ...prev,
-      certificates: prev.certificates.map((cert, i) => 
-        i === index ? { ...cert, [field]: value } : cert
-      )
-    }));
-  }, []);
+    setCvData(prev => {
+      const newData = {
+        ...prev,
+        certificates: prev.certificates.map((cert, i) => 
+          i === index ? { ...cert, [field]: value } : cert
+        )
+      };
+      saveCustomData(newData);
+      return newData;
+    });
+  }, [saveCustomData]);
 
   const updateFieldVisibility = useCallback((section: keyof FieldVisibility, field: string, visible: boolean) => {
     setFieldVisibility(prev => ({
