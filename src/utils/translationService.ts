@@ -3,9 +3,18 @@
 const translations: { [key: string]: { de: string; en: string } } = {
   // Personal Info
   'Max Mustermann': { de: 'Max Mustermann', en: 'John Smith' },
+  'Marcel Test Test': { de: 'Marcel Test Test', en: 'Marcel Test Test' },
   'Senior Frontend Developer': { de: 'Senior Frontend Developer', en: 'Senior Frontend Developer' },
   'Berlin, Deutschland': { de: 'Berlin, Deutschland', en: 'Berlin, Germany' },
   'Leidenschaftlicher Frontend-Entwickler': { de: 'Leidenschaftlicher Frontend-Entwickler', en: 'Passionate Frontend Developer' },
+  'Passionate Frontend Developer mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': {
+    de: 'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.',
+    en: 'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.'
+  },
+  'Ich bin Marcel Test Test': {
+    de: 'Ich bin Marcel Test Test',
+    en: 'I am Marcel Test Test'
+  },
   
   // Experience
   'Tech Solutions GmbH': { de: 'Tech Solutions GmbH', en: 'Tech Solutions GmbH' },

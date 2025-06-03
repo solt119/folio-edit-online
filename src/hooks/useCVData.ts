@@ -12,6 +12,7 @@ export const useCVData = () => {
   const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>(defaultVisibility);
   const [customData, setCustomData] = useState<{ [key: string]: CVData }>({});
   const [isInitialized, setIsInitialized] = useState(false);
+  const [previousLanguage, setPreviousLanguage] = useState<string>(language);
 
   // Save custom data to localStorage and auto-translate to other language
   const saveCustomData = useCallback((newCvData: CVData) => {
@@ -155,20 +156,38 @@ export const useCVData = () => {
     }
     
     setIsInitialized(true);
-  }, [language]);
+  }, []);
 
   // Update CV data when language changes (only after initialization)
   useEffect(() => {
-    if (!isInitialized) return;
+    if (!isInitialized || language === previousLanguage) return;
     
-    // If we have custom data for current language, use it
-    if (customData[language]) {
+    console.log('Language changed from', previousLanguage, 'to', language);
+    console.log('Current customData:', customData);
+    
+    // Always translate from previous language to current language if we have custom data
+    if (customData[previousLanguage] && !customData[language]) {
+      console.log('Translating from', previousLanguage, 'to', language);
+      const translatedData = translateCVData(customData[previousLanguage], previousLanguage as 'de' | 'en', language as 'de' | 'en');
+      console.log('Translated data:', translatedData);
+      
+      const newCustomData = {
+        ...customData,
+        [language]: translatedData
+      };
+      setCustomData(newCustomData);
+      localStorage.setItem('customCvData', JSON.stringify(newCustomData));
+      setCvData(translatedData);
+    } else if (customData[language]) {
+      console.log('Using existing custom data for', language);
       setCvData(customData[language]);
     } else {
-      // If no custom data for this language, use default
+      console.log('Using default data for', language);
       setCvData(cvContentTranslations[language]);
     }
-  }, [language, customData, isInitialized]);
+    
+    setPreviousLanguage(language);
+  }, [language, customData, isInitialized, previousLanguage]);
 
   useEffect(() => {
     localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
