@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,14 +22,11 @@ export const useCVData = () => {
 
   const { getDataForLanguage, autoTranslateData, forceRetranslate } = useDataTranslation();
 
-  // Save custom data without auto-translation
+  // Save custom data with auto-translation
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    const newCustomData = {
-      ...customData,
-      [language]: newCvData
-    };
+    const newCustomData = await autoTranslateData(newCvData, language, customData);
     saveCustomData(newCustomData);
-  }, [customData, language, saveCustomData]);
+  }, [autoTranslateData, customData, language, saveCustomData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
