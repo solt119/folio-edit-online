@@ -11,6 +11,7 @@ export const useCVData = () => {
   const { language } = useLanguage();
   const [cvData, setCvData] = useState<CVData>(cvContentTranslations[language]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [currentEditingLanguage, setCurrentEditingLanguage] = useState<'de' | 'en'>(language);
 
   const {
     customData,
@@ -25,18 +26,23 @@ export const useCVData = () => {
 
   // Save custom data with auto-translation
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    const newCustomData = await autoTranslateData(newCvData, language, customData);
+    const newCustomData = await autoTranslateData(newCvData, currentEditingLanguage, customData);
     saveCustomData(newCustomData);
     
     // Update the current display with the new data for current language
     setCvData(newCustomData[language]);
-  }, [autoTranslateData, customData, language, saveCustomData, setCvData]);
+  }, [autoTranslateData, customData, currentEditingLanguage, language, saveCustomData, setCvData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
     setFieldVisibility,
     setCvData
   });
+
+  // Track when user starts editing to remember the language context
+  const startEditing = useCallback(() => {
+    setCurrentEditingLanguage(language);
+  }, [language]);
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -86,6 +92,8 @@ export const useCVData = () => {
   return {
     cvData,
     fieldVisibility,
+    currentEditingLanguage,
+    startEditing,
     ...updateFunctions
   };
 };

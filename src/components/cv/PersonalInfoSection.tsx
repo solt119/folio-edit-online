@@ -17,6 +17,7 @@ interface PersonalInfoSectionProps {
   onSave: () => void;
   onUpdate: (field: keyof PersonalInfo, value: string) => void;
   visibility?: FieldVisibility['personalInfo'];
+  currentEditingLanguage?: 'de' | 'en';
 }
 
 export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
@@ -26,10 +27,11 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   onEdit,
   onSave,
   onUpdate,
-  visibility
+  visibility,
+  currentEditingLanguage = 'de'
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const isVisible = (field: keyof PersonalInfo) => {
     return isLoggedIn || !visibility || visibility[field];
@@ -103,32 +105,39 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                 value={personalInfo.name}
                 onChange={(value) => onUpdate('name', value)}
                 className="text-center text-3xl font-bold"
+                enableTranslation={false}
               />
               <EditableText
                 value={personalInfo.profession}
                 onChange={(value) => onUpdate('profession', value)}
                 className="text-center text-xl"
+                originalLanguage={currentEditingLanguage}
               />
               <div className="space-y-2">
                 <EditableText
                   value={personalInfo.location}
                   onChange={(value) => onUpdate('location', value)}
+                  originalLanguage={currentEditingLanguage}
                 />
                 <EditableText
                   value={personalInfo.email}
                   onChange={(value) => onUpdate('email', value)}
+                  enableTranslation={false}
                 />
                 <EditableText
                   value={personalInfo.phone}
                   onChange={(value) => onUpdate('phone', value)}
+                  enableTranslation={false}
                 />
                 <EditableText
                   value={personalInfo.linkedin}
                   onChange={(value) => onUpdate('linkedin', value)}
+                  enableTranslation={false}
                 />
                 <EditableText
                   value={personalInfo.github}
                   onChange={(value) => onUpdate('github', value)}
+                  enableTranslation={false}
                 />
               </div>
               <Button onClick={onSave} className="bg-green-600 hover:bg-green-700">
@@ -189,6 +198,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             onChange={(value) => onUpdate('bio', value)}
             multiline
             className="mt-4"
+            originalLanguage={currentEditingLanguage}
           />
         ) : (
           isVisible('bio') && (
