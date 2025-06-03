@@ -11,6 +11,7 @@ export const useCVData = () => {
   const [cvData, setCvData] = useState<CVData>(cvContentTranslations[language]);
   const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>(defaultVisibility);
   const [customData, setCustomData] = useState<{ [key: string]: CVData }>({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Save custom data to localStorage and auto-translate to other language
   const saveCustomData = useCallback((newCvData: CVData) => {
@@ -133,34 +134,41 @@ export const useCVData = () => {
   // Load data from localStorage on component mount
   useEffect(() => {
     const savedCustomData = localStorage.getItem('customCvData');
+    const savedVisibility = localStorage.getItem('fieldVisibility');
+    
     if (savedCustomData) {
       const parsed = JSON.parse(savedCustomData);
       setCustomData(parsed);
-    }
-    
-    const savedVisibility = localStorage.getItem('fieldVisibility');
-    if (savedVisibility) {
-      setFieldVisibility(JSON.parse(savedVisibility));
-    }
-  }, []);
-
-  // Update CV data when language changes
-  useEffect(() => {
-    const savedCustomData = localStorage.getItem('customCvData');
-    if (savedCustomData) {
-      const parsed = JSON.parse(savedCustomData);
       
-      // If we have custom data for current language, use it
+      // Set CV data for current language
       if (parsed[language]) {
         setCvData(parsed[language]);
       } else {
-        // If no custom data for this language, use default
         setCvData(cvContentTranslations[language]);
       }
     } else {
       setCvData(cvContentTranslations[language]);
     }
+    
+    if (savedVisibility) {
+      setFieldVisibility(JSON.parse(savedVisibility));
+    }
+    
+    setIsInitialized(true);
   }, [language]);
+
+  // Update CV data when language changes (only after initialization)
+  useEffect(() => {
+    if (!isInitialized) return;
+    
+    // If we have custom data for current language, use it
+    if (customData[language]) {
+      setCvData(customData[language]);
+    } else {
+      // If no custom data for this language, use default
+      setCvData(cvContentTranslations[language]);
+    }
+  }, [language, customData, isInitialized]);
 
   useEffect(() => {
     localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
