@@ -1,289 +1,173 @@
-// Enhanced translation mappings for comprehensive CV translations
-const translations: { [key: string]: { de: string; en: string } } = {
-  // Custom user inputs that need translation
-  'Guten Morgen': {
-    de: 'Guten Morgen',
-    en: 'Good Morning'
-  },
-  'Good Morning': {
-    de: 'Guten Morgen',
-    en: 'Good Morning'
-  },
-  'Das ist ein Test': {
-    de: 'Das ist ein Test',
-    en: 'This is a test'
-  },
-  'This is a test': {
-    de: 'Das ist ein Test',
-    en: 'This is a test'
-  },
-  'Hallo Welt': {
-    de: 'Hallo Welt',
-    en: 'Hello World'
-  },
-  'Hello World': {
-    de: 'Hallo Welt',
-    en: 'Hello World'
-  },
+
+// Vereinfachte Übersetzungstabelle - nur Deutsch nach Englisch
+const translations: { [germanText: string]: string } = {
+  // Personal Info
+  'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': 'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.',
   
-  // Personal Info - Complete phrases
-  'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': {
-    de: 'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.',
-    en: 'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.'
-  },
-  'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.': {
-    de: 'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.',
-    en: 'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.'
-  },
-  
-  // Names
-  'Max Mustermann': { de: 'Max Mustermann', en: 'Max Mustermann' },
-  'Marcel Test Test': { de: 'Marcel Test Test', en: 'Marcel Test Test' },
+  // Names (bleiben gleich)
+  'Max Mustermann': 'Max Mustermann',
+  'Marcel Test Test': 'Marcel Test Test',
   
   // Positions
-  'Senior Frontend Developer': { de: 'Senior Frontend Developer', en: 'Senior Frontend Developer' },
-  'Frontend Developer': { de: 'Frontend Developer', en: 'Frontend Developer' },
+  'Senior Frontend Developer': 'Senior Frontend Developer',
+  'Frontend Developer': 'Frontend Developer',
   
   // Locations
-  'Berlin, Deutschland': { de: 'Berlin, Deutschland', en: 'Berlin, Germany' },
-  'Deutschland': { de: 'Deutschland', en: 'Germany' },
-  'Germany': { de: 'Deutschland', en: 'Germany' },
+  'Berlin, Deutschland': 'Berlin, Germany',
+  'Deutschland': 'Germany',
   
   // Experience descriptions
-  'Entwicklung und Wartung von React-Anwendungen für Enterprise-Kunden. Implementierung von Design-Systemen und Performance-Optimierungen.': {
-    de: 'Entwicklung und Wartung von React-Anwendungen für Enterprise-Kunden. Implementierung von Design-Systemen und Performance-Optimierungen.',
-    en: 'Development and maintenance of React applications for enterprise clients. Implementation of design systems and performance optimizations.'
-  },
-  'Development and maintenance of React applications for enterprise clients. Implementation of design systems and performance optimizations.': {
-    de: 'Entwicklung und Wartung von React-Anwendungen für Enterprise-Kunden. Implementierung von Design-Systemen und Performance-Optimierungen.',
-    en: 'Development and maintenance of React applications for enterprise clients. Implementation of design systems and performance optimizations.'
-  },
-  'Erstellung responsiver Websites und Web-Anwendungen. Zusammenarbeit mit Design- und Backend-Teams in agilen Entwicklungsprozessen.': {
-    de: 'Erstellung responsiver Websites und Web-Anwendungen. Zusammenarbeit mit Design- und Backend-Teams in agilen Entwicklungsprozessen.',
-    en: 'Creation of responsive websites and web applications. Collaboration with design and backend teams in agile development processes.'
-  },
-  'Creation of responsive websites and web applications. Collaboration with design and backend teams in agile development processes.': {
-    de: 'Erstellung responsiver Websites und Web-Anwendungen. Zusammenarbeit mit Design- und Backend-Teams in agilen Entwicklungsprozessen.',
-    en: 'Creation of responsive websites and web applications. Collaboration with design and backend teams in agile development processes.'
-  },
+  'Entwicklung und Wartung von React-Anwendungen für Enterprise-Kunden. Implementierung von Design-Systemen und Performance-Optimierungen.': 'Development and maintenance of React applications for enterprise clients. Implementation of design systems and performance optimizations.',
+  'Erstellung responsiver Websites und Web-Anwendungen. Zusammenarbeit mit Design- und Backend-Teams in agilen Entwicklungsprozessen.': 'Creation of responsive websites and web applications. Collaboration with design and backend teams in agile development processes.',
   
   // Education
-  'Technische Universität Berlin': { de: 'Technische Universität Berlin', en: 'Technical University Berlin' },
-  'Technical University Berlin': { de: 'Technische Universität Berlin', en: 'Technical University Berlin' },
-  'Bachelor of Science - Informatik': { de: 'Bachelor of Science - Informatik', en: 'Bachelor of Science - Computer Science' },
-  'Bachelor of Science - Computer Science': { de: 'Bachelor of Science - Informatik', en: 'Bachelor of Science - Computer Science' },
-  'Schwerpunkt: Web-Entwicklung und Software Engineering. Abschlussnote: 1,5': {
-    de: 'Schwerpunkt: Web-Entwicklung und Software Engineering. Abschlussnote: 1,5',
-    en: 'Focus: Web Development and Software Engineering. Final grade: 1.5'
-  },
-  'Focus: Web Development and Software Engineering. Final grade: 1.5': {
-    de: 'Schwerpunkt: Web-Entwicklung und Software Engineering. Abschlussnote: 1,5',
-    en: 'Focus: Web Development and Software Engineering. Final grade: 1.5'
-  },
+  'Technische Universität Berlin': 'Technical University Berlin',
+  'Bachelor of Science - Informatik': 'Bachelor of Science - Computer Science',
+  'Schwerpunkt: Web-Entwicklung und Software Engineering. Abschlussnote: 1,5': 'Focus: Web Development and Software Engineering. Final grade: 1.5',
   
   // Time periods
-  'Heute': { de: 'Heute', en: 'Present' },
-  'Present': { de: 'Heute', en: 'Present' },
-  '2022 - Heute': { de: '2022 - Heute', en: '2022 - Present' },
-  '2022 - Present': { de: '2022 - Heute', en: '2022 - Present' },
+  'Heute': 'Present',
+  '2022 - Heute': '2022 - Present',
   
   // Languages
-  'Deutsch': { de: 'Deutsch', en: 'German' },
-  'German': { de: 'Deutsch', en: 'German' },
-  'Englisch': { de: 'Englisch', en: 'English' },
-  'English': { de: 'Englisch', en: 'English' },
-  'Französisch': { de: 'Französisch', en: 'French' },
-  'French': { de: 'Französisch', en: 'French' },
-  'Muttersprache': { de: 'Muttersprache', en: 'Native' },
-  'Native': { de: 'Muttersprache', en: 'Native' },
-  'Fließend (C1)': { de: 'Fließend (C1)', en: 'Fluent (C1)' },
-  'Fluent (C1)': { de: 'Fließend (C1)', en: 'Fluent (C1)' },
-  'Grundkenntnisse (A2)': { de: 'Grundkenntnisse (A2)', en: 'Basic (A2)' },
-  'Basic (A2)': { de: 'Grundkenntnisse (A2)', en: 'Basic (A2)' },
+  'Deutsch': 'German',
+  'Englisch': 'English',
+  'Französisch': 'French',
+  'Muttersprache': 'Native',
+  'Fließend (C1)': 'Fluent (C1)',
+  'Grundkenntnisse (A2)': 'Basic (A2)',
   
   // Projects
-  'Vollständiges Dashboard für Online-Shop-Verwaltung mit React und TypeScript': {
-    de: 'Vollständiges Dashboard für Online-Shop-Verwaltung mit React und TypeScript',
-    en: 'Complete dashboard for online shop management with React and TypeScript'
-  },
-  'Complete dashboard for online shop management with React and TypeScript': {
-    de: 'Vollständiges Dashboard für Online-Shop-Verwaltung mit React und TypeScript',
-    en: 'Complete dashboard for online shop management with React and TypeScript'
-  },
-  'Responsive Portfolio-Website mit modernem Design und Animationen': {
-    de: 'Responsive Portfolio-Website mit modernem Design und Animationen',
-    en: 'Responsive portfolio website with modern design and animations'
-  },
-  'Responsive portfolio website with modern design and animations': {
-    de: 'Responsive Portfolio-Website mit modernem Design und Animationen',
-    en: 'Responsive portfolio website with modern design and animations'
-  },
+  'Vollständiges Dashboard für Online-Shop-Verwaltung mit React und TypeScript': 'Complete dashboard for online shop management with React and TypeScript',
+  'Responsive Portfolio-Website mit modernem Design und Animationen': 'Responsive portfolio website with modern design and animations',
   
   // Certificates
-  'März 2023': { de: 'März 2023', en: 'March 2023' },
-  'March 2023': { de: 'März 2023', en: 'March 2023' },
-  'März 2026': { de: 'März 2026', en: 'March 2026' },
-  'March 2026': { de: 'März 2026', en: 'March 2026' },
-  'Januar 2023': { de: 'Januar 2023', en: 'January 2023' },
-  'January 2023': { de: 'Januar 2023', en: 'January 2023' },
-  'Amazon Web Services': { de: 'Amazon Web Services', en: 'Amazon Web Services' },
-  'Google': { de: 'Google', en: 'Google' }
+  'März 2023': 'March 2023',
+  'März 2026': 'March 2026',
+  'Januar 2023': 'January 2023',
+  'Amazon Web Services': 'Amazon Web Services',
+  'Google': 'Google',
+  
+  // Common custom phrases
+  'Guten Morgen': 'Good Morning',
+  'Das ist ein Test': 'This is a test',
+  'Hallo Welt': 'Hello World',
+  'ich bin sehr gut': 'I am very good',
+  'heute ist schön': 'today is nice',
+  'Das funktioniert gut': 'This works well',
+  'Sehr interessant': 'Very interesting',
+  'Toll gemacht': 'Well done',
+  'Perfekt': 'Perfect'
 };
 
-// Enhanced word-by-word translation for better coverage
-const wordTranslations: { [key: string]: { de: string; en: string } } = {
+// Wort-für-Wort Übersetzungen für einzelne Wörter
+const wordTranslations: { [germanWord: string]: string } = {
   // Common words
-  'mit': { de: 'mit', en: 'with' },
-  'with': { de: 'mit', en: 'with' },
-  'und': { de: 'und', en: 'and' },
-  'and': { de: 'und', en: 'and' },
-  'in': { de: 'in', en: 'in' },
-  'auf': { de: 'auf', en: 'on' },
-  'on': { de: 'auf', en: 'on' },
-  'für': { de: 'für', en: 'for' },
-  'for': { de: 'für', en: 'for' },
-  'von': { de: 'von', en: 'of' },
-  'of': { de: 'von', en: 'of' },
-  'Jahren': { de: 'Jahren', en: 'years' },
-  'years': { de: 'Jahren', en: 'years' },
-  'Erfahrung': { de: 'Erfahrung', en: 'experience' },
-  'experience': { de: 'Erfahrung', en: 'experience' },
-  'modernen': { de: 'modernen', en: 'modern' },
-  'modern': { de: 'modernen', en: 'modern' },
-  'Spezialisiert': { de: 'Spezialisiert', en: 'Specialized' },
-  'Specialized': { de: 'Spezialisiert', en: 'Specialized' },
-  'responsive': { de: 'responsive', en: 'responsive' },
-  'Design': { de: 'Design', en: 'design' },
-  'design': { de: 'Design', en: 'design' },
-  'Performance-Optimierung': { de: 'Performance-Optimierung', en: 'performance optimization' },
-  'performance optimization': { de: 'Performance-Optimierung', en: 'performance optimization' },
-  'Web-Technologies': { de: 'Web-Technologies', en: 'web technologies' },
-  'web technologies': { de: 'Web-Technologies', en: 'web technologies' },
-  'Leidenschaftlicher': { de: 'Leidenschaftlicher', en: 'Passionate' },
-  'Passionate': { de: 'Leidenschaftlicher', en: 'Passionate' },
-  'Entwicklung': { de: 'Entwicklung', en: 'Development' },
-  'Development': { de: 'Entwicklung', en: 'Development' },
-  'Wartung': { de: 'Wartung', en: 'maintenance' },
-  'maintenance': { de: 'Wartung', en: 'maintenance' },
-  'Implementierung': { de: 'Implementierung', en: 'Implementation' },
-  'Implementation': { de: 'Implementierung', en: 'Implementation' },
-  'Erstellung': { de: 'Erstellung', en: 'Creation' },
-  'Creation': { de: 'Erstellung', en: 'Creation' },
-  'Zusammenarbeit': { de: 'Zusammenarbeit', en: 'Collaboration' },
-  'Collaboration': { de: 'Zusammenarbeit', en: 'Collaboration' },
-  'Schwerpunkt': { de: 'Schwerpunkt', en: 'Focus' },
-  'Focus': { de: 'Schwerpunkt', en: 'Focus' },
-  'Abschlussnote': { de: 'Abschlussnote', en: 'Final grade' },
-  'Final grade': { de: 'Abschlussnote', en: 'Final grade' },
-  'Vollständiges': { de: 'Vollständiges', en: 'Complete' },
-  'Complete': { de: 'Vollständiges', en: 'Complete' },
-  'Dashboard': { de: 'Dashboard', en: 'dashboard' },
-  'dashboard': { de: 'Dashboard', en: 'dashboard' },
-  'Online-Shop-Verwaltung': { de: 'Online-Shop-Verwaltung', en: 'online shop management' },
-  'online shop management': { de: 'Online-Shop-Verwaltung', en: 'online shop management' },
-  'Portfolio-Website': { de: 'Portfolio-Website', en: 'portfolio website' },
-  'portfolio website': { de: 'Portfolio-Website', en: 'portfolio website' },
-  'Animationen': { de: 'Animationen', en: 'animations' },
-  'animations': { de: 'Animationen', en: 'animations' },
+  'mit': 'with',
+  'und': 'and',
+  'in': 'in',
+  'auf': 'on',
+  'für': 'for',
+  'von': 'of',
+  'Jahren': 'years',
+  'Erfahrung': 'experience',
+  'modernen': 'modern',
+  'Spezialisiert': 'Specialized',
+  'responsive': 'responsive',
+  'Design': 'design',
+  'Performance-Optimierung': 'performance optimization',
+  'Web-Technologies': 'web technologies',
+  'Leidenschaftlicher': 'Passionate',
+  'Entwicklung': 'Development',
+  'Wartung': 'maintenance',
+  'Implementierung': 'Implementation',
+  'Erstellung': 'Creation',
+  'Zusammenarbeit': 'Collaboration',
+  'Schwerpunkt': 'Focus',
+  'Abschlussnote': 'Final grade',
+  'Vollständiges': 'Complete',
+  'Dashboard': 'dashboard',
+  'Online-Shop-Verwaltung': 'online shop management',
+  'Portfolio-Website': 'portfolio website',
+  'Animationen': 'animations',
   
-  // Additional common words for custom text
-  'Guten': { de: 'Guten', en: 'Good' },
-  'Good': { de: 'Guten', en: 'Good' },
-  'Morgen': { de: 'Morgen', en: 'Morning' },
-  'Morning': { de: 'Morgen', en: 'Morning' },
-  'Das': { de: 'Das', en: 'This' },
-  'This': { de: 'Das', en: 'This' },
-  'ist': { de: 'ist', en: 'is' },
-  'is': { de: 'ist', en: 'is' },
-  'ein': { de: 'ein', en: 'a' },
-  'a': { de: 'ein', en: 'a' },
-  'Test': { de: 'Test', en: 'test' },
-  'test': { de: 'Test', en: 'test' },
-  'Hallo': { de: 'Hallo', en: 'Hello' },
-  'Hello': { de: 'Hallo', en: 'Hello' },
-  'Welt': { de: 'Welt', en: 'World' },
-  'World': { de: 'Welt', en: 'World' },
-  'ich': { de: 'ich', en: 'I' },
-  'I': { de: 'ich', en: 'I' },
-  'bin': { de: 'bin', en: 'am' },
-  'am': { de: 'bin', en: 'am' },
-  'sehr': { de: 'sehr', en: 'very' },
-  'very': { de: 'sehr', en: 'very' },
-  'gut': { de: 'gut', en: 'good' },
-  'good': { de: 'gut', en: 'gut' },
-  'schön': { de: 'schön', en: 'nice' },
-  'nice': { de: 'schön', en: 'nice' },
-  'heute': { de: 'heute', en: 'today' },
-  'today': { de: 'heute', en: 'today' }
+  // Simple words
+  'Guten': 'Good',
+  'Morgen': 'Morning',
+  'Das': 'This',
+  'ist': 'is',
+  'ein': 'a',
+  'Test': 'test',
+  'Hallo': 'Hello',
+  'Welt': 'World',
+  'ich': 'I',
+  'bin': 'am',
+  'sehr': 'very',
+  'gut': 'good',
+  'schön': 'nice',
+  'heute': 'today',
+  'funktioniert': 'works',
+  'interessant': 'interesting',
+  'toll': 'great',
+  'gemacht': 'done',
+  'perfekt': 'perfect'
 };
 
-// Smart translation function that handles sentences and phrases intelligently
+// Vereinfachte Übersetzungsfunktion - nur Deutsch zu Englisch
 export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' | 'en'): string => {
-  if (fromLang === toLang) return text;
-  
-  console.log(`Translating: "${text}" from ${fromLang} to ${toLang}`);
-  
-  // Trim the text first
-  const trimmedText = text.trim();
-  
-  // Return original if empty
-  if (!trimmedText) return text;
-  
-  // Try to find exact matches first (complete sentences/phrases)
-  for (const [key, value] of Object.entries(translations)) {
-    if (value[fromLang].toLowerCase() === trimmedText.toLowerCase()) {
-      console.log(`Found exact match: ${value[toLang]}`);
-      return value[toLang];
-    }
+  // Nur von Deutsch nach Englisch übersetzen
+  if (fromLang !== 'de' || toLang !== 'en') {
+    return text;
   }
   
-  // Try partial matches for longer texts (sentence fragments)
+  console.log(`Translating: "${text}" from German to English`);
+  
+  const trimmedText = text.trim();
+  if (!trimmedText) return text;
+  
+  // Erst versuchen, eine exakte Übereinstimmung zu finden
+  if (translations[trimmedText]) {
+    console.log(`Found exact translation: ${translations[trimmedText]}`);
+    return translations[trimmedText];
+  }
+  
+  // Dann versuchen, Teilübereinstimmungen zu finden (längste zuerst)
+  const sortedTranslations = Object.entries(translations).sort((a, b) => b[0].length - a[0].length);
+  
   let translatedText = text;
   let hasTranslation = false;
   
-  // Sort by length (longest first) to prioritize longer phrases
-  const sortedTranslations = Object.entries(translations).sort((a, b) => 
-    b[1][fromLang].length - a[1][fromLang].length
-  );
-  
-  for (const [key, value] of sortedTranslations) {
-    const sourceText = value[fromLang];
-    const targetText = value[toLang];
-    
-    // Case-insensitive partial match
-    if (text.toLowerCase().includes(sourceText.toLowerCase())) {
-      // Replace with case preservation
-      const regex = new RegExp(sourceText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-      translatedText = translatedText.replace(regex, targetText);
+  for (const [germanText, englishText] of sortedTranslations) {
+    if (text.toLowerCase().includes(germanText.toLowerCase())) {
+      const regex = new RegExp(germanText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      translatedText = translatedText.replace(regex, englishText);
       hasTranslation = true;
-      console.log(`Applied phrase translation: ${sourceText} -> ${targetText}`);
+      console.log(`Applied phrase translation: ${germanText} -> ${englishText}`);
     }
   }
   
-  // If no phrase matches found, try word-by-word translation
+  // Falls keine Phrasenübersetzung gefunden wurde, Wort-für-Wort versuchen
   if (!hasTranslation) {
     console.log('No phrase matches found, trying word-by-word translation');
     const words = text.split(/(\s+|[.,;:!?()+-])/);
     const translatedWords = words.map(word => {
       const cleanWord = word.trim();
       if (!cleanWord || /^[\s.,;:!?()+-]+$/.test(word)) {
-        return word; // Keep punctuation and spaces as is
+        return word; // Punktuation und Leerzeichen beibehalten
       }
       
-      for (const [key, value] of Object.entries(wordTranslations)) {
-        if (value[fromLang].toLowerCase() === cleanWord.toLowerCase()) {
-          console.log(`Word translation: ${cleanWord} -> ${value[toLang]}`);
-          // Preserve original case
-          if (cleanWord === cleanWord.toUpperCase()) {
-            return value[toLang].toUpperCase();
-          } else if (cleanWord[0] === cleanWord[0].toUpperCase()) {
-            return value[toLang].charAt(0).toUpperCase() + value[toLang].slice(1);
-          }
-          return value[toLang];
+      if (wordTranslations[cleanWord]) {
+        console.log(`Word translation: ${cleanWord} -> ${wordTranslations[cleanWord]}`);
+        // Groß-/Kleinschreibung beibehalten
+        if (cleanWord === cleanWord.toUpperCase()) {
+          return wordTranslations[cleanWord].toUpperCase();
+        } else if (cleanWord[0] === cleanWord[0].toUpperCase()) {
+          return wordTranslations[cleanWord].charAt(0).toUpperCase() + wordTranslations[cleanWord].slice(1);
         }
+        return wordTranslations[cleanWord];
       }
       
-      return word; // Return original if no translation found
+      return word; // Original zurückgeben, wenn keine Übersetzung gefunden
     });
     
     translatedText = translatedWords.join('');
@@ -294,7 +178,10 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
 };
 
 export const translateCVData = (data: any, fromLang: 'de' | 'en', toLang: 'de' | 'en'): any => {
-  if (fromLang === toLang) return data;
+  // Nur von Deutsch nach Englisch übersetzen
+  if (fromLang !== 'de' || toLang !== 'en') {
+    return data;
+  }
   
   const translateObject = (obj: any): any => {
     if (typeof obj === 'string') {
