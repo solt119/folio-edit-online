@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CVData, PersonalInfo, Experience, Education, Skill, Language, Certificate } from '@/types/cv';
+import { FieldVisibility, defaultVisibility } from '@/types/visibility';
 
 const initialCVData: CVData = {
   personalInfo: {
@@ -87,6 +88,7 @@ const initialCVData: CVData = {
 
 export const useCVData = () => {
   const [cvData, setCvData] = useState<CVData>(initialCVData);
+  const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>(defaultVisibility);
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -94,12 +96,21 @@ export const useCVData = () => {
     if (savedData) {
       setCvData(JSON.parse(savedData));
     }
+    
+    const savedVisibility = localStorage.getItem('fieldVisibility');
+    if (savedVisibility) {
+      setFieldVisibility(JSON.parse(savedVisibility));
+    }
   }, []);
 
-  // Save data to localStorage whenever cvData changes
+  // Save data to localStorage whenever cvData or visibility changes
   useEffect(() => {
     localStorage.setItem('cvData', JSON.stringify(cvData));
   }, [cvData]);
+
+  useEffect(() => {
+    localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
+  }, [fieldVisibility]);
 
   // Memoized update functions to prevent unnecessary re-renders
   const updatePersonalInfo = useCallback((field: keyof PersonalInfo, value: string) => {
@@ -163,14 +174,26 @@ export const useCVData = () => {
     }));
   }, []);
 
+  const updateFieldVisibility = useCallback((section: keyof FieldVisibility, field: string, visible: boolean) => {
+    setFieldVisibility(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [field]: visible
+      }
+    }));
+  }, []);
+
   return {
     cvData,
+    fieldVisibility,
     updatePersonalInfo,
     updateExperience,
     updateEducation,
     updateSkill,
     updateLanguage,
     updateProject,
-    updateCertificate
+    updateCertificate,
+    updateFieldVisibility
   };
 };

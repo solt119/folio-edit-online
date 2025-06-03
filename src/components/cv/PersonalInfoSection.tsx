@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mail, Phone, MapPin, Github, Linkedin, Edit, Save, X } from 'lucide-react';
 import { PersonalInfo } from '@/types/cv';
+import { FieldVisibility } from '@/types/visibility';
 import { EditableText } from '@/components/EditableText';
 
 interface PersonalInfoSectionProps {
@@ -13,6 +14,7 @@ interface PersonalInfoSectionProps {
   onEdit: () => void;
   onSave: () => void;
   onUpdate: (field: keyof PersonalInfo, value: string) => void;
+  visibility?: FieldVisibility['personalInfo'];
 }
 
 export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
@@ -21,8 +23,13 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   isEditing,
   onEdit,
   onSave,
-  onUpdate
+  onUpdate,
+  visibility
 }) => {
+  const isVisible = (field: keyof PersonalInfo) => {
+    return isLoggedIn || !visibility || visibility[field];
+  };
+
   return (
     <Card className="mb-8 bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader className="relative">
@@ -79,30 +86,44 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             </div>
           ) : (
             <>
-              <h1 className="text-4xl font-bold text-white">{personalInfo.name}</h1>
-              <p className="text-xl text-blue-400">{personalInfo.profession}</p>
+              {isVisible('name') && (
+                <h1 className="text-4xl font-bold text-white">{personalInfo.name}</h1>
+              )}
+              {isVisible('profession') && (
+                <p className="text-xl text-blue-400">{personalInfo.profession}</p>
+              )}
               
               <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-300">
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  <span>{personalInfo.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  <span>{personalInfo.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  <span>{personalInfo.phone}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Linkedin className="w-4 h-4" />
-                  <span>{personalInfo.linkedin}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Github className="w-4 h-4" />
-                  <span>{personalInfo.github}</span>
-                </div>
+                {isVisible('location') && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    <span>{personalInfo.location}</span>
+                  </div>
+                )}
+                {isVisible('email') && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    <span>{personalInfo.email}</span>
+                  </div>
+                )}
+                {isVisible('phone') && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    <span>{personalInfo.phone}</span>
+                  </div>
+                )}
+                {isVisible('linkedin') && (
+                  <div className="flex items-center gap-2">
+                    <Linkedin className="w-4 h-4" />
+                    <span>{personalInfo.linkedin}</span>
+                  </div>
+                )}
+                {isVisible('github') && (
+                  <div className="flex items-center gap-2">
+                    <Github className="w-4 h-4" />
+                    <span>{personalInfo.github}</span>
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -118,7 +139,9 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             className="mt-4"
           />
         ) : (
-          <p className="text-slate-300 text-center leading-relaxed">{personalInfo.bio}</p>
+          isVisible('bio') && (
+            <p className="text-slate-300 text-center leading-relaxed">{personalInfo.bio}</p>
+          )
         )}
       </CardContent>
     </Card>

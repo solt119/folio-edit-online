@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { LogOut, Edit, LogIn } from 'lucide-react';
+import { LogOut, Edit, LogIn, Settings } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/LoginForm';
 import { SupabaseConfig } from '@/components/SupabaseConfig';
+import { VisibilityControls } from '@/components/VisibilityControls';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { useCVData } from '@/hooks/useCVData';
 import { PersonalInfoSection } from '@/components/cv/PersonalInfoSection';
@@ -19,18 +20,21 @@ import { CertificatesSection } from '@/components/cv/CertificatesSection';
 const Index = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [showLogin, setShowLogin] = useState(false);
+  const [showVisibilitySettings, setShowVisibilitySettings] = useState(false);
   const [supabaseConfiguredState, setSupabaseConfiguredState] = useState(false);
   const { user, loading, signIn, signOut } = useAuth();
   
   const {
     cvData,
+    fieldVisibility,
     updatePersonalInfo,
     updateExperience,
     updateEducation,
     updateSkill,
     updateLanguage,
     updateProject,
-    updateCertificate
+    updateCertificate,
+    updateFieldVisibility
   } = useCVData();
 
   useEffect(() => {
@@ -115,6 +119,15 @@ const Index = () => {
               <>
                 <span className="text-slate-400 text-sm">Angemeldet als: {user.email}</span>
                 <Button 
+                  onClick={() => setShowVisibilitySettings(!showVisibilitySettings)}
+                  variant="outline" 
+                  size="sm"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Sichtbarkeit
+                </Button>
+                <Button 
                   onClick={handleLogout}
                   variant="outline" 
                   size="sm"
@@ -141,6 +154,14 @@ const Index = () => {
       </header>
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
+        {/* Visibility Controls - only show when logged in and toggled */}
+        {user && showVisibilitySettings && (
+          <VisibilityControls
+            visibility={fieldVisibility}
+            onUpdate={updateFieldVisibility}
+          />
+        )}
+
         {/* Personal Information */}
         <PersonalInfoSection
           personalInfo={cvData.personalInfo}
@@ -149,69 +170,82 @@ const Index = () => {
           onEdit={() => handleEdit('personal')}
           onSave={handleSave}
           onUpdate={updatePersonalInfo}
+          visibility={fieldVisibility.personalInfo}
         />
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Experience */}
-          <ExperienceSection
-            experiences={cvData.experiences}
-            isLoggedIn={!!user}
-            isEditing={editingSection === 'experience'}
-            onEdit={() => handleEdit('experience')}
-            onSave={handleSave}
-            onUpdate={updateExperience}
-          />
+          {(user || fieldVisibility.sections.experience) && (
+            <ExperienceSection
+              experiences={cvData.experiences}
+              isLoggedIn={!!user}
+              isEditing={editingSection === 'experience'}
+              onEdit={() => handleEdit('experience')}
+              onSave={handleSave}
+              onUpdate={updateExperience}
+            />
+          )}
 
           {/* Education */}
-          <EducationSection
-            education={cvData.education}
-            isLoggedIn={!!user}
-            isEditing={editingSection === 'education'}
-            onEdit={() => handleEdit('education')}
-            onSave={handleSave}
-            onUpdate={updateEducation}
-          />
+          {(user || fieldVisibility.sections.education) && (
+            <EducationSection
+              education={cvData.education}
+              isLoggedIn={!!user}
+              isEditing={editingSection === 'education'}
+              onEdit={() => handleEdit('education')}
+              onSave={handleSave}
+              onUpdate={updateEducation}
+            />
+          )}
 
           {/* Skills */}
-          <SkillsSection
-            skills={cvData.skills}
-            isLoggedIn={!!user}
-            isEditing={editingSection === 'skills'}
-            onEdit={() => handleEdit('skills')}
-            onSave={handleSave}
-            onUpdate={updateSkill}
-          />
+          {(user || fieldVisibility.sections.skills) && (
+            <SkillsSection
+              skills={cvData.skills}
+              isLoggedIn={!!user}
+              isEditing={editingSection === 'skills'}
+              onEdit={() => handleEdit('skills')}
+              onSave={handleSave}
+              onUpdate={updateSkill}
+            />
+          )}
 
           {/* Languages */}
-          <LanguagesSection
-            languages={cvData.languages}
-            isLoggedIn={!!user}
-            isEditing={editingSection === 'languages'}
-            onEdit={() => handleEdit('languages')}
-            onSave={handleSave}
-            onUpdate={updateLanguage}
-          />
+          {(user || fieldVisibility.sections.languages) && (
+            <LanguagesSection
+              languages={cvData.languages}
+              isLoggedIn={!!user}
+              isEditing={editingSection === 'languages'}
+              onEdit={() => handleEdit('languages')}
+              onSave={handleSave}
+              onUpdate={updateLanguage}
+            />
+          )}
 
           {/* Certificates */}
-          <CertificatesSection
-            certificates={cvData.certificates}
-            isLoggedIn={!!user}
-            isEditing={editingSection === 'certificates'}
-            onEdit={() => handleEdit('certificates')}
-            onSave={handleSave}
-            onUpdate={updateCertificate}
-          />
+          {(user || fieldVisibility.sections.certificates) && (
+            <CertificatesSection
+              certificates={cvData.certificates}
+              isLoggedIn={!!user}
+              isEditing={editingSection === 'certificates'}
+              onEdit={() => handleEdit('certificates')}
+              onSave={handleSave}
+              onUpdate={updateCertificate}
+            />
+          )}
         </div>
 
         {/* Projects */}
-        <ProjectsSection
-          projects={cvData.projects}
-          isLoggedIn={!!user}
-          isEditing={editingSection === 'projects'}
-          onEdit={() => handleEdit('projects')}
-          onSave={handleSave}
-          onUpdate={updateProject}
-        />
+        {(user || fieldVisibility.sections.projects) && (
+          <ProjectsSection
+            projects={cvData.projects}
+            isLoggedIn={!!user}
+            isEditing={editingSection === 'projects'}
+            onEdit={() => handleEdit('projects')}
+            onSave={handleSave}
+            onUpdate={updateProject}
+          />
+        )}
       </div>
     </div>
   );
