@@ -86,4 +86,3 @@ export const SupabaseConfig: React.FC<SupabaseConfigProps> = ({ onConfigured }) 
     </div>
   )
 }
-</SupabaseConfig>
