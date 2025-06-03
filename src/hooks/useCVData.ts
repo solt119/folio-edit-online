@@ -12,7 +12,6 @@ export const useCVData = () => {
   const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>(defaultVisibility);
   const [customData, setCustomData] = useState<{ [key: string]: CVData }>({});
   const [isInitialized, setIsInitialized] = useState(false);
-  const [previousLanguage, setPreviousLanguage] = useState<string>(language);
 
   // Save custom data to localStorage and auto-translate to other language
   const saveCustomData = useCallback((newCvData: CVData) => {
@@ -134,60 +133,78 @@ export const useCVData = () => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
+    console.log('Loading data from localStorage...');
     const savedCustomData = localStorage.getItem('customCvData');
     const savedVisibility = localStorage.getItem('fieldVisibility');
     
     if (savedCustomData) {
-      const parsed = JSON.parse(savedCustomData);
-      setCustomData(parsed);
-      
-      // Set CV data for current language
-      if (parsed[language]) {
-        setCvData(parsed[language]);
-      } else {
+      try {
+        const parsed = JSON.parse(savedCustomData);
+        console.log('Loaded custom data:', parsed);
+        setCustomData(parsed);
+        
+        // Set CV data for current language
+        if (parsed[language]) {
+          console.log('Setting CV data for language:', language);
+          setCvData(parsed[language]);
+        } else {
+          console.log('No custom data for current language, using default');
+          setCvData(cvContentTranslations[language]);
+        }
+      } catch (error) {
+        console.error('Error parsing custom data:', error);
         setCvData(cvContentTranslations[language]);
       }
     } else {
+      console.log('No saved custom data, using default');
       setCvData(cvContentTranslations[language]);
     }
     
     if (savedVisibility) {
-      setFieldVisibility(JSON.parse(savedVisibility));
+      try {
+        setFieldVisibility(JSON.parse(savedVisibility));
+      } catch (error) {
+        console.error('Error parsing visibility data:', error);
+      }
     }
     
     setIsInitialized(true);
-  }, []);
+  }, [language]);
 
   // Update CV data when language changes (only after initialization)
   useEffect(() => {
-    if (!isInitialized || language === previousLanguage) return;
+    if (!isInitialized) return;
     
-    console.log('Language changed from', previousLanguage, 'to', language);
-    console.log('Current customData:', customData);
+    console.log('Language changed to:', language);
+    console.log('Available custom data:', Object.keys(customData));
     
-    // Always translate from previous language to current language if we have custom data
-    if (customData[previousLanguage] && !customData[language]) {
-      console.log('Translating from', previousLanguage, 'to', language);
-      const translatedData = translateCVData(customData[previousLanguage], previousLanguage as 'de' | 'en', language as 'de' | 'en');
-      console.log('Translated data:', translatedData);
-      
-      const newCustomData = {
-        ...customData,
-        [language]: translatedData
-      };
-      setCustomData(newCustomData);
-      localStorage.setItem('customCvData', JSON.stringify(newCustomData));
-      setCvData(translatedData);
-    } else if (customData[language]) {
+    if (customData[language]) {
       console.log('Using existing custom data for', language);
       setCvData(customData[language]);
+    } else if (Object.keys(customData).length > 0) {
+      // If we have custom data for other language but not current, translate it
+      const otherLanguage = language === 'de' ? 'en' : 'de';
+      if (customData[otherLanguage]) {
+        console.log('Translating from', otherLanguage, 'to', language);
+        const translatedData = translateCVData(customData[otherLanguage], otherLanguage as 'de' | 'en', language as 'de' | 'en');
+        console.log('Translated data:', translatedData);
+        
+        const newCustomData = {
+          ...customData,
+          [language]: translatedData
+        };
+        setCustomData(newCustomData);
+        localStorage.setItem('customCvData', JSON.stringify(newCustomData));
+        setCvData(translatedData);
+      } else {
+        console.log('No data to translate, using default');
+        setCvData(cvContentTranslations[language]);
+      }
     } else {
-      console.log('Using default data for', language);
+      console.log('No custom data available, using default');
       setCvData(cvContentTranslations[language]);
     }
-    
-    setPreviousLanguage(language);
-  }, [language, customData, isInitialized, previousLanguage]);
+  }, [language, customData, isInitialized]);
 
   useEffect(() => {
     localStorage.setItem('fieldVisibility', JSON.stringify(fieldVisibility));
