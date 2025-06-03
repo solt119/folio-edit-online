@@ -1,4 +1,3 @@
-
 // Vereinfachte Übersetzungstabelle - nur Deutsch nach Englisch
 const translations: { [germanText: string]: string } = {
   // Personal Info
@@ -7,6 +6,10 @@ const translations: { [germanText: string]: string } = {
   // Better translations for common phrases
   'Passionate Skilled Service Desk Agent with mehr als 5 Years Experience': 'Passionate Skilled Service Desk Agent with more than 5 years experience',
   'Leidenschaftlicher qualifizierter Service Desk Agent mit mehr als 5 Jahren Erfahrung': 'Passionate skilled Service Desk Agent with more than 5 years experience',
+  
+  // Phrase patterns that need special handling
+  'mehr als': 'more than',
+  'mit mehr als': 'with more than',
   
   // Names (bleiben gleich)
   'Max Mustermann': 'Max Mustermann',
@@ -166,12 +169,15 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
     }
   }
   
-  // Falls keine Phrasenübersetzung gefunden wurde, Wort-für-Wort versuchen
-  if (!hasTranslation) {
-    console.log('No phrase matches found, trying word-by-word translation');
+  // Falls keine Phrasenübersetzung gefunden wurde oder Text immer noch Deutsche Wörter enthält
+  if (!hasTranslation || translatedText.includes('mehr als')) {
+    console.log('Applying word-by-word translation for remaining German words');
     
-    // Verbesserte Wort-für-Wort Übersetzung mit besserer Behandlung von gemischten Texten
-    const words = text.split(/(\s+|[.,;:!?()+-])/);
+    // Spezielle Behandlung für "mehr als" - zuerst als Phrase
+    translatedText = translatedText.replace(/mehr\s+als/gi, 'more than');
+    
+    // Dann Wort-für-Wort Übersetzung für verbleibende Wörter
+    const words = translatedText.split(/(\s+|[.,;:!?()+-])/);
     const translatedWords = words.map(word => {
       const cleanWord = word.trim();
       if (!cleanWord || /^[\s.,;:!?()+-]+$/.test(word)) {
