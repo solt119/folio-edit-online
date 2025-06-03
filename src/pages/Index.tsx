@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { LoginForm } from '@/components/LoginForm';
 import { useCVData } from '@/hooks/useCVData';
 import { PersonalInfoSection } from '@/components/cv/PersonalInfoSection';
 import { ExperienceSection } from '@/components/cv/ExperienceSection';
@@ -12,8 +15,8 @@ import { ProjectsSection } from '@/components/cv/ProjectsSection';
 import { CertificatesSection } from '@/components/cv/CertificatesSection';
 
 const Index = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const { user, loading, signIn, signOut } = useAuth();
   
   const {
     cvData,
@@ -26,31 +29,37 @@ const Index = () => {
     updateCertificate
   } = useCVData();
 
-  // Load login status from localStorage on component mount
-  useEffect(() => {
-    const loginStatus = localStorage.getItem('isLoggedIn');
-    if (loginStatus === 'true') {
-      setIsLoggedIn(true);
+  const handleLogin = async (email: string, password: string) => {
+    const { error } = await signIn(email, password);
+    if (error) {
+      toast({
+        title: "Anmeldung fehlgeschlagen",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Erfolgreich eingeloggt",
+        description: "Sie können jetzt Ihren Lebenslauf bearbeiten.",
+      });
     }
-  }, []);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    localStorage.setItem('isLoggedIn', 'true');
-    toast({
-      title: "Erfolgreich eingeloggt",
-      description: "Sie können jetzt Ihren Lebenslauf bearbeiten.",
-    });
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.setItem('isLoggedIn', 'false');
-    setEditingSection(null);
-    toast({
-      title: "Erfolgreich ausgeloggt",
-      description: "Sie befinden sich jetzt im Ansichtsmodus.",
-    });
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Fehler beim Abmelden",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      setEditingSection(null);
+      toast({
+        title: "Erfolgreich ausgeloggt",
+        description: "Sie befinden sich jetzt im Ansichtsmodus.",
+      });
+    }
   };
 
   const handleSave = () => {
@@ -65,6 +74,21 @@ const Index = () => {
     setEditingSection(editingSection === section ? null : section);
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-white">Laden...</div>
+      </div>
+    );
+  }
+
+  // Show login form if not authenticated
+  if (!user) {
+    return <LoginForm onLogin={handleLogin} loading={loading} />;
+  }
+
+  // Show CV editor if authenticated
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
@@ -72,26 +96,16 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-white">Curriculum Vitae</h1>
           <div className="flex items-center gap-4">
-            {isLoggedIn ? (
-              <Button 
-                onClick={handleLogout}
-                variant="outline" 
-                size="sm"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Abmelden
-              </Button>
-            ) : (
-              <Button 
-                onClick={handleLogin}
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <LogIn className="w-4 h-4 mr-2" />
-                Anmelden
-              </Button>
-            )}
+            <span className="text-slate-400 text-sm">Angemeldet als: {user.email}</span>
+            <Button 
+              onClick={handleLogout}
+              variant="outline" 
+              size="sm"
+              className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Abmelden
+            </Button>
           </div>
         </div>
       </header>
@@ -100,7 +114,7 @@ const Index = () => {
         {/* Personal Information */}
         <PersonalInfoSection
           personalInfo={cvData.personalInfo}
-          isLoggedIn={isLoggedIn}
+          isLoggedIn={true}
           isEditing={editingSection === 'personal'}
           onEdit={() => handleEdit('personal')}
           onSave={handleSave}
@@ -111,7 +125,7 @@ const Index = () => {
           {/* Experience */}
           <ExperienceSection
             experiences={cvData.experiences}
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={true}
             isEditing={editingSection === 'experience'}
             onEdit={() => handleEdit('experience')}
             onSave={handleSave}
@@ -121,7 +135,7 @@ const Index = () => {
           {/* Education */}
           <EducationSection
             education={cvData.education}
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={true}
             isEditing={editingSection === 'education'}
             onEdit={() => handleEdit('education')}
             onSave={handleSave}
@@ -131,7 +145,7 @@ const Index = () => {
           {/* Skills */}
           <SkillsSection
             skills={cvData.skills}
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={true}
             isEditing={editingSection === 'skills'}
             onEdit={() => handleEdit('skills')}
             onSave={handleSave}
@@ -141,7 +155,7 @@ const Index = () => {
           {/* Languages */}
           <LanguagesSection
             languages={cvData.languages}
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={true}
             isEditing={editingSection === 'languages'}
             onEdit={() => handleEdit('languages')}
             onSave={handleSave}
@@ -151,7 +165,7 @@ const Index = () => {
           {/* Certificates */}
           <CertificatesSection
             certificates={cvData.certificates}
-            isLoggedIn={isLoggedIn}
+            isLoggedIn={true}
             isEditing={editingSection === 'certificates'}
             onEdit={() => handleEdit('certificates')}
             onSave={handleSave}
@@ -162,7 +176,7 @@ const Index = () => {
         {/* Projects */}
         <ProjectsSection
           projects={cvData.projects}
-          isLoggedIn={isLoggedIn}
+          isLoggedIn={true}
           isEditing={editingSection === 'projects'}
           onEdit={() => handleEdit('projects')}
           onSave={handleSave}
