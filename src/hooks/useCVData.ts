@@ -4,6 +4,7 @@ import { FieldVisibility, defaultVisibility } from '@/types/visibility';
 
 const initialCVData: CVData = {
   personalInfo: {
+    image: undefined,
     name: "Max Mustermann",
     profession: "Senior Frontend Developer",
     location: "Berlin, Deutschland",

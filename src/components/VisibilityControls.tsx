@@ -36,7 +36,8 @@ export const VisibilityControls: React.FC<VisibilityControlsProps> = ({
                   onCheckedChange={(checked) => onUpdate('personalInfo', field, checked)}
                 />
                 <Label htmlFor={`personal-${field}`} className="text-slate-300 capitalize">
-                  {field === 'bio' ? 'Beschreibung' : 
+                  {field === 'image' ? 'Profilbild' :
+                   field === 'bio' ? 'Beschreibung' : 
                    field === 'profession' ? 'Beruf' : 
                    field === 'location' ? 'Standort' : 
                    field === 'email' ? 'E-Mail' : 

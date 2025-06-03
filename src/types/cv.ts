@@ -1,4 +1,6 @@
+
 export interface PersonalInfo {
+  image?: string;
   name: string;
   profession: string;
   location: string;

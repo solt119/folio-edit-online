@@ -1,6 +1,7 @@
 
 export interface FieldVisibility {
   personalInfo: {
+    image: boolean;
     name: boolean;
     profession: boolean;
     location: boolean;
@@ -22,6 +23,7 @@ export interface FieldVisibility {
 
 export const defaultVisibility: FieldVisibility = {
   personalInfo: {
+    image: true,
     name: true,
     profession: true,
     location: true,
