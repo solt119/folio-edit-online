@@ -4,6 +4,10 @@ const translations: { [germanText: string]: string } = {
   // Personal Info
   'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': 'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.',
   
+  // Better translations for common phrases
+  'Passionate Skilled Service Desk Agent with mehr als 5 Years Experience': 'Passionate Skilled Service Desk Agent with more than 5 years experience',
+  'Leidenschaftlicher qualifizierter Service Desk Agent mit mehr als 5 Jahren Erfahrung': 'Passionate skilled Service Desk Agent with more than 5 years experience',
+  
   // Names (bleiben gleich)
   'Max Mustermann': 'Max Mustermann',
   'Marcel Test Test': 'Marcel Test Test',
@@ -11,6 +15,7 @@ const translations: { [germanText: string]: string } = {
   // Positions
   'Senior Frontend Developer': 'Senior Frontend Developer',
   'Frontend Developer': 'Frontend Developer',
+  'Service Desk Agent': 'Service Desk Agent',
   
   // Locations
   'Berlin, Deutschland': 'Berlin, Germany',
@@ -60,7 +65,7 @@ const translations: { [germanText: string]: string } = {
   'Perfekt': 'Perfect'
 };
 
-// Wort-für-Wort Übersetzungen für einzelne Wörter
+// Verbesserte Wort-für-Wort Übersetzungen
 const wordTranslations: { [germanWord: string]: string } = {
   // Common words
   'mit': 'with',
@@ -69,8 +74,12 @@ const wordTranslations: { [germanWord: string]: string } = {
   'auf': 'on',
   'für': 'for',
   'von': 'of',
+  'als': 'than',
+  'mehr': 'more',
   'Jahren': 'years',
+  'Jahre': 'years',
   'Erfahrung': 'experience',
+  'Experience': 'experience',
   'modernen': 'modern',
   'Spezialisiert': 'Specialized',
   'responsive': 'responsive',
@@ -78,6 +87,9 @@ const wordTranslations: { [germanWord: string]: string } = {
   'Performance-Optimierung': 'performance optimization',
   'Web-Technologies': 'web technologies',
   'Leidenschaftlicher': 'Passionate',
+  'leidenschaftlicher': 'passionate',
+  'qualifizierter': 'skilled',
+  'Qualifizierter': 'Skilled',
   'Entwicklung': 'Development',
   'Wartung': 'maintenance',
   'Implementierung': 'Implementation',
@@ -97,6 +109,7 @@ const wordTranslations: { [germanWord: string]: string } = {
   'Das': 'This',
   'ist': 'is',
   'ein': 'a',
+  'eine': 'a',
   'Test': 'test',
   'Hallo': 'Hello',
   'Welt': 'World',
@@ -110,10 +123,17 @@ const wordTranslations: { [germanWord: string]: string } = {
   'interessant': 'interesting',
   'toll': 'great',
   'gemacht': 'done',
-  'perfekt': 'perfect'
+  'perfekt': 'perfect',
+  
+  // Service Desk specific
+  'Service': 'Service',
+  'Desk': 'Desk',
+  'Agent': 'Agent',
+  'Passionate': 'Passionate',
+  'Skilled': 'Skilled'
 };
 
-// Vereinfachte Übersetzungsfunktion - nur Deutsch zu Englisch
+// Verbesserte Übersetzungsfunktion
 export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' | 'en'): string => {
   // Nur von Deutsch nach Englisch übersetzen
   if (fromLang !== 'de' || toLang !== 'en') {
@@ -149,6 +169,8 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
   // Falls keine Phrasenübersetzung gefunden wurde, Wort-für-Wort versuchen
   if (!hasTranslation) {
     console.log('No phrase matches found, trying word-by-word translation');
+    
+    // Verbesserte Wort-für-Wort Übersetzung mit besserer Behandlung von gemischten Texten
     const words = text.split(/(\s+|[.,;:!?()+-])/);
     const translatedWords = words.map(word => {
       const cleanWord = word.trim();
@@ -156,15 +178,19 @@ export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' 
         return word; // Punktuation und Leerzeichen beibehalten
       }
       
-      if (wordTranslations[cleanWord]) {
-        console.log(`Word translation: ${cleanWord} -> ${wordTranslations[cleanWord]}`);
+      // Prüfe sowohl den originalen als auch den lowercase Wert
+      const lowerWord = cleanWord.toLowerCase();
+      let translation = wordTranslations[cleanWord] || wordTranslations[lowerWord];
+      
+      if (translation) {
+        console.log(`Word translation: ${cleanWord} -> ${translation}`);
         // Groß-/Kleinschreibung beibehalten
         if (cleanWord === cleanWord.toUpperCase()) {
-          return wordTranslations[cleanWord].toUpperCase();
+          return translation.toUpperCase();
         } else if (cleanWord[0] === cleanWord[0].toUpperCase()) {
-          return wordTranslations[cleanWord].charAt(0).toUpperCase() + wordTranslations[cleanWord].slice(1);
+          return translation.charAt(0).toUpperCase() + translation.slice(1);
         }
-        return wordTranslations[cleanWord];
+        return translation;
       }
       
       return word; // Original zurückgeben, wenn keine Übersetzung gefunden
