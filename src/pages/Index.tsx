@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -194,7 +193,60 @@ const Index = () => {
     });
   };
 
-  const EditableText = ({ 
+  // Memoized update functions to prevent unnecessary re-renders
+  const updatePersonalInfo = useCallback((field: keyof PersonalInfo, value: string) => {
+    setCvData(prev => ({
+      ...prev,
+      personalInfo: { ...prev.personalInfo, [field]: value }
+    }));
+  }, []);
+
+  const updateExperience = useCallback((index: number, field: keyof Experience, value: string) => {
+    setCvData(prev => ({
+      ...prev,
+      experiences: prev.experiences.map((exp, i) => 
+        i === index ? { ...exp, [field]: value } : exp
+      )
+    }));
+  }, []);
+
+  const updateEducation = useCallback((index: number, field: keyof Education, value: string) => {
+    setCvData(prev => ({
+      ...prev,
+      education: prev.education.map((edu, i) => 
+        i === index ? { ...edu, [field]: value } : edu
+      )
+    }));
+  }, []);
+
+  const updateSkill = useCallback((index: number, field: keyof Skill, value: string | number) => {
+    setCvData(prev => ({
+      ...prev,
+      skills: prev.skills.map((skill, i) => 
+        i === index ? { ...skill, [field]: value } : skill
+      )
+    }));
+  }, []);
+
+  const updateLanguage = useCallback((index: number, field: keyof Language, value: string) => {
+    setCvData(prev => ({
+      ...prev,
+      languages: prev.languages.map((lang, i) => 
+        i === index ? { ...lang, [field]: value } : lang
+      )
+    }));
+  }, []);
+
+  const updateProject = useCallback((index: number, field: string, value: string | string[]) => {
+    setCvData(prev => ({
+      ...prev,
+      projects: prev.projects.map((project, i) => 
+        i === index ? { ...project, [field]: value } : project
+      )
+    }));
+  }, []);
+
+  const EditableText = React.memo(({ 
     value, 
     onChange, 
     multiline = false, 
@@ -222,7 +274,7 @@ const Index = () => {
         className={`bg-slate-800 border-slate-600 text-white ${className}`}
       />
     );
-  };
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -275,55 +327,34 @@ const Index = () => {
                 <div className="space-y-4">
                   <EditableText
                     value={cvData.personalInfo.name}
-                    onChange={(value) => setCvData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, name: value }
-                    }))}
+                    onChange={(value) => updatePersonalInfo('name', value)}
                     className="text-center text-3xl font-bold"
                   />
                   <EditableText
                     value={cvData.personalInfo.profession}
-                    onChange={(value) => setCvData(prev => ({
-                      ...prev,
-                      personalInfo: { ...prev.personalInfo, profession: value }
-                    }))}
+                    onChange={(value) => updatePersonalInfo('profession', value)}
                     className="text-center text-xl"
                   />
                   <div className="space-y-2">
                     <EditableText
                       value={cvData.personalInfo.location}
-                      onChange={(value) => setCvData(prev => ({
-                        ...prev,
-                        personalInfo: { ...prev.personalInfo, location: value }
-                      }))}
+                      onChange={(value) => updatePersonalInfo('location', value)}
                     />
                     <EditableText
                       value={cvData.personalInfo.email}
-                      onChange={(value) => setCvData(prev => ({
-                        ...prev,
-                        personalInfo: { ...prev.personalInfo, email: value }
-                      }))}
+                      onChange={(value) => updatePersonalInfo('email', value)}
                     />
                     <EditableText
                       value={cvData.personalInfo.phone}
-                      onChange={(value) => setCvData(prev => ({
-                        ...prev,
-                        personalInfo: { ...prev.personalInfo, phone: value }
-                      }))}
+                      onChange={(value) => updatePersonalInfo('phone', value)}
                     />
                     <EditableText
                       value={cvData.personalInfo.linkedin}
-                      onChange={(value) => setCvData(prev => ({
-                        ...prev,
-                        personalInfo: { ...prev.personalInfo, linkedin: value }
-                      }))}
+                      onChange={(value) => updatePersonalInfo('linkedin', value)}
                     />
                     <EditableText
                       value={cvData.personalInfo.github}
-                      onChange={(value) => setCvData(prev => ({
-                        ...prev,
-                        personalInfo: { ...prev.personalInfo, github: value }
-                      }))}
+                      onChange={(value) => updatePersonalInfo('github', value)}
                     />
                   </div>
                   <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">
@@ -367,10 +398,7 @@ const Index = () => {
             {editingSection === 'personal' ? (
               <EditableText
                 value={cvData.personalInfo.bio}
-                onChange={(value) => setCvData(prev => ({
-                  ...prev,
-                  personalInfo: { ...prev.personalInfo, bio: value }
-                }))}
+                onChange={(value) => updatePersonalInfo('bio', value)}
                 multiline
                 className="mt-4"
               />
@@ -406,40 +434,20 @@ const Index = () => {
                     <div className="space-y-3">
                       <EditableText
                         value={exp.company}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          experiences: prev.experiences.map((e, i) => 
-                            i === index ? { ...e, company: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateExperience(index, 'company', value)}
                         className="font-semibold"
                       />
                       <EditableText
                         value={exp.position}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          experiences: prev.experiences.map((e, i) => 
-                            i === index ? { ...e, position: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateExperience(index, 'position', value)}
                       />
                       <EditableText
                         value={exp.duration}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          experiences: prev.experiences.map((e, i) => 
-                            i === index ? { ...e, duration: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateExperience(index, 'duration', value)}
                       />
                       <EditableText
                         value={exp.description}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          experiences: prev.experiences.map((e, i) => 
-                            i === index ? { ...e, description: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateExperience(index, 'description', value)}
                         multiline
                       />
                     </div>
@@ -491,40 +499,20 @@ const Index = () => {
                     <div className="space-y-3">
                       <EditableText
                         value={edu.institution}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          education: prev.education.map((e, i) => 
-                            i === index ? { ...e, institution: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateEducation(index, 'institution', value)}
                         className="font-semibold"
                       />
                       <EditableText
                         value={edu.degree}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          education: prev.education.map((e, i) => 
-                            i === index ? { ...e, degree: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateEducation(index, 'degree', value)}
                       />
                       <EditableText
                         value={edu.duration}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          education: prev.education.map((e, i) => 
-                            i === index ? { ...e, duration: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateEducation(index, 'duration', value)}
                       />
                       <EditableText
                         value={edu.description}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          education: prev.education.map((e, i) => 
-                            i === index ? { ...e, description: value } : e
-                          )
-                        }))}
+                        onChange={(value) => updateEducation(index, 'description', value)}
                         multiline
                       />
                     </div>
@@ -576,24 +564,14 @@ const Index = () => {
                     <div className="space-y-2">
                       <EditableText
                         value={skill.name}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          skills: prev.skills.map((s, i) => 
-                            i === index ? { ...s, name: value } : s
-                          )
-                        }))}
+                        onChange={(value) => updateSkill(index, 'name', value)}
                       />
                       <Input
                         type="number"
                         min="0"
                         max="100"
                         value={skill.level}
-                        onChange={(e) => setCvData(prev => ({
-                          ...prev,
-                          skills: prev.skills.map((s, i) => 
-                            i === index ? { ...s, level: parseInt(e.target.value) || 0 } : s
-                          )
-                        }))}
+                        onChange={(e) => updateSkill(index, 'level', parseInt(e.target.value) || 0)}
                         className="bg-slate-800 border-slate-600 text-white"
                       />
                     </div>
@@ -648,22 +626,12 @@ const Index = () => {
                     <div className="flex gap-2 w-full">
                       <EditableText
                         value={language.name}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          languages: prev.languages.map((l, i) => 
-                            i === index ? { ...l, name: value } : l
-                          )
-                        }))}
+                        onChange={(value) => updateLanguage(index, 'name', value)}
                         className="flex-1"
                       />
                       <EditableText
                         value={language.level}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          languages: prev.languages.map((l, i) => 
-                            i === index ? { ...l, level: value } : l
-                          )
-                        }))}
+                        onChange={(value) => updateLanguage(index, 'level', value)}
                         className="flex-1"
                       />
                     </div>
@@ -714,41 +682,21 @@ const Index = () => {
                     <div className="space-y-3">
                       <EditableText
                         value={project.name}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          projects: prev.projects.map((p, i) => 
-                            i === index ? { ...p, name: value } : p
-                          )
-                        }))}
+                        onChange={(value) => updateProject(index, 'name', value)}
                         className="font-semibold"
                       />
                       <EditableText
                         value={project.description}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          projects: prev.projects.map((p, i) => 
-                            i === index ? { ...p, description: value } : p
-                          )
-                        }))}
+                        onChange={(value) => updateProject(index, 'description', value)}
                         multiline
                       />
                       <EditableText
                         value={project.technologies.join(', ')}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          projects: prev.projects.map((p, i) => 
-                            i === index ? { ...p, technologies: value.split(', ').filter(t => t.trim()) } : p
-                          )
-                        }))}
+                        onChange={(value) => updateProject(index, 'technologies', value.split(', ').filter(t => t.trim()))}
                       />
                       <EditableText
                         value={project.link || ''}
-                        onChange={(value) => setCvData(prev => ({
-                          ...prev,
-                          projects: prev.projects.map((p, i) => 
-                            i === index ? { ...p, link: value || undefined } : p
-                          )
-                        }))}
+                        onChange={(value) => updateProject(index, 'link', value || undefined)}
                       />
                     </div>
                   ) : (
