@@ -24,28 +24,39 @@ export const EditableText = React.memo(({
 }: EditableTextProps) => {
   const { language } = useLanguage();
   const [localValue, setLocalValue] = useState(value);
+  const [lastTranslatedValue, setLastTranslatedValue] = useState('');
   const [lastLanguage, setLastLanguage] = useState(language);
 
-  // Update local value when language changes and translation is enabled
+  // Handle translation when language changes
   useEffect(() => {
-    if (enableTranslation && language !== lastLanguage && value) {
-      console.log(`Translating text from ${lastLanguage} to ${language}:`, value);
-      const translatedValue = translateText(value, lastLanguage, language);
-      setLocalValue(translatedValue);
-      onChange(translatedValue);
-    } else {
-      setLocalValue(value);
+    if (enableTranslation && language !== lastLanguage && value && value.trim() !== '') {
+      console.log(`Translating EditableText from ${lastLanguage} to ${language}:`, value);
+      
+      // Only translate if the current value hasn't been manually changed from the last translated value
+      if (value === lastTranslatedValue || lastTranslatedValue === '') {
+        const translatedValue = translateText(value, lastLanguage, language);
+        console.log(`Translated result:`, translatedValue);
+        
+        if (translatedValue !== value) {
+          setLocalValue(translatedValue);
+          setLastTranslatedValue(translatedValue);
+          onChange(translatedValue);
+        }
+      }
     }
     setLastLanguage(language);
-  }, [language, value, enableTranslation, lastLanguage, onChange]);
+  }, [language, value, enableTranslation, lastLanguage, lastTranslatedValue, onChange]);
 
-  // Update local value when prop value changes
+  // Update local value when prop value changes (but not during translation)
   useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
+    if (value !== lastTranslatedValue) {
+      setLocalValue(value);
+    }
+  }, [value, lastTranslatedValue]);
 
   const handleChange = (newValue: string) => {
     setLocalValue(newValue);
+    setLastTranslatedValue(''); // Reset translation tracking when user manually edits
     onChange(newValue);
   };
 

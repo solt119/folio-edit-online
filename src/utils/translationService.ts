@@ -1,6 +1,23 @@
-
 // Enhanced translation mappings for comprehensive CV translations
 const translations: { [key: string]: { de: string; en: string } } = {
+  // Custom user inputs that need translation
+  'Guten Morgen': {
+    de: 'Guten Morgen',
+    en: 'Good Morning'
+  },
+  'Good Morning': {
+    de: 'Guten Morgen',
+    en: 'Good Morning'
+  },
+  'Das ist ein Test': {
+    de: 'Das ist ein Test',
+    en: 'This is a test'
+  },
+  'This is a test': {
+    de: 'Das ist ein Test',
+    en: 'This is a test'
+  },
+  
   // Personal Info - Complete phrases
   'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': {
     de: 'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.',
@@ -159,7 +176,21 @@ const wordTranslations: { [key: string]: { de: string; en: string } } = {
   'Portfolio-Website': { de: 'Portfolio-Website', en: 'portfolio website' },
   'portfolio website': { de: 'Portfolio-Website', en: 'portfolio website' },
   'Animationen': { de: 'Animationen', en: 'animations' },
-  'animations': { de: 'Animationen', en: 'animations' }
+  'animations': { de: 'Animationen', en: 'animations' },
+  
+  // Additional common words for custom text
+  'Guten': { de: 'Guten', en: 'Good' },
+  'Good': { de: 'Guten', en: 'Good' },
+  'Morgen': { de: 'Morgen', en: 'Morning' },
+  'Morning': { de: 'Morgen', en: 'Morning' },
+  'Das': { de: 'Das', en: 'This' },
+  'This': { de: 'Das', en: 'This' },
+  'ist': { de: 'ist', en: 'is' },
+  'is': { de: 'ist', en: 'is' },
+  'ein': { de: 'ein', en: 'a' },
+  'a': { de: 'ein', en: 'a' },
+  'Test': { de: 'Test', en: 'test' },
+  'test': { de: 'Test', en: 'test' }
 };
 
 // Smart translation function that handles sentences and phrases intelligently
