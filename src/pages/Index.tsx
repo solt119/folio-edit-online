@@ -7,6 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/LoginForm';
 import { SupabaseConfig } from '@/components/SupabaseConfig';
 import { VisibilityControls } from '@/components/VisibilityControls';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { useCVData } from '@/hooks/useCVData';
 import { PersonalInfoSection } from '@/components/cv/PersonalInfoSection';
@@ -23,6 +25,7 @@ const Index = () => {
   const [showVisibilitySettings, setShowVisibilitySettings] = useState(false);
   const [supabaseConfiguredState, setSupabaseConfiguredState] = useState(false);
   const { user, loading, signIn, signOut } = useAuth();
+  const { t } = useLanguage();
   
   const {
     cvData,
@@ -51,14 +54,14 @@ const Index = () => {
     const { error } = await signIn(email, password);
     if (error) {
       toast({
-        title: "Anmeldung fehlgeschlagen",
+        title: t('login_failed'),
         description: error.message,
         variant: "destructive"
       });
     } else {
       toast({
-        title: "Erfolgreich eingeloggt",
-        description: "Sie können jetzt Ihren Lebenslauf bearbeiten.",
+        title: t('login_success'),
+        description: t('login_success_desc'),
       });
       setShowLogin(false);
     }
@@ -68,15 +71,15 @@ const Index = () => {
     const { error } = await signOut();
     if (error) {
       toast({
-        title: "Fehler beim Abmelden",
+        title: t('logout_error'),
         description: error.message,
         variant: "destructive"
       });
     } else {
       setEditingSection(null);
       toast({
-        title: "Erfolgreich ausgeloggt",
-        description: "Sie befinden sich jetzt im Ansichtsmodus.",
+        title: t('logout_success'),
+        description: t('logout_success_desc'),
       });
     }
   };
@@ -84,8 +87,8 @@ const Index = () => {
   const handleSave = () => {
     setEditingSection(null);
     toast({
-      title: "Gespeichert",
-      description: "Ihre Änderungen wurden erfolgreich gespeichert.",
+      title: t('saved'),
+      description: t('saved_desc'),
     });
   };
 
@@ -113,11 +116,12 @@ const Index = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur-sm bg-slate-900/80 border-b border-slate-700">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">Curriculum Vitae</h1>
+          <h1 className="text-2xl font-bold text-white">{t('curriculum_vitae')}</h1>
           <div className="flex items-center gap-4">
+            <LanguageSelector />
             {user ? (
               <>
-                <span className="text-slate-400 text-sm">Angemeldet als: {user.email}</span>
+                <span className="text-slate-400 text-sm">{t('logged_in_as')}: {user.email}</span>
                 <Button 
                   onClick={() => setShowVisibilitySettings(!showVisibilitySettings)}
                   variant="outline" 
@@ -125,7 +129,7 @@ const Index = () => {
                   className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
                 >
                   <Settings className="w-4 h-4 mr-2" />
-                  Sichtbarkeit
+                  {t('visibility')}
                 </Button>
                 <Button 
                   onClick={handleLogout}
@@ -134,7 +138,7 @@ const Index = () => {
                   className="bg-transparent border-slate-600 text-white hover:bg-slate-800"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  Abmelden
+                  {t('logout')}
                 </Button>
               </>
             ) : (
@@ -146,7 +150,7 @@ const Index = () => {
                 disabled={loading}
               >
                 <LogIn className="w-4 h-4 mr-2" />
-                {loading ? 'Laden...' : 'Anmelden zum Bearbeiten'}
+                {loading ? t('loading') : t('login_to_edit')}
               </Button>
             )}
           </div>

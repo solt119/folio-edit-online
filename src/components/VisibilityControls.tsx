@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff } from 'lucide-react';
 import { FieldVisibility } from '@/types/visibility';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VisibilityControlsProps {
   visibility: FieldVisibility;
@@ -15,18 +16,47 @@ export const VisibilityControls: React.FC<VisibilityControlsProps> = ({
   visibility,
   onUpdate
 }) => {
+  const { t } = useLanguage();
+
+  const getPersonalInfoLabel = (field: string) => {
+    const fieldMap: { [key: string]: string } = {
+      image: 'profile_image',
+      bio: 'description',
+      profession: 'profession',
+      location: 'location',
+      email: 'email',
+      phone: 'phone',
+      name: 'name',
+      linkedin: 'linkedin',
+      github: 'github'
+    };
+    return t(fieldMap[field] || field);
+  };
+
+  const getSectionLabel = (section: string) => {
+    const sectionMap: { [key: string]: string } = {
+      experience: 'experience',
+      education: 'education',
+      skills: 'skills',
+      languages: 'languages',
+      projects: 'projects',
+      certificates: 'certificates'
+    };
+    return t(sectionMap[section] || section);
+  };
+
   return (
     <Card className="mb-8 bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-blue-400">
           <Eye className="w-5 h-5" />
-          Sichtbarkeitseinstellungen
+          {t('visibility_settings')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Personal Info Visibility */}
         <div>
-          <h3 className="font-semibold text-white mb-3">Persönliche Informationen</h3>
+          <h3 className="font-semibold text-white mb-3">{t('personal_information')}</h3>
           <div className="grid grid-cols-2 gap-4">
             {Object.entries(visibility.personalInfo).map(([field, visible]) => (
               <div key={field} className="flex items-center space-x-2">
@@ -36,12 +66,7 @@ export const VisibilityControls: React.FC<VisibilityControlsProps> = ({
                   onCheckedChange={(checked) => onUpdate('personalInfo', field, checked)}
                 />
                 <Label htmlFor={`personal-${field}`} className="text-slate-300 capitalize">
-                  {field === 'image' ? 'Profilbild' :
-                   field === 'bio' ? 'Beschreibung' : 
-                   field === 'profession' ? 'Beruf' : 
-                   field === 'location' ? 'Standort' : 
-                   field === 'email' ? 'E-Mail' : 
-                   field === 'phone' ? 'Telefon' : field}
+                  {getPersonalInfoLabel(field)}
                 </Label>
                 {!visible && <EyeOff className="w-4 h-4 text-slate-500" />}
               </div>
@@ -51,7 +76,7 @@ export const VisibilityControls: React.FC<VisibilityControlsProps> = ({
 
         {/* Sections Visibility */}
         <div>
-          <h3 className="font-semibold text-white mb-3">Bereiche</h3>
+          <h3 className="font-semibold text-white mb-3">{t('sections')}</h3>
           <div className="grid grid-cols-2 gap-4">
             {Object.entries(visibility.sections).map(([section, visible]) => (
               <div key={section} className="flex items-center space-x-2">
@@ -61,12 +86,7 @@ export const VisibilityControls: React.FC<VisibilityControlsProps> = ({
                   onCheckedChange={(checked) => onUpdate('sections', section, checked)}
                 />
                 <Label htmlFor={`section-${section}`} className="text-slate-300 capitalize">
-                  {section === 'experience' ? 'Berufserfahrung' :
-                   section === 'education' ? 'Ausbildung' :
-                   section === 'skills' ? 'Fähigkeiten' :
-                   section === 'languages' ? 'Sprachen' :
-                   section === 'projects' ? 'Projekte' :
-                   section === 'certificates' ? 'Zertifikate' : section}
+                  {getSectionLabel(section)}
                 </Label>
                 {!visible && <EyeOff className="w-4 h-4 text-slate-500" />}
               </div>
