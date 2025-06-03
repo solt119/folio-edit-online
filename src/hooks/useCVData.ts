@@ -4,6 +4,7 @@ import { CVData, PersonalInfo, Experience, Education, Skill, Language, Certifica
 import { FieldVisibility, defaultVisibility } from '@/types/visibility';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cvContentTranslations } from '@/utils/cvContentTranslations';
+import { translateCVData } from '@/utils/translationService';
 
 export const useCVData = () => {
   const { language } = useLanguage();
@@ -34,12 +35,20 @@ export const useCVData = () => {
     }
   }, [language]);
 
-  // Save custom data to localStorage whenever cvData changes
+  // Save custom data to localStorage and auto-translate to other language
   useEffect(() => {
     const newCustomData = {
       ...customData,
       [language]: cvData
     };
+    
+    // Auto-translate to the other language
+    const otherLanguage = language === 'de' ? 'en' : 'de';
+    if (!newCustomData[otherLanguage] || JSON.stringify(newCustomData[otherLanguage]) === JSON.stringify(cvContentTranslations[otherLanguage])) {
+      // Only auto-translate if the other language doesn't have custom data or still has default data
+      newCustomData[otherLanguage] = translateCVData(cvData, language, otherLanguage);
+    }
+    
     setCustomData(newCustomData);
     localStorage.setItem('customCvData', JSON.stringify(newCustomData));
   }, [cvData, language]);
