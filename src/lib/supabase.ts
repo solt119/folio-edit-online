@@ -1,61 +1,50 @@
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-let supabaseClient: SupabaseClient | null = null
-
-// Fest eingebaute Supabase-Konfiguration
+// Fest eingebaute Supabase-Konfiguration - direkt im Code definiert
 const SUPABASE_URL = 'https://vvmboyqgmhqctwnhgldf.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2bWJveXFnbWhxY3R3bmhnbGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNDYwNzUsImV4cCI6MjA0ODkyMjA3NX0.5Qm7N7J7XJPTJWKOBklnwXxQyF7YUy-D3H_1yF5-8cE'
 
-const getSupabaseUrl = () => {
-  // First try environment variables, then localStorage, then hardcoded values
-  const envUrl = import.meta.env.VITE_SUPABASE_URL;
-  const localUrl = localStorage.getItem('VITE_SUPABASE_URL');
-  console.log('🔍 Checking Supabase URL - ENV:', envUrl ? 'SET' : 'NOT SET', 'LocalStorage:', localUrl ? 'SET' : 'NOT SET');
-  return envUrl || localUrl || SUPABASE_URL;
-}
+let supabaseClient: SupabaseClient | null = null
 
-const getSupabaseAnonKey = () => {
-  // First try environment variables, then localStorage, then hardcoded values
-  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const localKey = localStorage.getItem('VITE_SUPABASE_ANON_KEY');
-  console.log('🔍 Checking Supabase Key - ENV:', envKey ? 'SET' : 'NOT SET', 'LocalStorage:', localKey ? 'SET' : 'NOT SET');
-  return envKey || localKey || SUPABASE_ANON_KEY;
-}
-
+// Automatische Initialisierung beim ersten Aufruf
 export const getSupabase = (): SupabaseClient => {
   if (!supabaseClient) {
-    const supabaseUrl = getSupabaseUrl()
-    const supabaseAnonKey = getSupabaseAnonKey()
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error('Missing Supabase environment variables')
-    }
-
-    supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+    console.log('🚀 Initialisiere Supabase mit hartkodierten Werten...')
+    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   }
-
   return supabaseClient
 }
 
+// Immer als konfiguriert betrachten, da Werte im Code fest definiert sind
 export const isSupabaseConfigured = (): boolean => {
-  const supabaseUrl = getSupabaseUrl()
-  const supabaseAnonKey = getSupabaseAnonKey()
-  const configured = !!(supabaseUrl && supabaseAnonKey);
-  console.log('🔍 isSupabaseConfigured:', configured);
-  return configured;
+  console.log('✅ Supabase ist immer konfiguriert (hartcodierte Werte)')
+  return true
 }
 
-// Check if configuration comes from environment variables OR hardcoded values
-export const isConfiguredViaEnv = (): boolean => {
-  const envConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
-  const hardcodedConfigured = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
-  const configuredViaEnv = envConfigured || hardcodedConfigured;
-  console.log('🔍 isConfiguredViaEnv:', configuredViaEnv, '(ENV:', envConfigured, 'Hardcoded:', hardcodedConfigured, ')');
-  return configuredViaEnv;
+// Verbindungstest-Funktion
+export const testSupabaseConnection = async (): Promise<boolean> => {
+  try {
+    console.log('🔍 Teste Supabase-Verbindung...')
+    const supabase = getSupabase()
+    
+    // Einfacher Test durch Abrufen der aktuellen Session
+    const { data, error } = await supabase.auth.getSession()
+    
+    if (error) {
+      console.warn('⚠️ Supabase-Verbindung funktioniert, aber Session-Fehler:', error.message)
+      return true // Verbindung ist OK, nur keine Session
+    }
+    
+    console.log('✅ Supabase-Verbindung erfolgreich')
+    return true
+  } catch (error) {
+    console.error('❌ Supabase-Verbindung fehlgeschlagen:', error)
+    return false
+  }
 }
 
-// For backward compatibility
+// Für Rückwärtskompatibilität
 export const supabase = {
   get auth() {
     return getSupabase().auth
@@ -67,3 +56,6 @@ export const supabase = {
     return getSupabase().storage
   }
 }
+
+// Automatischer Verbindungstest beim Import
+testSupabaseConnection()

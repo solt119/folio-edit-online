@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/LoginForm';
-import { SupabaseConfig } from '@/components/SupabaseConfig';
 import { Header } from '@/components/Header';
 import { CVContent } from '@/components/CVContent';
 import { useAuthActions } from '@/components/AuthActions';
@@ -14,7 +13,6 @@ const Index = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [showLogin, setShowLogin] = useState(false);
   const [showVisibilitySettings, setShowVisibilitySettings] = useState(false);
-  const [showSupabaseConfig, setShowSupabaseConfig] = useState(false);
   const { user, loading, signIn, signOut } = useAuth();
   const { t } = useLanguage();
   
@@ -38,16 +36,9 @@ const Index = () => {
     signIn,
     signOut,
     setShowLogin,
-    setShowSupabaseConfig,
+    setShowSupabaseConfig: () => {}, // Nicht mehr benötigt
     setEditingSection
   });
-
-  const handleSupabaseConfigured = () => {
-    console.log('✅ Supabase configured, hiding config and reloading')
-    setShowSupabaseConfig(false);
-    // Reload the page to reinitialize Supabase client
-    window.location.reload();
-  };
 
   const handleSave = () => {
     setEditingSection(null);
@@ -61,17 +52,12 @@ const Index = () => {
     handleEdit(section, editingSection, setEditingSection);
   };
 
-  // Show Supabase configuration if explicitly requested
-  if (showSupabaseConfig) {
-    return <SupabaseConfig onConfigured={handleSupabaseConfigured} />;
-  }
-
-  // Show login form as overlay if requested
+  // Login-Formular als Overlay anzeigen
   if (showLogin && !user && !loading) {
     return <LoginForm onLogin={handleLogin} loading={loading} onCancel={() => setShowLogin(false)} />;
   }
 
-  // Show loading state for CV data
+  // Ladezustand für CV-Daten
   if (cvLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">

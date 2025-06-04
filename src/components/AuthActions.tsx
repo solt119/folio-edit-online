@@ -2,7 +2,6 @@
 import React from 'react';
 import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { isSupabaseConfigured } from '@/lib/supabase';
 
 interface AuthActionsProps {
   user: any;
@@ -24,13 +23,7 @@ export const useAuthActions = ({
   const { t } = useLanguage();
 
   const handleLogin = async (email: string, password: string) => {
-    // Check if Supabase is configured (including hardcoded values)
-    if (!isSupabaseConfigured()) {
-      setShowSupabaseConfig(true);
-      setShowLogin(false);
-      return;
-    }
-
+    // Direkt anmelden, da Supabase immer konfiguriert ist
     const { error } = await signIn(email, password);
     if (error) {
       toast({
