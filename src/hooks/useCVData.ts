@@ -56,26 +56,38 @@ export const useCVData = () => {
   // Create initial translation when switching to a language that has no data
   const createInitialTranslation = useCallback(async () => {
     console.log('🔄 Erstelle initiale Übersetzung für Sprache:', language);
+    
+    // Check if we already have data for this language
+    if (cvData && cvData !== null && Object.keys(cvData).length > 0) {
+      console.log('ℹ️ Daten für Sprache bereits vorhanden:', language);
+      return;
+    }
+    
     setIsTranslating(true);
     
     try {
       const otherLanguage = language === 'de' ? 'en' : 'de';
       
-      // Get current CV data (which should be from the other language or default)
-      const sourceData = cvData;
+      console.log('🔍 Suche nach Daten in anderer Sprache:', otherLanguage);
       
-      if (sourceData) {
-        console.log('🔄 Übersetze von', otherLanguage, 'nach', language);
-        const translatedData = await autoTranslateData(sourceData, otherLanguage, {});
-        
-        if (translatedData[language]) {
-          console.log('💾 Speichere initiale Übersetzung für:', language);
-          await supabaseData.saveCVData(translatedData[language], language);
-          console.log('✅ Initiale Übersetzung erfolgreich erstellt');
-          
-          // Reload data to show the translated version
-          await supabaseData.refetch();
-        }
+      // Force a reload to check for data in the other language
+      await supabaseData.refetch();
+      
+      // Try to get data from the other language by temporarily switching language detection
+      const tempData = await supabaseData.refetch();
+      
+      console.log('🔄 Starte manuelle Übersetzung von Standard-Daten');
+      // If no data exists, use default German data and translate to English
+      const sourceData = language === 'en' ? 
+        (await import('@/utils/cvContentTranslations')).cvContentTranslations.de :
+        (await import('@/utils/cvContentTranslations')).cvContentTranslations.en;
+      
+      const translatedData = await autoTranslateData(sourceData, language === 'en' ? 'de' : 'en', {});
+      
+      if (translatedData[language]) {
+        console.log('💾 Speichere initiale Übersetzung für:', language);
+        await supabaseData.saveCVData(translatedData[language], language);
+        console.log('✅ Initiale Übersetzung erfolgreich erstellt');
       }
     } catch (error) {
       console.error('❌ Fehler bei initialer Übersetzung:', error);

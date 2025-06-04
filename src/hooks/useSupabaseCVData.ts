@@ -65,19 +65,39 @@ export const useSupabaseCVData = () => {
           
         if (otherLangData && !otherError) {
           console.log('🔄 Erstelle Auto-Übersetzung von', otherLanguage, 'nach', language);
+          console.log('📋 Quelldaten für Übersetzung:', otherLangData.content);
+          
           try {
             const translatedData = await translateCVData(otherLangData.content, language);
+            console.log('✅ Übersetzung abgeschlossen:', translatedData);
             
-            // Save the translated data
-            await saveCVData(translatedData, language);
+            // Save the translated data to Supabase
+            console.log('💾 Speichere übersetzte Daten in Supabase...');
+            const { error: saveError } = await supabase
+              .from('cv_data')
+              .upsert({
+                language: language,
+                content: translatedData,
+                updated_at: new Date().toISOString()
+              }, { 
+                onConflict: 'language' 
+              });
+
+            if (saveError) {
+              console.error('❌ Fehler beim Speichern der übersetzten Daten:', saveError);
+            } else {
+              console.log('✅ Übersetzte Daten erfolgreich in Supabase gespeichert');
+            }
+            
             setCvData(translatedData);
-            console.log('✅ Auto-Übersetzung erfolgreich erstellt und gespeichert');
+            console.log('✅ Auto-Übersetzung erfolgreich erstellt und angezeigt');
           } catch (translationError) {
             console.error('❌ Auto-Übersetzung fehlgeschlagen:', translationError);
+            // Use default data as fallback
             setCvData(cvContentTranslations[language]);
           }
         } else {
-          console.log('📝 Verwende Standard-Daten für Sprache:', language);
+          console.log('📝 Keine Daten für andere Sprache gefunden - verwende Standard-Daten für Sprache:', language);
           setCvData(cvContentTranslations[language]);
         }
         setError(null);
@@ -97,6 +117,7 @@ export const useSupabaseCVData = () => {
     
     try {
       console.log('💾 Speichere CV-Daten für Sprache:', saveLanguage);
+      console.log('📋 Zu speichernde Daten:', newCvData);
       
       // Update local state only if saving for current language
       if (saveLanguage === language) {
@@ -129,12 +150,18 @@ export const useSupabaseCVData = () => {
       } else {
         console.log('✅ CV-Daten in Supabase gespeichert für Sprache:', saveLanguage);
         setError(null);
+        
+        // Force reload after successful save to ensure we show the latest data
+        if (saveLanguage === language) {
+          console.log('🔄 Erzwinge Neuladen der Daten nach Speichern...');
+          await loadCVData();
+        }
       }
     } catch (err) {
       console.error('❌ Fehler beim Speichern der CV-Daten:', err);
       setError('Verbindungsfehler beim Speichern');
     }
-  }, [language]);
+  }, [language, loadCVData]);
 
   // Load data when component mounts or language changes
   useEffect(() => {
