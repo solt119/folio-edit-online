@@ -1,7 +1,6 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
-import { getSupabase, testSupabaseConnection } from '@/lib/supabase';
+import { getSupabase, testSupabaseConnection, forceReconnection } from '@/lib/supabase';
 import { cvContentTranslations } from '@/utils/cvContentTranslations';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -16,11 +15,14 @@ export const useSupabaseCVData = () => {
     try {
       setIsLoading(true);
       console.log('🔄 Versuche CV-Daten von Supabase zu laden...');
+      console.log('🌍 Aktueller Standort:', window.location.href);
       
+      // IMMER Verbindungstest durchführen, auch wenn bereits getestet
+      console.log('🔍 Führe Supabase-Verbindungstest durch...');
       const isWorking = await testSupabaseConnection();
       
       if (!isWorking) {
-        console.log('📱 Supabase nicht verfügbar, verwende Standard-Daten');
+        console.log('📱 Supabase nicht verfügbar - Grund: Verbindungstest fehlgeschlagen');
         console.log('💾 Lade Daten aus localStorage...');
         
         // Versuche localStorage als Fallback
@@ -43,10 +45,14 @@ export const useSupabaseCVData = () => {
           console.log('📝 Keine localStorage-Daten gefunden, verwende Standard-Daten');
           setCvData(cvContentTranslations[language]);
         }
+        
+        // Setze Fehler für UI-Feedback
+        setError('Supabase-Verbindung fehlgeschlagen - verwende lokale Daten');
         setIsLoading(false);
         return;
       }
 
+      console.log('✅ Supabase-Verbindung erfolgreich - lade Daten...');
       const supabase = getSupabase();
       
       console.log('📡 Lade CV-Daten von Supabase für Sprache:', language);
@@ -58,7 +64,7 @@ export const useSupabaseCVData = () => {
 
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
         console.error('❌ Fehler beim Laden der CV-Daten:', error);
-        setError('Supabase-Fehler - verwende lokale Daten');
+        setError('Supabase-Query-Fehler - verwende lokale Daten');
         
         // Fallback zu localStorage
         const savedData = localStorage.getItem('customCvData');
@@ -78,13 +84,14 @@ export const useSupabaseCVData = () => {
         const parsed = JSON.parse(savedData);
         parsed[language] = data.content;
         localStorage.setItem('customCvData', JSON.stringify(parsed));
+        console.log('💾 Daten auch in localStorage gespeichert');
       } else {
         console.log('📝 Keine CV-Daten in Supabase gefunden, verwende Standard-Daten');
         setCvData(cvContentTranslations[language]);
         setError(null);
       }
     } catch (err) {
-      console.error('❌ Fehler beim Laden der CV-Daten:', err);
+      console.error('❌ Unerwarteter Fehler beim Laden der CV-Daten:', err);
       setError('Verbindungsfehler - verwende lokale Daten');
       
       // Fallback zu localStorage
@@ -159,6 +166,13 @@ export const useSupabaseCVData = () => {
     saveCVData,
     isLoading,
     error,
-    refetch: loadCVData
+    refetch: loadCVData,
+    forceReconnection: async () => {
+      const result = await forceReconnection();
+      if (result) {
+        await loadCVData();
+      }
+      return result;
+    }
   };
 };
