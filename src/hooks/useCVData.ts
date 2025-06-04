@@ -51,15 +51,17 @@ export const useCVData = () => {
     }
   }, [supabaseData, autoTranslateData, currentEditingLanguage]);
 
-  // Force reload when language changes
+  // Only reload when language actually changes
   useEffect(() => {
-    console.log('🌍 Sprachwechsel von', currentEditingLanguage, 'zu', language);
-    setCurrentEditingLanguage(language);
-    
-    // Force reload data for new language
-    console.log('🔄 Erzwinge Neuladen für neue Sprache:', language);
-    supabaseData.refetch();
-  }, [language, supabaseData]);
+    if (language !== currentEditingLanguage) {
+      console.log('🌍 Sprachwechsel von', currentEditingLanguage, 'zu', language);
+      setCurrentEditingLanguage(language);
+      
+      // Force reload data for new language
+      console.log('🔄 Erzwinge Neuladen für neue Sprache:', language);
+      supabaseData.refetch();
+    }
+  }, [language, currentEditingLanguage, supabaseData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
