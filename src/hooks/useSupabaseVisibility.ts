@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { FieldVisibility, defaultVisibility } from '@/types/visibility';
 import { getSupabase, testSupabaseConnection } from '@/lib/supabase';
@@ -12,10 +11,11 @@ export const useSupabaseVisibility = () => {
 
   // Load visibility settings from Supabase
   const loadVisibilitySettings = useCallback(async () => {
-    console.log('🔍 Loading visibility settings for language:', language);
+    console.log('🔍 Lade Sichtbarkeitseinstellungen für Sprache:', language);
     
     try {
       setIsLoading(true);
+      
       const isWorking = await testSupabaseConnection();
       
       if (!isWorking) {
@@ -25,10 +25,10 @@ export const useSupabaseVisibility = () => {
         if (savedVisibility) {
           try {
             const parsed = JSON.parse(savedVisibility);
-            console.log('✅ Loaded from localStorage:', parsed);
+            console.log('✅ Aus localStorage geladen:', parsed);
             setFieldVisibility(parsed);
           } catch (error) {
-            console.error('❌ Error parsing visibility data:', error);
+            console.error('❌ Fehler beim Parsen der Sichtbarkeitsdaten:', error);
             setFieldVisibility(defaultVisibility);
           }
         } else {
@@ -40,7 +40,7 @@ export const useSupabaseVisibility = () => {
 
       const supabase = getSupabase();
       
-      console.log('🔄 Fetching from Supabase...');
+      console.log('🔄 Lade von Supabase...');
       const { data, error } = await supabase
         .from('visibility_settings')
         .select('*')
@@ -48,7 +48,7 @@ export const useSupabaseVisibility = () => {
         .single();
 
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
-        console.error('❌ Error loading visibility settings:', error);
+        console.error('❌ Fehler beim Laden der Sichtbarkeitseinstellungen:', error);
         setError('Supabase-Verbindung fehlgeschlagen');
         // Fall back to localStorage
         const savedVisibility = localStorage.getItem('fieldVisibility');
@@ -58,16 +58,16 @@ export const useSupabaseVisibility = () => {
           setFieldVisibility(defaultVisibility);
         }
       } else if (data) {
-        console.log('✅ Loaded from Supabase:', data.visibility);
+        console.log('✅ Von Supabase geladen:', data.visibility);
         setFieldVisibility(data.visibility);
         setError(null);
       } else {
-        console.log('📝 No data found in Supabase, using default');
+        console.log('📝 Keine Daten in Supabase gefunden, verwende Standard-Einstellungen');
         setFieldVisibility(defaultVisibility);
         setError(null);
       }
     } catch (err) {
-      console.error('❌ Error loading visibility settings:', err);
+      console.error('❌ Fehler beim Laden der Sichtbarkeitseinstellungen:', err);
       setError('Verbindungsfehler');
       // Fall back to localStorage
       const savedVisibility = localStorage.getItem('fieldVisibility');
@@ -87,7 +87,7 @@ export const useSupabaseVisibility = () => {
 
   // Save visibility settings to Supabase
   const saveVisibilitySettings = useCallback(async (newVisibility: FieldVisibility) => {
-    console.log('💾 Saving visibility settings:', newVisibility);
+    console.log('💾 Speichere Sichtbarkeitseinstellungen:', newVisibility);
     
     // Validate that newVisibility is not null/undefined and has the correct structure
     if (!newVisibility || typeof newVisibility !== 'object') {
@@ -115,7 +115,7 @@ export const useSupabaseVisibility = () => {
 
       const supabase = getSupabase();
       
-      console.log('🔄 Saving to Supabase with data:', { language, visibility: validatedVisibility });
+      console.log('🔄 Speichere in Supabase...');
       
       const { error } = await supabase
         .from('visibility_settings')
@@ -127,14 +127,14 @@ export const useSupabaseVisibility = () => {
         });
 
       if (error) {
-        console.error('❌ Error saving visibility settings:', error);
+        console.error('❌ Fehler beim Speichern der Sichtbarkeitseinstellungen:', error);
         setError('Speichern in Supabase fehlgeschlagen - in localStorage gespeichert');
       } else {
-        console.log('✅ Successfully saved to Supabase');
+        console.log('✅ Erfolgreich in Supabase gespeichert');
         setError(null);
       }
     } catch (err) {
-      console.error('❌ Error saving visibility settings:', err);
+      console.error('❌ Fehler beim Speichern der Sichtbarkeitseinstellungen:', err);
       setError('Verbindungsfehler beim Speichern');
     }
   }, [language]);

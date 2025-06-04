@@ -15,6 +15,8 @@ export const useSupabaseCVData = () => {
   const loadCVData = useCallback(async () => {
     try {
       setIsLoading(true);
+      console.log('🔄 Lade CV-Daten von Supabase...');
+      
       const isWorking = await testSupabaseConnection();
       
       if (!isWorking) {
@@ -34,13 +36,14 @@ export const useSupabaseCVData = () => {
 
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
         console.error('Error loading CV data:', error);
-        setError('Supabase-Verbindung fehlgeschlagen - verwende lokale Daten');
+        setError('Supabase-Fehler - verwende lokale Daten');
         setCvData(cvContentTranslations[language]);
       } else if (data) {
+        console.log('✅ CV-Daten von Supabase geladen');
         setCvData(data.content);
         setError(null);
       } else {
-        // No data found, use default
+        console.log('📝 Keine CV-Daten in Supabase gefunden, verwende Standard-Daten');
         setCvData(cvContentTranslations[language]);
         setError(null);
       }
@@ -79,11 +82,12 @@ export const useSupabaseCVData = () => {
       if (error) {
         console.error('Error saving CV data:', error);
         setError('Speichern fehlgeschlagen - Daten nur lokal gespeichert');
-        setCvData(newCvData);
       } else {
-        setCvData(newCvData);
+        console.log('✅ CV-Daten in Supabase gespeichert');
         setError(null);
       }
+      
+      setCvData(newCvData);
     } catch (err) {
       console.error('Error saving CV data:', err);
       setError('Verbindungsfehler beim Speichern');
