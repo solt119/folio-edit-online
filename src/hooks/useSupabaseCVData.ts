@@ -13,10 +13,7 @@ export const useSupabaseCVData = () => {
 
   // Load CV data from Supabase
   const loadCVData = useCallback(async () => {
-    console.log('loadCVData called, isSupabaseConfigured:', isSupabaseConfigured());
-    
     if (!isSupabaseConfigured()) {
-      console.log('Supabase not configured, using default translations');
       setCvData(cvContentTranslations[language]);
       setIsLoading(false);
       return;
@@ -26,25 +23,19 @@ export const useSupabaseCVData = () => {
       setIsLoading(true);
       const supabase = getSupabase();
       
-      console.log('Loading data from Supabase for language:', language);
-      
       const { data, error } = await supabase
         .from('cv_data')
         .select('*')
         .eq('language', language)
         .single();
 
-      console.log('Supabase response - data:', data, 'error:', error);
-
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
         console.error('Error loading CV data:', error);
         setError(error.message);
         setCvData(cvContentTranslations[language]);
       } else if (data) {
-        console.log('Data loaded from Supabase:', data.content);
         setCvData(data.content);
       } else {
-        console.log('No data found in Supabase, using default');
         // No data found, use default
         setCvData(cvContentTranslations[language]);
       }
@@ -59,8 +50,6 @@ export const useSupabaseCVData = () => {
 
   // Save CV data to Supabase
   const saveCVData = useCallback(async (newCvData: CVData) => {
-    console.log('saveCVData called with:', newCvData);
-    
     if (!isSupabaseConfigured()) {
       console.warn('Supabase not configured, saving locally only');
       setCvData(newCvData);
@@ -69,8 +58,6 @@ export const useSupabaseCVData = () => {
 
     try {
       const supabase = getSupabase();
-      
-      console.log('Saving to Supabase for language:', language);
       
       const { error } = await supabase
         .from('cv_data')
@@ -84,7 +71,6 @@ export const useSupabaseCVData = () => {
         console.error('Error saving CV data:', error);
         setError(error.message);
       } else {
-        console.log('Data saved successfully to Supabase');
         setCvData(newCvData);
         setError(null);
       }

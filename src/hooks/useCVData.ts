@@ -17,24 +17,15 @@ export const useCVData = () => {
 
   const isUsingSupabase = isSupabaseConfigured();
 
-  console.log('useCVData - isUsingSupabase:', isUsingSupabase);
-  console.log('useCVData - supabaseData.cvData:', supabaseData.cvData);
-  console.log('useCVData - localStorageData.cvData:', localStorageData.cvData);
-
   // Choose data source based on Supabase configuration
   const cvData = isUsingSupabase ? supabaseData.cvData : localStorageData.cvData;
   const fieldVisibility = localStorageData.fieldVisibility; // Always use localStorage for visibility
 
   // Save function that uses appropriate storage
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    console.log('saveCustomDataWithTranslation called with:', newCvData);
-    console.log('isUsingSupabase:', isUsingSupabase);
-    
     if (isUsingSupabase) {
-      console.log('Saving to Supabase...');
       await supabaseData.saveCVData(newCvData);
     } else {
-      console.log('Saving to localStorage...');
       // Fall back to localStorage method
       localStorageData.saveCustomData({ [language]: newCvData });
     }
