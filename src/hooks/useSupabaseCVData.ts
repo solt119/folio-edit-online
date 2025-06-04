@@ -65,8 +65,6 @@ export const useSupabaseCVData = () => {
           language,
           content: newCvData,
           updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'language'
         });
 
       if (error) {
