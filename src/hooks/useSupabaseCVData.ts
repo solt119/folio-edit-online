@@ -31,7 +31,7 @@ export const useSupabaseCVData = () => {
       console.log('✅ Supabase-Verbindung erfolgreich');
       const supabase = getSupabase();
       
-      // Load German data and check for English column
+      // Load the main record (always from the 'de' record which contains both columns)
       const { data, error } = await supabase
         .from('cv_data')
         .select('*')
@@ -43,24 +43,30 @@ export const useSupabaseCVData = () => {
         setError('Supabase-Query-Fehler');
         setCvData(cvContentTranslations[language]);
       } else if (data) {
-        // Choose correct content based on language
+        // Select the correct content based on language
         let contentToUse;
         
-        if (language === 'en' && data.content_en) {
-          console.log('✅ Verwende englische Spalte (content_en)');
-          contentToUse = data.content_en;
-        } else if (language === 'de' && data.content) {
-          console.log('✅ Verwende deutsche Spalte (content)');
-          contentToUse = data.content;
-        } else if (data.content) {
-          console.log('⚠️ Sprach-spezifische Spalte nicht gefunden, verwende Hauptinhalt');
-          contentToUse = data.content;
+        if (language === 'en') {
+          // For English, prefer content_en, fallback to translated content
+          if (data.content_en) {
+            console.log('✅ Verwende englische Spalte (content_en)');
+            contentToUse = data.content_en;
+          } else if (data.content) {
+            console.log('⚠️ content_en nicht gefunden, übersetze deutschen Inhalt');
+            contentToUse = await translateCVData(data.content, 'en');
+          } else {
+            console.log('❌ Keine Inhalte gefunden - verwende Standard');
+            contentToUse = cvContentTranslations.en;
+          }
         } else {
-          console.log('❌ Keine Inhalte gefunden');
-          setCvData(cvContentTranslations[language]);
-          setError(null);
-          setIsLoading(false);
-          return;
+          // For German, use content column
+          if (data.content) {
+            console.log('✅ Verwende deutsche Spalte (content)');
+            contentToUse = data.content;
+          } else {
+            console.log('❌ Deutsche Inhalte nicht gefunden - verwende Standard');
+            contentToUse = cvContentTranslations.de;
+          }
         }
 
         console.log('📋 Geladene Daten für Sprache', language, ':', contentToUse);

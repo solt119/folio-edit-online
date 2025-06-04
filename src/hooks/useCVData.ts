@@ -53,15 +53,13 @@ export const useCVData = () => {
 
   // Force reload when language changes
   useEffect(() => {
-    if (language !== currentEditingLanguage) {
-      console.log('🌍 Sprachwechsel von', currentEditingLanguage, 'zu', language);
-      setCurrentEditingLanguage(language);
-      
-      // Force reload data for new language
-      console.log('🔄 Erzwinge Neuladen für neue Sprache:', language);
-      supabaseData.refetch();
-    }
-  }, [language, currentEditingLanguage, supabaseData]);
+    console.log('🌍 Sprachwechsel von', currentEditingLanguage, 'zu', language);
+    setCurrentEditingLanguage(language);
+    
+    // Force reload data for new language
+    console.log('🔄 Erzwinge Neuladen für neue Sprache:', language);
+    supabaseData.refetch();
+  }, [language, supabaseData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
