@@ -26,6 +26,15 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 }) => {
   const { t } = useLanguage();
 
+  const formatText = (text: string) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < text.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader className="relative">
@@ -66,6 +75,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                   value={exp.description}
                   onChange={(value) => onUpdate(index, 'description', value)}
                   multiline
+                  className="min-h-[100px]"
                 />
               </div>
             ) : (
@@ -76,7 +86,9 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                   <Calendar className="w-3 h-3" />
                   {exp.duration}
                 </p>
-                <p className="text-slate-300 text-sm mt-2">{exp.description}</p>
+                <div className="text-slate-300 text-sm mt-2 leading-relaxed text-justify">
+                  {formatText(exp.description)}
+                </div>
               </>
             )}
           </div>
