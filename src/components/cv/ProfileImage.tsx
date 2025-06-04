@@ -23,9 +23,27 @@ export const ProfileImage: React.FC<ProfileImageProps> = ({
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Validate file size (max 2MB)
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSize) {
+        alert('Bild ist zu groß. Maximale Größe: 2MB');
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Bitte wählen Sie eine gültige Bilddatei aus');
+        return;
+      }
+
+      console.log('📷 Lade Profilbild hoch:', file.name, file.size, 'bytes');
+      
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
+        console.log('📷 Profilbild als Base64 konvertiert, Länge:', result.length);
+        
+        // Speichere das Bild direkt in den CV-Daten, welche dann in Supabase gespeichert werden
         onUpdate(result);
       };
       reader.readAsDataURL(file);
