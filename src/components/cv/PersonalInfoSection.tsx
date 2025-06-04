@@ -35,7 +35,16 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const { t } = useLanguage();
 
   const isVisible = (field: keyof PersonalInfo) => {
-    return isLoggedIn || !visibility || visibility[field];
+    // When editing (logged in), always show fields for editing
+    if (isEditing) return true;
+    
+    // When not logged in, respect visibility settings
+    if (!isLoggedIn) {
+      return !visibility || visibility[field];
+    }
+    
+    // When logged in but not editing, still respect visibility settings
+    return !visibility || visibility[field];
   };
 
   return (
