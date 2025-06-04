@@ -21,14 +21,27 @@ export const PersonalBio: React.FC<PersonalBioProps> = ({
         value={bio}
         onChange={onUpdate}
         multiline
-        className="mt-4"
+        className="mt-4 min-h-[120px]"
       />
     );
   }
 
   if (!isVisible) return null;
 
+  const formatText = (text: string) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < text.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+
   return (
-    <p className="text-slate-300 text-center leading-relaxed">{bio}</p>
+    <div className="text-slate-300 leading-relaxed space-y-2">
+      <p className="text-justify">
+        {formatText(bio)}
+      </p>
+    </div>
   );
 };

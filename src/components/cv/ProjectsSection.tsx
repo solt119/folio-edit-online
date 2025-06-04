@@ -27,6 +27,15 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
 }) => {
   const { t } = useLanguage();
 
+  const formatText = (text: string) => {
+    return text.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < text.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
+  };
+
   return (
     <Card className="mt-8 bg-slate-800/50 backdrop-blur-sm border-slate-700 text-white">
       <CardHeader className="relative">
@@ -60,6 +69,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                     value={project.description}
                     onChange={(value) => onUpdate(index, 'description', value)}
                     multiline
+                    className="min-h-[100px]"
                   />
                   <EditableText
                     value={project.technologies.join(', ')}
@@ -72,8 +82,10 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
                 </div>
               ) : (
                 <>
-                  <h3 className="font-semibold text-white mb-2">{project.name}</h3>
-                  <p className="text-slate-300 text-sm mb-3">{project.description}</p>
+                  <h3 className="font-semibold text-white mb-3">{project.name}</h3>
+                  <div className="text-slate-300 text-sm mb-4 leading-relaxed text-justify">
+                    {formatText(project.description)}
+                  </div>
                   <div className="flex flex-wrap gap-2 mb-3">
                     {project.technologies.map((tech, techIndex) => (
                       <Badge key={techIndex} variant="secondary" className="bg-blue-900/50 text-blue-400">
