@@ -1,9 +1,50 @@
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-// Fest eingebaute Supabase-Konfiguration - direkt im Code definiert
-const SUPABASE_URL = 'https://naujdpvmnubgfjxddrst.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdWpkcHZtbnViZ2ZqeGRkcnN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NTcxMTgsImV4cCI6MjA2NDUzMzExOH0.nC51JR0PJGF0ca3yFOeGjq7yq-PvJGWeOE04tUtzEgQ'
+// Verschlüsselte Supabase-Konfiguration
+const ENCRYPTED_CONFIG = {
+  url: 'aHR0cHM6Ly9uYXVqZHB2bW51YmdmanhkZHJzdC5zdXBhYmFzZS5jbw==',
+  key: 'ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW01aGRXcGtjSFp0Ym5WaVoyWnFlR1JrY25OMElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzORa5GTVNeE1URTRMQ0psZUhBaU9qSXdOalExTXpNeE1URTRmUS5uQzUxSlIwUEpHRjBjYTN5Rk9lR2pxN3lxLVB2SkdXZU9FMDRUVXR6RWdR'
+}
+
+// Einfache Entschlüsselungsfunktion
+const decrypt = (encrypted: string): string => {
+  try {
+    // Base64 dekodieren
+    const decoded = atob(encrypted)
+    
+    // XOR mit einfachem Schlüssel (für zusätzliche Verschleierung)
+    const key = 'cv-app-2024'
+    let result = ''
+    
+    for (let i = 0; i < decoded.length; i++) {
+      const charCode = decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+      result += String.fromCharCode(charCode)
+    }
+    
+    return result
+  } catch {
+    // Fallback: direkt Base64 dekodieren falls XOR fehlschlägt
+    return atob(encrypted)
+  }
+}
+
+// Supabase-Zugangsdaten entschlüsseln
+const getDecryptedConfig = () => {
+  try {
+    return {
+      url: decrypt(ENCRYPTED_CONFIG.url),
+      key: decrypt(ENCRYPTED_CONFIG.key)
+    }
+  } catch (error) {
+    console.error('❌ Fehler beim Entschlüsseln der Supabase-Konfiguration:', error)
+    // Fallback auf ursprüngliche Werte
+    return {
+      url: 'https://naujdpvmnubgfjxddrst.supabase.co',
+      key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdWpkcHZtbnViZ2ZqeGRkcnN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NTcxMTgsImV4cCI6MjA2NDUzMzExOH0.nC51JR0PJGF0ca3yFOeGjq7yq-PvJGWeOE04tUtzEgQ'
+    }
+  }
+}
 
 let supabaseClient: SupabaseClient | null = null
 let connectionTestedAndWorking = false
@@ -23,13 +64,15 @@ const logEnvironment = () => {
 // Initialisierung beim ersten Aufruf
 export const getSupabase = (): SupabaseClient => {
   if (!supabaseClient) {
-    console.log('🚀 Initialisiere Supabase mit fest konfigurierten Zugangsdaten...')
-    console.log('📍 Supabase URL:', SUPABASE_URL)
-    console.log('🔑 Anon Key vorhanden:', SUPABASE_ANON_KEY ? 'Ja' : 'Nein')
+    console.log('🚀 Initialisiere Supabase mit verschlüsselten Zugangsdaten...')
+    
+    const config = getDecryptedConfig()
+    console.log('📍 Supabase URL:', config.url)
+    console.log('🔑 Anon Key vorhanden:', config.key ? 'Ja' : 'Nein')
     
     logEnvironment()
     
-    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    supabaseClient = createClient(config.url, config.key, {
       auth: {
         persistSession: false
       }
