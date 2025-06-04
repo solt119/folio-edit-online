@@ -7,17 +7,46 @@ import { translateCVData, detectLanguage } from '@/utils/translationService';
 export const useDataTranslation = () => {
   const getDataForLanguage = useCallback(async (
     language: 'de' | 'en',
-    customData: { [key: string]: CVData }
+    customData: { [key: string]: CVData },
+    currentData?: CVData
   ): Promise<CVData> => {
     console.log('Getting data for language:', language);
     console.log('Available custom data:', Object.keys(customData));
     
+    // Wenn wir bereits übersetzte Daten für diese Sprache haben, verwende sie
     if (customData[language]) {
       console.log('Using existing custom data for', language);
       return customData[language];
     }
     
-    // If we have data in the other language, translate it
+    // Wenn wir aktuelle Daten haben, übersetze diese direkt
+    if (currentData) {
+      console.log('Translating current data to', language);
+      try {
+        const translatedData = await translateCVData(currentData, language);
+        console.log('Translation of current data completed for', language);
+        return translatedData;
+      } catch (error) {
+        console.error('Translation of current data failed:', error);
+        // Fallback: Verwende Template aber übernehme Kontaktdaten
+        const baseData = cvContentTranslations[language];
+        return {
+          ...baseData,
+          personalInfo: {
+            ...baseData.personalInfo,
+            email: currentData.personalInfo.email,
+            phone: currentData.personalInfo.phone,
+            linkedin: currentData.personalInfo.linkedin,
+            github: currentData.personalInfo.github,
+            location: currentData.personalInfo.location,
+            image: currentData.personalInfo.image,
+            name: currentData.personalInfo.name
+          }
+        };
+      }
+    }
+    
+    // Wenn wir Daten in der anderen Sprache haben, übersetze sie
     const otherLanguage = language === 'de' ? 'en' : 'de';
     if (customData[otherLanguage]) {
       console.log('Found data in', otherLanguage, '- translating to', language);

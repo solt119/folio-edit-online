@@ -68,23 +68,24 @@ export const useCVData = () => {
             };
             setCustomDataCache(newCache);
             
-            // Get or translate data for the new language
+            // Get or translate data for the new language - WICHTIG: Übergabe der aktuellen Daten
             console.log('Getting/translating data for new language:', language);
-            const targetData = await getDataForLanguage(language, newCache);
+            const targetData = await getDataForLanguage(language, newCache, currentData);
             
             if (targetData) {
               console.log('Setting translated data for language:', language);
               supabaseData.setCvData(targetData);
               
-              // If this is a new translation, also save it to Supabase
-              if (!newCache[language]) {
-                console.log('Saving new translation to Supabase for:', language);
-                // Temporarily switch the language context for saving
-                const originalLanguage = currentEditingLanguage;
-                setCurrentEditingLanguage(language);
-                await supabaseData.saveCVData(targetData);
-                setCurrentEditingLanguage(originalLanguage);
-              }
+              // Save the translated data to cache and Supabase
+              const updatedCache = {
+                ...newCache,
+                [language]: targetData
+              };
+              setCustomDataCache(updatedCache);
+              
+              // Save to Supabase for the new language
+              console.log('Saving translated data to Supabase for:', language);
+              await supabaseData.saveCVData(targetData);
             }
           }
           
