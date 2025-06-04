@@ -70,7 +70,7 @@ export const useCVData = () => {
             
             // Get or translate data for the new language
             console.log('Getting/translating data for new language:', language);
-            const targetData = getDataForLanguage(language, newCache);
+            const targetData = await getDataForLanguage(language, newCache);
             
             if (targetData) {
               console.log('Setting translated data for language:', language);
