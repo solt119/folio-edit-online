@@ -6,7 +6,6 @@ import { useLocalStorage } from './useLocalStorage';
 import { useDataUpdates } from './useDataUpdates';
 import { useSupabaseCVData } from './useSupabaseCVData';
 import { useSupabaseVisibility } from './useSupabaseVisibility';
-import { useVisibilityUpdates } from './useVisibilityUpdates';
 import { isSupabaseConfigured } from '@/lib/supabase';
 
 export const useCVData = () => {
@@ -40,10 +39,23 @@ export const useCVData = () => {
     setCvData: isUsingSupabase ? supabaseData.setCvData : localStorageData.setCvData
   });
 
-  const visibilityUpdates = useVisibilityUpdates({
-    fieldVisibility,
-    setFieldVisibility: visibilityData.setFieldVisibility
-  });
+  // Direct visibility update function
+  const updateFieldVisibility = useCallback(async (
+    section: keyof typeof fieldVisibility,
+    field: string,
+    visible: boolean
+  ) => {
+    const updatedVisibility = {
+      ...fieldVisibility,
+      [section]: {
+        ...fieldVisibility[section],
+        [field]: visible
+      }
+    };
+    
+    console.log('Updating visibility:', { section, field, visible, updatedVisibility });
+    await visibilityData.setFieldVisibility(updatedVisibility);
+  }, [fieldVisibility, visibilityData.setFieldVisibility]);
 
   // Track when user starts editing to remember the language context
   const startEditing = useCallback(() => {
@@ -58,6 +70,6 @@ export const useCVData = () => {
     isLoading: isUsingSupabase ? (supabaseData.isLoading || visibilityData.isLoading) : false,
     error: isUsingSupabase ? (supabaseData.error || visibilityData.error) : null,
     ...updateFunctions,
-    updateFieldVisibility: visibilityUpdates.updateFieldVisibility
+    updateFieldVisibility
   };
 };
