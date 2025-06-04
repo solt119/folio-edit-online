@@ -5,10 +5,10 @@ import { cvContentTranslations } from '@/utils/cvContentTranslations';
 import { translateCVData, detectLanguage } from '@/utils/translationService';
 
 export const useDataTranslation = () => {
-  const getDataForLanguage = useCallback((
+  const getDataForLanguage = useCallback(async (
     language: 'de' | 'en',
     customData: { [key: string]: CVData }
-  ): CVData => {
+  ): Promise<CVData> => {
     console.log('Getting data for language:', language);
     console.log('Available custom data:', Object.keys(customData));
     
@@ -20,26 +20,32 @@ export const useDataTranslation = () => {
     // If we have data in the other language, translate it
     const otherLanguage = language === 'de' ? 'en' : 'de';
     if (customData[otherLanguage]) {
-      console.log('Found data in', otherLanguage, '- will translate to', language);
+      console.log('Found data in', otherLanguage, '- translating to', language);
       
-      // We'll handle the translation asynchronously in autoTranslateData
-      // For now, return base data with contact info copied
-      const baseData = cvContentTranslations[language];
-      const sourceData = customData[otherLanguage];
-      
-      return {
-        ...baseData,
-        personalInfo: {
-          ...baseData.personalInfo,
-          email: sourceData.personalInfo.email,
-          phone: sourceData.personalInfo.phone,
-          linkedin: sourceData.personalInfo.linkedin,
-          github: sourceData.personalInfo.github,
-          location: sourceData.personalInfo.location,
-          image: sourceData.personalInfo.image,
-          name: sourceData.personalInfo.name // Keep name as is
-        }
-      };
+      try {
+        const translatedData = await translateCVData(customData[otherLanguage], language);
+        console.log('Translation completed for', language);
+        return translatedData;
+      } catch (error) {
+        console.error('Translation failed:', error);
+        // Fallback: copy contact info only
+        const baseData = cvContentTranslations[language];
+        const sourceData = customData[otherLanguage];
+        
+        return {
+          ...baseData,
+          personalInfo: {
+            ...baseData.personalInfo,
+            email: sourceData.personalInfo.email,
+            phone: sourceData.personalInfo.phone,
+            linkedin: sourceData.personalInfo.linkedin,
+            github: sourceData.personalInfo.github,
+            location: sourceData.personalInfo.location,
+            image: sourceData.personalInfo.image,
+            name: sourceData.personalInfo.name
+          }
+        };
+      }
     }
     
     console.log('Using default data for', language);
@@ -61,37 +67,15 @@ export const useDataTranslation = () => {
       [fromLanguage]: newCvData
     };
     
-    // Check if we should auto-translate to the other language
-    const shouldTranslate = !customData[otherLanguage] || 
-      (customData[otherLanguage] && Object.keys(customData).length === 1);
-    
-    if (shouldTranslate) {
-      console.log('Auto-translating content to', otherLanguage);
-      try {
-        const translatedData = await translateCVData(newCvData, otherLanguage);
-        newCustomData[otherLanguage] = translatedData;
-        console.log('Auto-translation completed successfully');
-      } catch (error) {
-        console.error('Translation failed:', error);
-        // If translation fails, copy contact info only
-        if (customData[otherLanguage]) {
-          newCustomData[otherLanguage] = {
-            ...customData[otherLanguage],
-            personalInfo: {
-              ...customData[otherLanguage].personalInfo,
-              email: newCvData.personalInfo.email,
-              phone: newCvData.personalInfo.phone,
-              linkedin: newCvData.personalInfo.linkedin,
-              github: newCvData.personalInfo.github,
-              location: newCvData.personalInfo.location,
-              image: newCvData.personalInfo.image,
-              name: newCvData.personalInfo.name
-            }
-          };
-        }
-      }
-    } else {
-      // Just sync contact information if both languages exist
+    // Always try to auto-translate to the other language
+    console.log('Auto-translating content to', otherLanguage);
+    try {
+      const translatedData = await translateCVData(newCvData, otherLanguage);
+      newCustomData[otherLanguage] = translatedData;
+      console.log('Auto-translation completed successfully');
+    } catch (error) {
+      console.error('Translation failed:', error);
+      // If translation fails, copy contact info only
       if (customData[otherLanguage]) {
         newCustomData[otherLanguage] = {
           ...customData[otherLanguage],
