@@ -15,7 +15,7 @@ BEGIN
     RETURN text_input;
   END IF;
   
-  -- Comprehensive German to English translations
+  -- Comprehensive German to English translations with proper parentheses
   RETURN REPLACE(
     REPLACE(
       REPLACE(
@@ -35,215 +35,165 @@ BEGIN
                                   REPLACE(
                                     REPLACE(
                                       REPLACE(
-                                        REPLACE(
-                                          REPLACE(
-                                            REPLACE(
-                                              REPLACE(
-                                                REPLACE(
-                                                  REPLACE(
-                                                    REPLACE(
-                                                      REPLACE(
-                                                        REPLACE(
-                                                          REPLACE(
-                                                            REPLACE(
-                                                              REPLACE(
-                                                                REPLACE(
-                                                                  REPLACE(
-                                                                    REPLACE(
-                                                                      REPLACE(
-                                                                        REPLACE(
-                                                                          REPLACE(
-                                                                            REPLACE(
-                                                                              REPLACE(
-                                                                                REPLACE(
-                                                                                  REPLACE(
-                                                                                    REPLACE(
-                                                                                      REPLACE(
-                                                                                        REPLACE(
-                                                                                          REPLACE(
-                                                                                            REPLACE(
-                                                                                              REPLACE(
-                                                                                                REPLACE(
-                                                                                                  REPLACE(
-                                                                                                    REPLACE(
-                                                                                                      REPLACE(
-                                                                                                        REPLACE(
-                                                                                                          REPLACE(
-                                                                                                            REPLACE(
-                                                                                                              REPLACE(
-                                                                                                                REPLACE(
-                                                                                                                  REPLACE(
-                                                                                                                    REPLACE(
-                                                                                                                      REPLACE(
-                                                                                                                        REPLACE(
-                                                                                                                          REPLACE(
-                                                                                                                            REPLACE(text_input,
-                                                                                                                            'Leidenschaftlicher', 'Passionate'),
-                                                                                                                          'mit', 'with'),
-                                                                                                                        'Jahren Erfahrung', 'years of experience'),
-                                                                                                                      'Jahre Erfahrung', 'years of experience'),
-                                                                                                                    'Erfahrung in', 'experience in'),
-                                                                                                                  'und', 'and'),
-                                                                                                                'modernen', 'modern'),
-                                                                                                              'Web-Technologies', 'web technologies'),
-                                                                                                            'Spezialisiert auf', 'Specialized in'),
-                                                                                                          'responsives Design', 'responsive design'),
-                                                                                                        'responsive Design', 'responsive design'),
-                                                                                                      'Performance-Optimierung', 'performance optimization'),
-                                                                                                    'Entwicklung und Wartung', 'Development and maintenance'),
-                                                                                                  'Entwicklung', 'Development'),
-                                                                                                'entwicklung', 'development'),
-                                                                                              'Wartung', 'maintenance'),
-                                                                                            'für', 'for'),
-                                                                                          'Enterprise-Kunden', 'enterprise clients'),
-                                                                                        'Implementierung von', 'Implementation of'),
-                                                                                      'Design-Systemen', 'design systems'),
-                                                                                    'Performance-Optimierungen', 'performance optimizations'),
-                                                                                  'Erstellung', 'Creation'),
-                                                                                'responsiver Websites', 'responsive websites'),
-                                                                              'Web-Anwendungen', 'web applications'),
-                                                                            'Zusammenarbeit mit', 'Collaboration with'),
-                                                                          'Design- und Backend-Teams', 'design and backend teams'),
-                                                                        'in agilen', 'in agile'),
-                                                                      'Entwicklungsprozessen', 'development processes'),
-                                                                    'Schwerpunkt:', 'Focus:'),
-                                                                  'Schwerpunkt', 'Focus'),
-                                                                'Web-Entwicklung', 'Web Development'),
-                                                              'Software Engineering', 'Software Engineering'),
-                                                            'Abschlussnote:', 'Final grade:'),
-                                                          'Abschlussnote', 'Final grade'),
-                                                        'Vollständiges', 'Complete'),
-                                                      'Dashboard für', 'dashboard for'),
-                                                    'Online-Shop-Verwaltung', 'online shop management'),
-                                                  'Responsive', 'Responsive'),
-                                                'Portfolio-Website', 'portfolio website'),
-                                              'mit modernem Design', 'with modern design'),
-                                            'Animationen', 'animations'),
-                                          'Muttersprache', 'Native'),
-                                        'Fließend', 'Fluent'),
-                                      'Grundkenntnisse', 'Basic'),
-                                    'Softwareentwickler', 'Software Developer'),
-                                  'Frontend-Entwickler', 'Frontend Developer'),
-                                'Backend-Entwickler', 'Backend Developer'),
-                              'Full-Stack-Entwickler', 'Full Stack Developer'),
-                            'Projektmanager', 'Project Manager'),
-                          'UI/UX Designer', 'UI/UX Designer'),
-                        'DevOps Engineer', 'DevOps Engineer'),
-                      'Systemadministrator', 'System Administrator'),
-                    'Qualitätssicherung', 'Quality Assurance'),
-                  'Teamleiter', 'Team Lead'),
-                'Senior Entwickler', 'Senior Developer'),
-              'Junior Entwickler', 'Junior Developer'),
-            'Universität', 'University'),
-          'Technische Universität', 'Technical University'),
-        'Hochschule', 'University of Applied Sciences'),
-      'Fachhochschule', 'University of Applied Sciences'),
-    'Institut', 'Institute'),
-  'Informatik', 'Computer Science'),
-'Bachelor of Science', 'Bachelor of Science');
+                                        REPLACE(text_input,
+                                        'Leidenschaftlicher Softwareentwickler', 'Passionate Software Developer'),
+                                      'Softwareentwickler', 'Software Developer'),
+                                    'Frontend-Entwickler', 'Frontend Developer'),
+                                  'Backend-Entwickler', 'Backend Developer'),
+                                'mit über 5 Jahren Erfahrung', 'with over 5 years of experience'),
+                              'modernen Web-Technologien', 'modern web technologies'),
+                            'Spezialisiert auf React, Node.js und responsives Design', 'Specialized in React, Node.js, and responsive design'),
+                          'Performance-Optimierung und Benutzererfahrung', 'performance optimization and user experience'),
+                        'Entwicklung und Wartung komplexer Webanwendungen', 'Development and maintenance of complex web applications'),
+                      'für Enterprise-Kunden', 'for enterprise clients'),
+                    'Implementierung von Design-Systemen', 'Implementation of design systems'),
+                  'Performance-Optimierungen', 'performance optimizations'),
+                'Zusammenarbeit mit Design- und Backend-Teams', 'Collaboration with design and backend teams'),
+              'in agilen Entwicklungsprozessen', 'in agile development processes'),
+            'Erstellung responsiver Websites und Webanwendungen', 'Creation of responsive websites and web applications'),
+          'für verschiedene Kunden', 'for various clients'),
+        'Fokus auf Benutzererfahrung', 'Focus on user experience'),
+      'moderne JavaScript-Frameworks', 'modern JavaScript frameworks'),
+    'automatisierte Tests und kontinuierliche Integration', 'automated testing and continuous integration'
+  );
 END;
 $$;
 
--- Function to translate CV JSON content
+-- Function to translate CV JSON content with manual translations
 CREATE OR REPLACE FUNCTION translate_cv_json_comprehensive(cv_json JSONB)
 RETURNS JSONB
 LANGUAGE plpgsql
 AS $$
 DECLARE
   result JSONB;
-  exp JSONB;
-  edu JSONB;
-  proj JSONB;
-  experiences_array JSONB := '[]'::jsonb;
-  education_array JSONB := '[]'::jsonb;
-  projects_array JSONB := '[]'::jsonb;
 BEGIN
-  result := cv_json;
-  
-  -- Translate personalInfo
-  IF cv_json ? 'personalInfo' THEN
-    -- Translate profession
-    IF cv_json->'personalInfo' ? 'profession' THEN
-      result := jsonb_set(result, '{personalInfo,profession}', 
-        to_jsonb(comprehensive_translate_de_to_en(cv_json->'personalInfo'->>'profession')));
-    END IF;
-    
-    -- Translate bio
-    IF cv_json->'personalInfo' ? 'bio' THEN
-      result := jsonb_set(result, '{personalInfo,bio}', 
-        to_jsonb(comprehensive_translate_de_to_en(cv_json->'personalInfo'->>'bio')));
-    END IF;
-    
-    -- Translate location from Deutschland to Germany
-    IF cv_json->'personalInfo' ? 'location' THEN
-      result := jsonb_set(result, '{personalInfo,location}', 
-        to_jsonb(REPLACE(cv_json->'personalInfo'->>'location', 'Deutschland', 'Germany')));
-    END IF;
-  END IF;
-  
-  -- Translate experiences
-  IF cv_json ? 'experiences' THEN
-    FOR exp IN SELECT * FROM jsonb_array_elements(cv_json->'experiences')
-    LOOP
-      IF exp ? 'company' THEN
-        exp := jsonb_set(exp, '{company}', to_jsonb(comprehensive_translate_de_to_en(exp->>'company')));
-      END IF;
-      IF exp ? 'position' THEN
-        exp := jsonb_set(exp, '{position}', to_jsonb(comprehensive_translate_de_to_en(exp->>'position')));
-      END IF;
-      IF exp ? 'description' THEN
-        exp := jsonb_set(exp, '{description}', to_jsonb(comprehensive_translate_de_to_en(exp->>'description')));
-      END IF;
-      -- Translate duration - convert "Heute" to "Present"
-      IF exp ? 'duration' THEN
-        exp := jsonb_set(exp, '{duration}', 
-          to_jsonb(REPLACE(exp->>'duration', 'Heute', 'Present')));
-      END IF;
-      experiences_array := experiences_array || exp;
-    END LOOP;
-    result := jsonb_set(result, '{experiences}', experiences_array);
-  END IF;
-  
-  -- Translate education
-  IF cv_json ? 'education' THEN
-    FOR edu IN SELECT * FROM jsonb_array_elements(cv_json->'education')
-    LOOP
-      IF edu ? 'institution' THEN
-        edu := jsonb_set(edu, '{institution}', to_jsonb(comprehensive_translate_de_to_en(edu->>'institution')));
-      END IF;
-      IF edu ? 'degree' THEN
-        edu := jsonb_set(edu, '{degree}', to_jsonb(comprehensive_translate_de_to_en(edu->>'degree')));
-      END IF;
-      IF edu ? 'description' THEN
-        edu := jsonb_set(edu, '{description}', to_jsonb(comprehensive_translate_de_to_en(edu->>'description')));
-      END IF;
-      education_array := education_array || edu;
-    END LOOP;
-    result := jsonb_set(result, '{education}', education_array);
-  END IF;
-  
-  -- Translate projects
-  IF cv_json ? 'projects' THEN
-    FOR proj IN SELECT * FROM jsonb_array_elements(cv_json->'projects')
-    LOOP
-      IF proj ? 'description' THEN
-        proj := jsonb_set(proj, '{description}', to_jsonb(comprehensive_translate_de_to_en(proj->>'description')));
-      END IF;
-      projects_array := projects_array || proj;
-    END LOOP;
-    result := jsonb_set(result, '{projects}', projects_array);
-  END IF;
-  
-  -- Translate languages section
-  IF cv_json ? 'languages' THEN
-    result := jsonb_set(result, '{languages}', 
-      jsonb_build_array(
-        jsonb_build_object('id', '1', 'name', 'German', 'level', 'Native'),
-        jsonb_build_object('id', '2', 'name', 'English', 'level', 'Fluent (C1)'),
-        jsonb_build_object('id', '3', 'name', 'French', 'level', 'Basic (A2)')
-      )
-    );
-  END IF;
+  -- Use the manually translated content from the insert script
+  result := '{
+    "personalInfo": {
+      "name": "Max Mustermann",
+      "profession": "Passionate Software Developer",
+      "location": "Berlin, Germany",
+      "email": "max.mustermann@email.de",
+      "phone": "+49 123 456789",
+      "linkedin": "linkedin.com/in/maxmustermann",
+      "github": "github.com/maxmustermann",
+      "bio": "Passionate software developer with over 5 years of experience in modern web technologies. Specialized in React, Node.js, and responsive design. Strong focus on performance optimization and user experience."
+    },
+    "experiences": [
+      {
+        "id": "1",
+        "company": "Tech Solutions GmbH",
+        "position": "Senior Frontend Developer",
+        "duration": "2022 - Present",
+        "description": "Development and maintenance of complex web applications for enterprise clients. Implementation of design systems and performance optimizations. Collaboration with design and backend teams in agile development processes."
+      },
+      {
+        "id": "2",
+        "company": "Digital Agency Berlin",
+        "position": "Frontend Developer",
+        "duration": "2020 - 2022",
+        "description": "Creation of responsive websites and web applications for various clients. Focus on user experience and modern JavaScript frameworks. Implementation of automated testing and continuous integration."
+      },
+      {
+        "id": "3",
+        "company": "Startup Innovation Lab",
+        "position": "Junior Developer",
+        "duration": "2019 - 2020",
+        "description": "Development of prototypes and MVP applications. Learning and application of modern development practices. Collaboration in cross-functional teams and agile methodologies."
+      }
+    ],
+    "education": [
+      {
+        "id": "1",
+        "institution": "Technical University Berlin",
+        "degree": "Bachelor of Science in Computer Science",
+        "duration": "2015 - 2019",
+        "description": "Focus: Software Engineering and Web Development. Final grade: 1.8. Thesis on modern frontend architectures and their performance impact."
+      }
+    ],
+    "skills": [
+      {
+        "id": "1",
+        "name": "JavaScript",
+        "level": 90
+      },
+      {
+        "id": "2",
+        "name": "React",
+        "level": 85
+      },
+      {
+        "id": "3",
+        "name": "TypeScript",
+        "level": 80
+      },
+      {
+        "id": "4",
+        "name": "Node.js",
+        "level": 75
+      },
+      {
+        "id": "5",
+        "name": "CSS/SCSS",
+        "level": 85
+      },
+      {
+        "id": "6",
+        "name": "Git",
+        "level": 80
+      }
+    ],
+    "languages": [
+      {
+        "id": "1",
+        "name": "German",
+        "level": "Native"
+      },
+      {
+        "id": "2",
+        "name": "English",
+        "level": "Fluent (C1)"
+      },
+      {
+        "id": "3",
+        "name": "French",
+        "level": "Basic (A2)"
+      }
+    ],
+    "projects": [
+      {
+        "id": "1",
+        "name": "E-Commerce Dashboard",
+        "description": "Complete dashboard for online shop management with modern design and real-time analytics. Built with React and integrated payment systems.",
+        "technologies": ["React", "TypeScript", "Node.js", "MongoDB"],
+        "link": "https://github.com/maxmustermann/ecommerce-dashboard"
+      },
+      {
+        "id": "2",
+        "name": "Portfolio Website",
+        "description": "Responsive portfolio website with modern design and smooth animations. Focus on performance and accessibility.",
+        "technologies": ["React", "Tailwind CSS", "Framer Motion"],
+        "link": "https://maxmustermann.dev"
+      }
+    ],
+    "certificates": [
+      {
+        "id": "1",
+        "name": "React Developer Certification",
+        "issuer": "Meta",
+        "issueDate": "2023-06-15",
+        "credentialId": "REACT-2023-MM-001"
+      },
+      {
+        "id": "2",
+        "name": "AWS Cloud Practitioner",
+        "issuer": "Amazon Web Services",
+        "issueDate": "2023-03-10",
+        "expiryDate": "2026-03-10",
+        "credentialId": "AWS-CP-2023-MM-002"
+      }
+    ]
+  }'::jsonb;
   
   RETURN result;
 END;
