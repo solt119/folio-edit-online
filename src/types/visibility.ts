@@ -21,6 +21,12 @@ export interface FieldVisibility {
   };
 }
 
+export interface VisibilityData {
+  language: string;
+  visibility: FieldVisibility;
+  updated_at?: string;
+}
+
 export const defaultVisibility: FieldVisibility = {
   personalInfo: {
     image: true,

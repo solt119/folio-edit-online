@@ -1,10 +1,11 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLocalStorage } from './useLocalStorage';
 import { useDataUpdates } from './useDataUpdates';
 import { useSupabaseCVData } from './useSupabaseCVData';
+import { useSupabaseVisibility } from './useSupabaseVisibility';
 import { isSupabaseConfigured } from '@/lib/supabase';
 
 export const useCVData = () => {
@@ -14,12 +15,13 @@ export const useCVData = () => {
   // Use Supabase if configured, otherwise fall back to localStorage
   const supabaseData = useSupabaseCVData();
   const localStorageData = useLocalStorage();
+  const visibilityData = useSupabaseVisibility();
 
   const isUsingSupabase = isSupabaseConfigured();
 
   // Choose data source based on Supabase configuration
   const cvData = isUsingSupabase ? supabaseData.cvData : localStorageData.cvData;
-  const fieldVisibility = localStorageData.fieldVisibility; // Always use localStorage for visibility
+  const fieldVisibility = visibilityData.fieldVisibility;
 
   // Save function that uses appropriate storage
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
@@ -33,7 +35,7 @@ export const useCVData = () => {
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
-    setFieldVisibility: localStorageData.setFieldVisibility,
+    setFieldVisibility: visibilityData.setFieldVisibility,
     setCvData: isUsingSupabase ? supabaseData.setCvData : localStorageData.setCvData
   });
 
@@ -47,8 +49,8 @@ export const useCVData = () => {
     fieldVisibility,
     currentEditingLanguage,
     startEditing,
-    isLoading: isUsingSupabase ? supabaseData.isLoading : false,
-    error: isUsingSupabase ? supabaseData.error : null,
+    isLoading: isUsingSupabase ? (supabaseData.isLoading || visibilityData.isLoading) : false,
+    error: isUsingSupabase ? (supabaseData.error || visibilityData.error) : null,
     ...updateFunctions
   };
 };
