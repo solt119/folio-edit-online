@@ -65,7 +65,8 @@ export const useSupabaseCVData = () => {
           language,
           content: newCvData,
           updated_at: new Date().toISOString()
-        });
+        })
+        .eq('language', language);
 
       if (error) {
         console.error('Error saving CV data:', error);
