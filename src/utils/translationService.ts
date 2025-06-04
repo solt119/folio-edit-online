@@ -226,44 +226,52 @@ export const translateCVData = async (cvData: any, targetLanguage: 'de' | 'en'):
     }));
   }
   
-  // Keep skills names unchanged - only translate general terms in descriptions if any
+  // Keep ALL skill values unchanged - no translation at all
   if (translatedData.skills) {
     translatedData.skills = translatedData.skills.map((skill: any) => ({
       ...skill,
-      // Keep skill name as-is (programming languages, frameworks should stay the same)
-      name: skill.name || ''
+      // Keep everything as-is - name and level unchanged
+      name: skill.name || '',
+      level: skill.level || 0
     }));
   }
   
-  // Translate projects
+  // Keep ALL project values unchanged except description
   if (translatedData.projects) {
     translatedData.projects = translatedData.projects.map((project: any) => ({
       ...project,
-      name: translateText(project.name || '', sourceLanguage, targetLanguage),
+      // Keep project name unchanged
+      name: project.name || '',
+      // Only translate description
       description: translateText(project.description || '', sourceLanguage, targetLanguage),
-      // Keep technology names as-is (they are usually in English anyway)
-      technologies: project.technologies || []
+      // Keep all technologies unchanged
+      technologies: project.technologies || [],
+      // Keep link unchanged
+      link: project.link || ''
     }));
   }
   
-  // Keep certificates and language names unchanged
+  // Keep ALL certificate values unchanged
   if (translatedData.certificates) {
     translatedData.certificates = translatedData.certificates.map((cert: any) => ({
       ...cert,
-      // Keep certificate and issuer names as-is (they are proper names)
+      // Keep all values unchanged
       name: cert.name || '',
-      issuer: cert.issuer || ''
+      issuer: cert.issuer || '',
+      issueDate: cert.issueDate || '',
+      expiryDate: cert.expiryDate || '',
+      credentialId: cert.credentialId || '',
+      link: cert.link || ''
     }));
   }
   
-  // Keep language names unchanged but translate level descriptions if needed
+  // Keep ALL language values unchanged
   if (translatedData.languages) {
     translatedData.languages = translatedData.languages.map((lang: any) => ({
       ...lang,
-      // Keep language name as-is
+      // Keep all values unchanged
       name: lang.name || '',
-      // Translate level if it's a descriptive term
-      level: translateText(lang.level || '', sourceLanguage, targetLanguage)
+      level: lang.level || ''
     }));
   }
   
