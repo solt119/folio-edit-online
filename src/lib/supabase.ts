@@ -2,8 +2,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 // Fest eingebaute Supabase-Konfiguration - direkt im Code definiert
-const SUPABASE_URL = 'https://vvmboyqgmhqctwnhgldf.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2bWJveXFnbWhxY3R3bmhnbGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNDYwNzUsImV4cCI6MjA0ODkyMjA3NX0.5Qm7N7J7XJPTJWKOBklnwXxQyF7YUy-D3H_1yF5-8cE'
+const SUPABASE_URL = 'https://naujdpvmnubgfjxddrst.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdWpkcHZtbnViZ2ZqeGRkcnN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NTcxMTgsImV4cCI6MjA2NDUzMzExOH0.nC51JR0PJGF0ca3yFOeGjq7yq-PvJGWeOE04tUtzEgQ'
 
 let supabaseClient: SupabaseClient | null = null
 let isConnectionWorking = false
@@ -11,7 +11,7 @@ let isConnectionWorking = false
 // Automatische Initialisierung beim ersten Aufruf
 export const getSupabase = (): SupabaseClient => {
   if (!supabaseClient) {
-    console.log('🚀 Initialisiere Supabase mit hartkodierten Werten...')
+    console.log('🚀 Initialisiere Supabase mit aktualisierten Zugangsdaten...')
     supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   }
   return supabaseClient
@@ -25,7 +25,7 @@ export const isSupabaseConfigured = (): boolean => {
 // Verbindungstest-Funktion mit besserer Fehlerbehandlung
 export const testSupabaseConnection = async (): Promise<boolean> => {
   try {
-    console.log('🔍 Teste Supabase-Verbindung...')
+    console.log('🔍 Teste Supabase-Verbindung mit neuen Zugangsdaten...')
     const supabase = getSupabase()
     
     // Einfacher Test durch Abrufen der aktuellen Session
@@ -37,7 +37,7 @@ export const testSupabaseConnection = async (): Promise<boolean> => {
       return false
     }
     
-    console.log('✅ Supabase-Verbindung erfolgreich')
+    console.log('✅ Supabase-Verbindung erfolgreich mit neuen Zugangsdaten')
     isConnectionWorking = true
     return true
   } catch (error) {
