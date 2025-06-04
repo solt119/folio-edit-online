@@ -151,8 +151,8 @@ export const CVContent: React.FC<CVContentProps> = ({
         )}
       </div>
 
-      {/* Projects */}
-      {(user || fieldVisibility.sections.projects) && (
+      {/* Projects - Fixed visibility condition */}
+      {(!!user || fieldVisibility.sections.projects) && (
         <ProjectsSection
           projects={cvData.projects}
           isLoggedIn={!!user}
