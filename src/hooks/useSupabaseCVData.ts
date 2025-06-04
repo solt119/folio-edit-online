@@ -43,24 +43,36 @@ export const useSupabaseCVData = () => {
         setError('Supabase-Query-Fehler');
         setCvData(cvContentTranslations[language]);
       } else if (data) {
+        console.log('📋 Rohdaten aus Datenbank:', {
+          hasContent: !!data.content,
+          hasContentEn: !!data.content_en,
+          contentSnippet: data.content ? JSON.stringify(data.content).substring(0, 100) + '...' : 'null',
+          contentEnSnippet: data.content_en ? JSON.stringify(data.content_en).substring(0, 100) + '...' : 'null'
+        });
+
         // Select the correct content based on language
         let contentToUse;
         
         if (language === 'en') {
-          // For English, prefer content_en, fallback to translated content
-          if (data.content_en) {
+          // For English, prefer content_en, fallback to translated content or default
+          if (data.content_en && Object.keys(data.content_en).length > 0) {
             console.log('✅ Verwende englische Spalte (content_en)');
             contentToUse = data.content_en;
           } else if (data.content) {
-            console.log('⚠️ content_en nicht gefunden, übersetze deutschen Inhalt');
-            contentToUse = await translateCVData(data.content, 'en');
+            console.log('⚠️ content_en leer/nicht gefunden, übersetze deutschen Inhalt');
+            try {
+              contentToUse = await translateCVData(data.content, 'en');
+            } catch (translationError) {
+              console.error('❌ Übersetzung fehlgeschlagen:', translationError);
+              contentToUse = cvContentTranslations.en;
+            }
           } else {
             console.log('❌ Keine Inhalte gefunden - verwende Standard');
             contentToUse = cvContentTranslations.en;
           }
         } else {
           // For German, use content column
-          if (data.content) {
+          if (data.content && Object.keys(data.content).length > 0) {
             console.log('✅ Verwende deutsche Spalte (content)');
             contentToUse = data.content;
           } else {
@@ -69,7 +81,12 @@ export const useSupabaseCVData = () => {
           }
         }
 
-        console.log('📋 Geladene Daten für Sprache', language, ':', contentToUse);
+        console.log('📋 Finale Daten für Sprache', language, ':', {
+          name: contentToUse?.personalInfo?.name,
+          profession: contentToUse?.personalInfo?.profession,
+          experienceCount: contentToUse?.experiences?.length || 0
+        });
+        
         setCvData(contentToUse);
         setError(null);
       } else {
@@ -92,7 +109,10 @@ export const useSupabaseCVData = () => {
     
     try {
       console.log('💾 Speichere CV-Daten für Sprache:', saveLanguage);
-      console.log('📋 Zu speichernde Daten:', newCvData);
+      console.log('📋 Zu speichernde Daten:', {
+        name: newCvData?.personalInfo?.name,
+        profession: newCvData?.personalInfo?.profession
+      });
       
       // Update local state immediately for current language
       if (saveLanguage === language) {
@@ -142,7 +162,7 @@ export const useSupabaseCVData = () => {
 
   // Force reload when language changes
   useEffect(() => {
-    console.log('🌍 Sprachwechsel erkannt - lade Daten neu für:', language);
+    console.log('🌍 useSupabaseCVData: Sprachwechsel erkannt - lade Daten neu für:', language);
     loadCVData();
   }, [loadCVData]);
 
