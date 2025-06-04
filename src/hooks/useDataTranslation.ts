@@ -16,6 +16,28 @@ export const useDataTranslation = () => {
       return customData[language];
     }
     
+    // If we have data in the other language, copy contact information
+    const otherLanguage = language === 'de' ? 'en' : 'de';
+    if (customData[otherLanguage]) {
+      console.log('Creating data for', language, 'with contact info from', otherLanguage);
+      const baseData = cvContentTranslations[language];
+      const sourceData = customData[otherLanguage];
+      
+      // Copy contact information from the other language
+      return {
+        ...baseData,
+        personalInfo: {
+          ...baseData.personalInfo,
+          email: sourceData.personalInfo.email,
+          phone: sourceData.personalInfo.phone,
+          linkedin: sourceData.personalInfo.linkedin,
+          github: sourceData.personalInfo.github,
+          location: sourceData.personalInfo.location,
+          image: sourceData.personalInfo.image
+        }
+      };
+    }
+    
     console.log('Using default data for', language);
     return cvContentTranslations[language];
   }, []);
@@ -25,13 +47,31 @@ export const useDataTranslation = () => {
     fromLanguage: 'de' | 'en',
     customData: { [key: string]: CVData }
   ): Promise<{ [key: string]: CVData }> => {
-    // No automatic translation - just save the data for the current language
+    const otherLanguage = fromLanguage === 'de' ? 'en' : 'de';
+    
+    // Update the source language data
     const newCustomData = {
       ...customData,
       [fromLanguage]: newCvData
     };
     
-    console.log('Saving data without auto-translation for language:', fromLanguage);
+    // If we have data in the other language, update its contact information
+    if (customData[otherLanguage]) {
+      newCustomData[otherLanguage] = {
+        ...customData[otherLanguage],
+        personalInfo: {
+          ...customData[otherLanguage].personalInfo,
+          email: newCvData.personalInfo.email,
+          phone: newCvData.personalInfo.phone,
+          linkedin: newCvData.personalInfo.linkedin,
+          github: newCvData.personalInfo.github,
+          location: newCvData.personalInfo.location,
+          image: newCvData.personalInfo.image
+        }
+      };
+    }
+    
+    console.log('Saving data with synchronized contact info for language:', fromLanguage);
     
     return newCustomData;
   }, []);
