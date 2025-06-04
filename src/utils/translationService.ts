@@ -1,4 +1,3 @@
-
 // Simple translation mappings for common CV terms
 const translationMappings = {
   'de-en': {
@@ -34,16 +33,6 @@ const translationMappings = {
     'Elektrotechnik': 'Electrical Engineering',
     'Maschinenbau': 'Mechanical Engineering',
     'Betriebswirtschaft': 'Business Administration',
-    
-    // Skills
-    'Programmierung': 'Programming',
-    'Webentwicklung': 'Web Development',
-    'Datenbanken': 'Databases',
-    'Projektmanagement': 'Project Management',
-    'Kommunikation': 'Communication',
-    'Teamarbeit': 'Teamwork',
-    'Problemlösung': 'Problem Solving',
-    'Analytisches Denken': 'Analytical Thinking',
     
     // Common terms
     'Jahre Erfahrung': 'years of experience',
@@ -90,15 +79,6 @@ const translationMappings = {
     'Electrical Engineering': 'Elektrotechnik',
     'Mechanical Engineering': 'Maschinenbau',
     'Business Administration': 'Betriebswirtschaft',
-    
-    'Programming': 'Programmierung',
-    'Web Development': 'Webentwicklung',
-    'Databases': 'Datenbanken',
-    'Project Management': 'Projektmanagement',
-    'Communication': 'Kommunikation',
-    'Teamwork': 'Teamarbeit',
-    'Problem Solving': 'Problemlösung',
-    'Analytical Thinking': 'Analytisches Denken',
     
     'years of experience': 'Jahre Erfahrung',
     'Professional Experience': 'Berufserfahrung',
@@ -246,11 +226,12 @@ export const translateCVData = async (cvData: any, targetLanguage: 'de' | 'en'):
     }));
   }
   
-  // Translate skills
+  // Keep skills names unchanged - only translate general terms in descriptions if any
   if (translatedData.skills) {
     translatedData.skills = translatedData.skills.map((skill: any) => ({
       ...skill,
-      name: translateText(skill.name || '', sourceLanguage, targetLanguage)
+      // Keep skill name as-is (programming languages, frameworks should stay the same)
+      name: skill.name || ''
     }));
   }
   
@@ -260,18 +241,29 @@ export const translateCVData = async (cvData: any, targetLanguage: 'de' | 'en'):
       ...project,
       name: translateText(project.name || '', sourceLanguage, targetLanguage),
       description: translateText(project.description || '', sourceLanguage, targetLanguage),
-      technologies: project.technologies?.map((tech: string) => 
-        translateText(tech, sourceLanguage, targetLanguage)
-      ) || []
+      // Keep technology names as-is (they are usually in English anyway)
+      technologies: project.technologies || []
     }));
   }
   
-  // Translate certificates
+  // Keep certificates and language names unchanged
   if (translatedData.certificates) {
     translatedData.certificates = translatedData.certificates.map((cert: any) => ({
       ...cert,
-      name: translateText(cert.name || '', sourceLanguage, targetLanguage),
-      issuer: translateText(cert.issuer || '', sourceLanguage, targetLanguage)
+      // Keep certificate and issuer names as-is (they are proper names)
+      name: cert.name || '',
+      issuer: cert.issuer || ''
+    }));
+  }
+  
+  // Keep language names unchanged but translate level descriptions if needed
+  if (translatedData.languages) {
+    translatedData.languages = translatedData.languages.map((lang: any) => ({
+      ...lang,
+      // Keep language name as-is
+      name: lang.name || '',
+      // Translate level if it's a descriptive term
+      level: translateText(lang.level || '', sourceLanguage, targetLanguage)
     }));
   }
   
