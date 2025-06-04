@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,12 +27,18 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
   const { t } = useLanguage();
 
   const formatText = (text: string) => {
-    return text.split('\n').map((line, index) => (
-      <React.Fragment key={index}>
-        {line}
-        {index < text.split('\n').length - 1 && <br />}
-      </React.Fragment>
-    ));
+    return text.split('\n').map((line, index) => {
+      // Use justify only for longer lines (more than 60 characters)
+      const shouldJustify = line.length > 60;
+      return (
+        <React.Fragment key={index}>
+          <span className={shouldJustify ? 'text-justify' : 'text-left'}>
+            {line}
+          </span>
+          {index < text.split('\n').length - 1 && <br />}
+        </React.Fragment>
+      );
+    });
   };
 
   return (
@@ -83,7 +88,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({
               ) : (
                 <>
                   <h3 className="font-semibold text-white mb-3">{project.name}</h3>
-                  <div className="text-slate-300 text-sm mb-4 leading-relaxed text-justify">
+                  <div className="text-slate-300 text-sm mb-4 leading-relaxed">
                     {formatText(project.description)}
                   </div>
                   <div className="flex flex-wrap gap-2 mb-3">
