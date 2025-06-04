@@ -8,7 +8,7 @@ import { Header } from '@/components/Header';
 import { CVContent } from '@/components/CVContent';
 import { useAuthActions } from '@/components/AuthActions';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { isConfiguredViaEnv } from '@/lib/supabase';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { useCVData } from '@/hooks/useCVData';
 
 const Index = () => {
@@ -61,8 +61,8 @@ const Index = () => {
     handleEdit(section, editingSection, setEditingSection);
   };
 
-  // Show Supabase configuration only when explicitly requested and not configured via env
-  if (showSupabaseConfig && !isConfiguredViaEnv()) {
+  // Show Supabase configuration only when explicitly requested and not configured
+  if (showSupabaseConfig && !isSupabaseConfigured()) {
     return <SupabaseConfig onConfigured={handleSupabaseConfigured} />;
   }
 

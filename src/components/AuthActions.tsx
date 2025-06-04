@@ -2,7 +2,7 @@
 import React from 'react';
 import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { isSupabaseConfigured, isConfiguredViaEnv } from '@/lib/supabase';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 interface AuthActionsProps {
   user: any;
@@ -24,20 +24,11 @@ export const useAuthActions = ({
   const { t } = useLanguage();
 
   const handleLogin = async (email: string, password: string) => {
-    // Check if Supabase is configured first, but only show config if not configured via env
+    // Check if Supabase is configured (including hardcoded values)
     if (!isSupabaseConfigured()) {
-      if (!isConfiguredViaEnv()) {
-        setShowSupabaseConfig(true);
-        setShowLogin(false);
-        return;
-      } else {
-        toast({
-          title: t('login_failed'),
-          description: "Supabase configuration error",
-          variant: "destructive"
-        });
-        return;
-      }
+      setShowSupabaseConfig(true);
+      setShowLogin(false);
+      return;
     }
 
     const { error } = await signIn(email, password);

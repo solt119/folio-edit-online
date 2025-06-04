@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from '@/hooks/use-toast'
-import { isConfiguredViaEnv } from '@/lib/supabase'
+import { isSupabaseConfigured } from '@/lib/supabase'
 
 interface SupabaseConfigProps {
   onConfigured: () => void
@@ -14,8 +14,8 @@ export const SupabaseConfig: React.FC<SupabaseConfigProps> = ({ onConfigured }) 
   const [supabaseUrl, setSupabaseUrl] = useState('')
   const [supabaseAnonKey, setSupabaseAnonKey] = useState('')
 
-  // Don't show this component if already configured via environment variables
-  if (isConfiguredViaEnv()) {
+  // Don't show this component if Supabase is already configured (including hardcoded values)
+  if (isSupabaseConfigured()) {
     onConfigured()
     return null
   }
