@@ -27,15 +27,23 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const { t } = useLanguage();
 
   const formatText = (text: string) => {
-    return text.split('\n').map((line, index) => {
-      // Use justify only for longer lines (more than 60 characters)
-      const shouldJustify = line.length > 60;
+    const lines = text.split('\n');
+    const totalLength = text.length;
+    const hasMultipleLines = lines.length > 1;
+    
+    // Use justify only for longer texts with multiple lines
+    const shouldUseJustify = totalLength > 200 && hasMultipleLines;
+    
+    return lines.map((line, index) => {
+      const isLongLine = line.length > 80;
+      const shouldJustifyLine = shouldUseJustify && isLongLine;
+      
       return (
         <React.Fragment key={index}>
-          <span className={shouldJustify ? 'text-justify' : 'text-left'}>
+          <span className={shouldJustifyLine ? 'text-justify' : 'text-left'}>
             {line}
           </span>
-          {index < text.split('\n').length - 1 && <br />}
+          {index < lines.length - 1 && <br />}
         </React.Fragment>
       );
     });
@@ -92,7 +100,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                   <Calendar className="w-3 h-3" />
                   {exp.duration}
                 </p>
-                <div className="text-slate-300 text-sm mt-2 leading-relaxed">
+                <div className="text-slate-300 text-sm mt-3 leading-relaxed space-y-2">
                   {formatText(exp.description)}
                 </div>
               </>
