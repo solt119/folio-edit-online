@@ -1,10 +1,15 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { FieldVisibility, defaultVisibility } from '@/types/visibility';
+import { cvContentTranslations } from '@/utils/cvContentTranslations';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const useLocalStorage = () => {
+  const { language } = useLanguage();
   const [customData, setCustomData] = useState<{ [key: string]: CVData }>({});
   const [fieldVisibility, setFieldVisibility] = useState<FieldVisibility>(defaultVisibility);
+  const [cvData, setCvData] = useState<CVData>(cvContentTranslations[language]);
 
   // Load data from localStorage
   const loadStoredData = useCallback(() => {
@@ -17,11 +22,22 @@ export const useLocalStorage = () => {
         const parsed = JSON.parse(savedCustomData);
         console.log('Loaded custom data:', parsed);
         setCustomData(parsed);
+        
+        // Set current language data if available
+        if (parsed[language]) {
+          setCvData(parsed[language]);
+        } else {
+          setCvData(cvContentTranslations[language]);
+        }
+        
         return parsed;
       } catch (error) {
         console.error('Error parsing custom data:', error);
+        setCvData(cvContentTranslations[language]);
         return {};
       }
+    } else {
+      setCvData(cvContentTranslations[language]);
     }
     
     if (savedVisibility) {
@@ -33,30 +49,33 @@ export const useLocalStorage = () => {
     }
     
     return {};
-  }, []);
+  }, [language]);
 
   // Save custom data to localStorage
   const saveCustomData = useCallback((newCustomData: { [key: string]: CVData }) => {
     console.log('Saving custom data:', newCustomData);
     setCustomData(newCustomData);
     localStorage.setItem('customCvData', JSON.stringify(newCustomData));
-  }, []);
-
-  // Force retranslation of stored data
-  const retranslateStoredData = useCallback(() => {
-    const currentData = { ...customData };
-    if (Object.keys(currentData).length > 0) {
-      // Clear existing translations and force retranslation
-      const sourceLanguage = currentData.de ? 'de' : 'en';
-      const sourceData = currentData[sourceLanguage];
-      
-      // Keep only source data, translation will be done by the translation hook
-      const newData = { [sourceLanguage]: sourceData };
-      saveCustomData(newData);
-      return newData;
+    
+    // Update current display if data exists for current language
+    if (newCustomData[language]) {
+      setCvData(newCustomData[language]);
     }
-    return currentData;
-  }, [customData, saveCustomData]);
+  }, [language]);
+
+  // Load initial data
+  useEffect(() => {
+    loadStoredData();
+  }, [loadStoredData]);
+
+  // Update CV data when language changes
+  useEffect(() => {
+    if (customData[language]) {
+      setCvData(customData[language]);
+    } else {
+      setCvData(cvContentTranslations[language]);
+    }
+  }, [language, customData]);
 
   // Save field visibility to localStorage
   useEffect(() => {
@@ -65,10 +84,11 @@ export const useLocalStorage = () => {
 
   return {
     customData,
+    cvData,
+    setCvData,
     fieldVisibility,
     setFieldVisibility,
     loadStoredData,
-    saveCustomData,
-    retranslateStoredData
+    saveCustomData
   };
 };

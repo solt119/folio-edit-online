@@ -2,41 +2,39 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { cvContentTranslations } from '@/utils/cvContentTranslations';
 import { useLocalStorage } from './useLocalStorage';
-import { useDataTranslation } from './useDataTranslation';
 import { useDataUpdates } from './useDataUpdates';
+import { useSupabaseCVData } from './useSupabaseCVData';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 export const useCVData = () => {
   const { language } = useLanguage();
-  const [cvData, setCvData] = useState<CVData>(cvContentTranslations[language]);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [currentEditingLanguage, setCurrentEditingLanguage] = useState<'de' | 'en'>(language);
 
-  const {
-    customData,
-    fieldVisibility,
-    setFieldVisibility,
-    loadStoredData,
-    saveCustomData,
-    retranslateStoredData
-  } = useLocalStorage();
+  // Use Supabase if configured, otherwise fall back to localStorage
+  const supabaseData = useSupabaseCVData();
+  const localStorageData = useLocalStorage();
 
-  const { getDataForLanguage, autoTranslateData, forceRetranslate } = useDataTranslation();
+  const isUsingSupabase = isSupabaseConfigured();
 
-  // Save custom data with auto-translation
+  // Choose data source based on Supabase configuration
+  const cvData = isUsingSupabase ? supabaseData.cvData : localStorageData.cvData;
+  const fieldVisibility = localStorageData.fieldVisibility; // Always use localStorage for visibility
+
+  // Save function that uses appropriate storage
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    const newCustomData = await autoTranslateData(newCvData, currentEditingLanguage, customData);
-    saveCustomData(newCustomData);
-    
-    // Update the current display with the new data for current language
-    setCvData(newCustomData[language]);
-  }, [autoTranslateData, customData, currentEditingLanguage, language, saveCustomData, setCvData]);
+    if (isUsingSupabase) {
+      await supabaseData.saveCVData(newCvData);
+    } else {
+      // Fall back to localStorage method
+      localStorageData.saveCustomData({ [language]: newCvData });
+    }
+  }, [isUsingSupabase, supabaseData, localStorageData, language]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
-    setFieldVisibility,
-    setCvData
+    setFieldVisibility: localStorageData.setFieldVisibility,
+    setCvData: isUsingSupabase ? supabaseData.setCvData : localStorageData.setCvData
   });
 
   // Track when user starts editing to remember the language context
@@ -44,56 +42,13 @@ export const useCVData = () => {
     setCurrentEditingLanguage(language);
   }, [language]);
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const storedData = loadStoredData();
-    
-    if (storedData[language]) {
-      console.log('Setting CV data for language:', language);
-      setCvData(storedData[language]);
-    } else {
-      console.log('No custom data for current language, using default');
-      setCvData(cvContentTranslations[language]);
-    }
-    
-    setIsInitialized(true);
-  }, [language, loadStoredData]);
-
-  // Update CV data when language changes (only after initialization)
-  // This now handles real-time translation during editing
-  useEffect(() => {
-    if (!isInitialized) return;
-    
-    console.log('Language changed to:', language);
-    console.log('Available custom data languages:', Object.keys(customData));
-    
-    // If we have custom data, always try to get/translate for the current language
-    if (Object.keys(customData).length > 0) {
-      const newData = getDataForLanguage(language, customData);
-      
-      // If we got translated data and it's different from what we have stored, save it
-      if (newData !== cvContentTranslations[language] && !customData[language]) {
-        console.log('Saving translated data for language:', language);
-        const newCustomData = {
-          ...customData,
-          [language]: newData
-        };
-        saveCustomData(newCustomData);
-      }
-      
-      // Always update the display with the correct language data
-      setCvData(newData);
-    } else {
-      // No custom data, use defaults
-      setCvData(cvContentTranslations[language]);
-    }
-  }, [language, customData, isInitialized, getDataForLanguage, saveCustomData]);
-
   return {
     cvData,
     fieldVisibility,
     currentEditingLanguage,
     startEditing,
+    isLoading: isUsingSupabase ? supabaseData.isLoading : false,
+    error: isUsingSupabase ? supabaseData.error : null,
     ...updateFunctions
   };
 };

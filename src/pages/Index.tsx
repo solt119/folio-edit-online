@@ -30,6 +30,8 @@ const Index = () => {
   const {
     cvData,
     fieldVisibility,
+    isLoading: cvLoading,
+    error: cvError,
     updatePersonalInfo,
     updateExperience,
     updateEducation,
@@ -113,6 +115,15 @@ const Index = () => {
     return <LoginForm onLogin={handleLogin} loading={loading} onCancel={() => setShowLogin(false)} />;
   }
 
+  // Show loading state for CV data
+  if (cvLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">{t('loading')}...</div>
+      </div>
+    );
+  }
+
   // Always show CV content - this is the main change
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -161,6 +172,13 @@ const Index = () => {
       </header>
 
       <div className="container mx-auto px-6 py-8 max-w-4xl">
+        {/* Error message */}
+        {cvError && (
+          <div className="mb-4 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-300">
+            {cvError}
+          </div>
+        )}
+
         {/* Visibility Controls - only show when logged in and toggled */}
         {user && showVisibilitySettings && (
           <VisibilityControls
