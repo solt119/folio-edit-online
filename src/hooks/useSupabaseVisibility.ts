@@ -72,8 +72,9 @@ export const useSupabaseVisibility = () => {
         .from('visibility_settings')
         .upsert({
           language,
-          visibility: newVisibility,
-          updated_at: new Date().toISOString()
+          visibility: newVisibility
+        }, { 
+          onConflict: 'language' 
         });
 
       if (error) {
