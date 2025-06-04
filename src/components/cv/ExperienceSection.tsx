@@ -96,10 +96,12 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({
               <>
                 <h3 className="font-semibold text-white">{exp.company}</h3>
                 <p className="text-blue-400">{exp.position}</p>
-                <p className="text-sm text-slate-400 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
-                  {exp.duration}
-                </p>
+                {exp.duration && exp.duration.trim() !== '' && (
+                  <p className="text-sm text-slate-400 flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {exp.duration}
+                  </p>
+                )}
                 <div className="text-slate-300 text-sm mt-3 leading-relaxed space-y-2">
                   {formatText(exp.description)}
                 </div>
