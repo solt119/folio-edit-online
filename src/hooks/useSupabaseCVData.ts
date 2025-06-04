@@ -13,16 +13,16 @@ export const useSupabaseCVData = () => {
   const { language } = useLanguage();
 
   // Load CV data from Supabase with enhanced column handling
-  const loadCVData = useCallback(async () => {
+  const loadCVData = useCallback(async (targetLanguage: 'de' | 'en') => {
     try {
       setIsLoading(true);
-      console.log('🔄 Lade CV-Daten für Sprache:', language);
+      console.log('🔄 Lade CV-Daten für Sprache:', targetLanguage);
       
       const isWorking = await testSupabaseConnection();
       
       if (!isWorking) {
         console.log('❌ Supabase nicht verfügbar - verwende Standard-Daten');
-        setCvData(cvContentTranslations[language]);
+        setCvData(cvContentTranslations[targetLanguage]);
         setError('Supabase-Verbindung fehlgeschlagen');
         setIsLoading(false);
         return;
@@ -41,19 +41,19 @@ export const useSupabaseCVData = () => {
       if (error && error.code !== 'PGRST116') {
         console.error('❌ Fehler beim Laden der CV-Daten:', error);
         setError('Supabase-Query-Fehler');
-        setCvData(cvContentTranslations[language]);
+        setCvData(cvContentTranslations[targetLanguage]);
       } else if (data) {
-        console.log('📋 Rohdaten aus Datenbank:', {
+        console.log('📋 Rohdaten aus Datenbank für Sprache', targetLanguage, ':', {
           hasContent: !!data.content,
           hasContentEn: !!data.content_en,
           contentSnippet: data.content ? JSON.stringify(data.content).substring(0, 100) + '...' : 'null',
           contentEnSnippet: data.content_en ? JSON.stringify(data.content_en).substring(0, 100) + '...' : 'null'
         });
 
-        // Select the correct content based on language
+        // Select the correct content based on target language
         let contentToUse;
         
-        if (language === 'en') {
+        if (targetLanguage === 'en') {
           // For English, prefer content_en, fallback to translated content or default
           if (data.content_en && Object.keys(data.content_en).length > 0) {
             console.log('✅ Verwende englische Spalte (content_en)');
@@ -81,7 +81,7 @@ export const useSupabaseCVData = () => {
           }
         }
 
-        console.log('📋 Finale Daten für Sprache', language, ':', {
+        console.log('📋 Finale Daten für Sprache', targetLanguage, ':', {
           name: contentToUse?.personalInfo?.name,
           profession: contentToUse?.personalInfo?.profession,
           experienceCount: contentToUse?.experiences?.length || 0
@@ -91,17 +91,17 @@ export const useSupabaseCVData = () => {
         setError(null);
       } else {
         console.log('📝 Keine CV-Daten gefunden - verwende Standard-Daten');
-        setCvData(cvContentTranslations[language]);
+        setCvData(cvContentTranslations[targetLanguage]);
         setError(null);
       }
     } catch (err) {
       console.error('❌ Unerwarteter Fehler:', err);
       setError('Verbindungsfehler');
-      setCvData(cvContentTranslations[language]);
+      setCvData(cvContentTranslations[targetLanguage]);
     } finally {
       setIsLoading(false);
     }
-  }, [language]);
+  }, []); // Entferne language dependency um Endlosschleife zu vermeiden
 
   // Save CV data to Supabase with column-specific saving
   const saveCVData = useCallback(async (newCvData: CVData, targetLanguage?: 'de' | 'en') => {
@@ -160,11 +160,11 @@ export const useSupabaseCVData = () => {
     }
   }, [language]);
 
-  // Force reload when language changes
+  // Force reload when language changes - mit direktem Parameter
   useEffect(() => {
     console.log('🌍 useSupabaseCVData: Sprachwechsel erkannt - lade Daten neu für:', language);
-    loadCVData();
-  }, [loadCVData]);
+    loadCVData(language);
+  }, [language]); // Verwende language direkt, nicht loadCVData
 
   return {
     cvData,
@@ -172,11 +172,11 @@ export const useSupabaseCVData = () => {
     saveCVData,
     isLoading,
     error,
-    refetch: loadCVData,
+    refetch: () => loadCVData(language),
     forceReconnection: async () => {
       const result = await forceReconnection();
       if (result) {
-        await loadCVData();
+        await loadCVData(language);
       }
       return result;
     }

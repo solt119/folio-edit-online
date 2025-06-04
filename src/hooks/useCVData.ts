@@ -10,7 +10,6 @@ import { useDataTranslation } from './useDataTranslation';
 
 export const useCVData = () => {
   const { language } = useLanguage();
-  const [currentEditingLanguage, setCurrentEditingLanguage] = useState<'de' | 'en'>(language);
   const [isTranslating, setIsTranslating] = useState(false);
 
   // Always use Supabase as primary data source
@@ -25,19 +24,19 @@ export const useCVData = () => {
 
   // Enhanced save function with translation
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    console.log('🔄 Speichere mit Auto-Übersetzung für Sprache:', currentEditingLanguage);
+    console.log('🔄 Speichere mit Auto-Übersetzung für Sprache:', language);
     setIsTranslating(true);
     
     try {
       // Save current data first
-      console.log('💾 Speichere Hauptdaten für:', currentEditingLanguage);
-      await supabaseData.saveCVData(newCvData, currentEditingLanguage);
+      console.log('💾 Speichere Hauptdaten für:', language);
+      await supabaseData.saveCVData(newCvData, language);
       
       // Auto-translate to other language
-      const otherLanguage = currentEditingLanguage === 'de' ? 'en' : 'de';
+      const otherLanguage = language === 'de' ? 'en' : 'de';
       console.log('🔄 Starte Auto-Übersetzung für:', otherLanguage);
       
-      const translatedData = await autoTranslateData(newCvData, currentEditingLanguage, {});
+      const translatedData = await autoTranslateData(newCvData, language, {});
       
       if (translatedData[otherLanguage]) {
         console.log('💾 Speichere übersetzte Daten für:', otherLanguage);
@@ -49,19 +48,7 @@ export const useCVData = () => {
     } finally {
       setIsTranslating(false);
     }
-  }, [supabaseData, autoTranslateData, currentEditingLanguage]);
-
-  // Only reload when language actually changes
-  useEffect(() => {
-    if (language !== currentEditingLanguage) {
-      console.log('🌍 Sprachwechsel von', currentEditingLanguage, 'zu', language);
-      setCurrentEditingLanguage(language);
-      
-      // Force reload data for new language
-      console.log('🔄 Erzwinge Neuladen für neue Sprache:', language);
-      supabaseData.refetch();
-    }
-  }, [language, currentEditingLanguage, supabaseData]);
+  }, [supabaseData, autoTranslateData, language]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
@@ -89,14 +76,13 @@ export const useCVData = () => {
 
   // Track editing language
   const startEditing = useCallback(() => {
-    setCurrentEditingLanguage(language);
     console.log('✏️ Bearbeitung startet in Sprache:', language);
   }, [language]);
 
   return {
     cvData,
     fieldVisibility,
-    currentEditingLanguage,
+    currentEditingLanguage: language,
     startEditing,
     isLoading: supabaseData.isLoading || visibilityData.isLoading || isTranslating,
     error: supabaseData.error || visibilityData.error,
