@@ -4,7 +4,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 // Verschlüsselte Supabase-Konfiguration
 const ENCRYPTED_CONFIG = {
   url: 'aHR0cHM6Ly9uYXVqZHB2bW51YmdmanhkZHJzdC5zdXBhYmFzZS5jbw==',
-  key: 'ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW01aGRXcGtjSFp0Ym5WaVoyWnFlR1JrY25OMElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzORa5GTVNeE1URTRMQ0psZUhBaU9qSXdOalExTXpNeE1URTRmUS5uQzUxSlIwUEpHRjBjYTN5Rk9lR2pxN3lxLVB2SkdXZU9FMDRUVXR6RWdR'
+  key: 'ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW01aGRXcGtjSFp0Ym5WaVoyWnFlR1JrY25OMElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzORa5GTVNeE1URTRMQ0psZEhBaU9qSXdOalExTXpNeE1URTRmUS5uQzUxSlIwUEpHRjBjYTN5Rk9lR2pxN3lxLVB2SkdXZU9FMDRUVXR6RWdR'
 }
 
 // Einfache Entschlüsselungsfunktion
@@ -109,7 +109,8 @@ export const testSupabaseConnection = async (): Promise<boolean> => {
     
     // Erst einfache Ping-Test
     console.log('🏓 Teste einfache Verbindung...')
-    const pingPromise = fetch(SUPABASE_URL + '/health', { 
+    const config = getDecryptedConfig()
+    const pingPromise = fetch(config.url + '/health', { 
       method: 'GET',
       mode: 'cors',
       cache: 'no-cache'
