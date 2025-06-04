@@ -6,6 +6,7 @@ import { useLocalStorage } from './useLocalStorage';
 import { useDataUpdates } from './useDataUpdates';
 import { useSupabaseCVData } from './useSupabaseCVData';
 import { useSupabaseVisibility } from './useSupabaseVisibility';
+import { useVisibilityUpdates } from './useVisibilityUpdates';
 import { isSupabaseConfigured } from '@/lib/supabase';
 
 export const useCVData = () => {
@@ -39,6 +40,11 @@ export const useCVData = () => {
     setCvData: isUsingSupabase ? supabaseData.setCvData : localStorageData.setCvData
   });
 
+  const visibilityUpdates = useVisibilityUpdates({
+    fieldVisibility,
+    setFieldVisibility: visibilityData.setFieldVisibility
+  });
+
   // Track when user starts editing to remember the language context
   const startEditing = useCallback(() => {
     setCurrentEditingLanguage(language);
@@ -51,6 +57,7 @@ export const useCVData = () => {
     startEditing,
     isLoading: isUsingSupabase ? (supabaseData.isLoading || visibilityData.isLoading) : false,
     error: isUsingSupabase ? (supabaseData.error || visibilityData.error) : null,
-    ...updateFunctions
+    ...updateFunctions,
+    updateFieldVisibility: visibilityUpdates.updateFieldVisibility
   };
 };
