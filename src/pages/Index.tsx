@@ -8,7 +8,6 @@ import { Header } from '@/components/Header';
 import { CVContent } from '@/components/CVContent';
 import { useAuthActions } from '@/components/AuthActions';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { isSupabaseConfigured } from '@/lib/supabase';
 import { useCVData } from '@/hooks/useCVData';
 
 const Index = () => {
@@ -44,6 +43,7 @@ const Index = () => {
   });
 
   const handleSupabaseConfigured = () => {
+    console.log('✅ Supabase configured, hiding config and reloading')
     setShowSupabaseConfig(false);
     // Reload the page to reinitialize Supabase client
     window.location.reload();
@@ -61,8 +61,8 @@ const Index = () => {
     handleEdit(section, editingSection, setEditingSection);
   };
 
-  // Show Supabase configuration only when explicitly requested and not configured
-  if (showSupabaseConfig && !isSupabaseConfigured()) {
+  // Show Supabase configuration if explicitly requested
+  if (showSupabaseConfig) {
     return <SupabaseConfig onConfigured={handleSupabaseConfigured} />;
   }
 

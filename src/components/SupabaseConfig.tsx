@@ -1,10 +1,9 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from '@/hooks/use-toast'
-import { isSupabaseConfigured } from '@/lib/supabase'
 
 interface SupabaseConfigProps {
   onConfigured: () => void
@@ -13,10 +12,31 @@ interface SupabaseConfigProps {
 export const SupabaseConfig: React.FC<SupabaseConfigProps> = ({ onConfigured }) => {
   const [supabaseUrl, setSupabaseUrl] = useState('')
   const [supabaseAnonKey, setSupabaseAnonKey] = useState('')
+  const [shouldShow, setShouldShow] = useState(true)
 
-  // Don't show this component if Supabase is already configured (including hardcoded values)
-  if (isSupabaseConfigured()) {
-    onConfigured()
+  useEffect(() => {
+    // Check if hardcoded values exist
+    const hasHardcodedConfig = !!(
+      'https://vvmboyqgmhqctwnhgldf.supabase.co' && 
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2bWJveXFnbWhxY3R3bmhnbGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNDYwNzUsImV4cCI6MjA0ODkyMjA3NX0.5Qm7N7J7XJPTJWKOBklnwXxQyF7YUy-D3H_1yF5-8cE'
+    )
+    
+    // Check environment variables
+    const hasEnvConfig = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
+    
+    // Check localStorage
+    const hasLocalConfig = !!(localStorage.getItem('VITE_SUPABASE_URL') && localStorage.getItem('VITE_SUPABASE_ANON_KEY'))
+    
+    console.log('🔍 SupabaseConfig check:', { hasHardcodedConfig, hasEnvConfig, hasLocalConfig })
+    
+    if (hasHardcodedConfig || hasEnvConfig || hasLocalConfig) {
+      console.log('✅ Supabase already configured, calling onConfigured')
+      setShouldShow(false)
+      onConfigured()
+    }
+  }, [onConfigured])
+
+  if (!shouldShow) {
     return null
   }
 
