@@ -28,12 +28,12 @@ export const useDataTranslation = () => {
         return translatedData;
       } catch (error) {
         console.error('Translation of current data failed:', error);
-        // Fallback: Verwende Template aber übernehme Kontaktdaten
-        const baseData = cvContentTranslations[language];
+        // Fallback: Verwende die aktuellen Daten aber mit Standard-Inhalten für fehlende Übersetzungen
         return {
-          ...baseData,
+          ...currentData,
+          // Nur die Kontaktdaten beibehalten, Rest wird von Template übernommen
           personalInfo: {
-            ...baseData.personalInfo,
+            ...cvContentTranslations[language].personalInfo,
             email: currentData.personalInfo.email,
             phone: currentData.personalInfo.phone,
             linkedin: currentData.personalInfo.linkedin,

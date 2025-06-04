@@ -13,6 +13,7 @@ export const useCVData = () => {
   const [currentEditingLanguage, setCurrentEditingLanguage] = useState<'de' | 'en'>(language);
   const [isTranslating, setIsTranslating] = useState(false);
   const [customDataCache, setCustomDataCache] = useState<{ [key: string]: CVData }>({});
+  const [isLanguageSwitching, setIsLanguageSwitching] = useState(false);
 
   // Always try to use Supabase, with automatic fallback to localStorage
   const supabaseData = useSupabaseCVData();
@@ -53,8 +54,9 @@ export const useCVData = () => {
   // Handle language switching with automatic translation
   useEffect(() => {
     const handleLanguageSwitch = async () => {
-      if (language !== currentEditingLanguage) {
+      if (language !== currentEditingLanguage && !isLanguageSwitching) {
         console.log('Language switched from', currentEditingLanguage, 'to', language);
+        setIsLanguageSwitching(true);
         setIsTranslating(true);
         
         try {
@@ -66,27 +68,30 @@ export const useCVData = () => {
               ...customDataCache,
               [currentEditingLanguage]: currentData
             };
-            setCustomDataCache(newCache);
             
-            // Get or translate data for the new language - WICHTIG: Übergabe der aktuellen Daten
-            console.log('Getting/translating data for new language:', language);
-            const targetData = await getDataForLanguage(language, newCache, currentData);
-            
-            if (targetData) {
-              console.log('Setting translated data for language:', language);
-              supabaseData.setCvData(targetData);
+            // Check if we already have data for the target language
+            if (newCache[language]) {
+              console.log('Using existing cached data for:', language);
+              supabaseData.setCvData(newCache[language]);
+            } else {
+              // Translate current data to target language
+              console.log('Translating data to:', language);
+              const targetData = await getDataForLanguage(language, newCache, currentData);
               
-              // Save the translated data to cache and Supabase
-              const updatedCache = {
-                ...newCache,
-                [language]: targetData
-              };
-              setCustomDataCache(updatedCache);
-              
-              // Save to Supabase for the new language
-              console.log('Saving translated data to Supabase for:', language);
-              await supabaseData.saveCVData(targetData);
+              if (targetData) {
+                console.log('Setting translated data for language:', language);
+                supabaseData.setCvData(targetData);
+                
+                // Update cache with new translation
+                newCache[language] = targetData;
+                
+                // Save to Supabase for the new language
+                console.log('Saving translated data to Supabase for:', language);
+                await supabaseData.saveCVData(targetData);
+              }
             }
+            
+            setCustomDataCache(newCache);
           }
           
           setCurrentEditingLanguage(language);
@@ -94,12 +99,16 @@ export const useCVData = () => {
           console.error('Error during language switch:', error);
         } finally {
           setIsTranslating(false);
+          setIsLanguageSwitching(false);
         }
       }
     };
 
-    handleLanguageSwitch();
-  }, [language, currentEditingLanguage, customDataCache, getDataForLanguage, supabaseData]);
+    // Debounce the language switch to prevent rapid changes
+    const timeoutId = setTimeout(handleLanguageSwitch, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [language, currentEditingLanguage, customDataCache, getDataForLanguage, supabaseData, isLanguageSwitching]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
