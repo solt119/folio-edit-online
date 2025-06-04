@@ -22,29 +22,39 @@ export const useCVData = () => {
   const cvData = supabaseData.cvData;
   const fieldVisibility = visibilityData.fieldVisibility;
 
+  // Debug logging for language changes
+  useEffect(() => {
+    console.log('🌍 [CVDATA-DEBUG] useCVData: Aktuelle Sprache:', language);
+    console.log('📋 [CVDATA-DEBUG] Aktuelle CV-Daten:', {
+      name: cvData?.personalInfo?.name,
+      profession: cvData?.personalInfo?.profession,
+      isLoading: supabaseData.isLoading
+    });
+  }, [language, cvData, supabaseData.isLoading]);
+
   // Enhanced save function with translation
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    console.log('🔄 Speichere mit Auto-Übersetzung für Sprache:', language);
+    console.log('🔄 [SAVE-DEBUG] Speichere mit Auto-Übersetzung für Sprache:', language);
     setIsTranslating(true);
     
     try {
       // Save current data first
-      console.log('💾 Speichere Hauptdaten für:', language);
+      console.log('💾 [SAVE-DEBUG] Speichere Hauptdaten für:', language);
       await supabaseData.saveCVData(newCvData, language);
       
       // Auto-translate to other language
       const otherLanguage = language === 'de' ? 'en' : 'de';
-      console.log('🔄 Starte Auto-Übersetzung für:', otherLanguage);
+      console.log('🔄 [SAVE-DEBUG] Starte Auto-Übersetzung für:', otherLanguage);
       
       const translatedData = await autoTranslateData(newCvData, language, {});
       
       if (translatedData[otherLanguage]) {
-        console.log('💾 Speichere übersetzte Daten für:', otherLanguage);
+        console.log('💾 [SAVE-DEBUG] Speichere übersetzte Daten für:', otherLanguage);
         await supabaseData.saveCVData(translatedData[otherLanguage], otherLanguage);
-        console.log('✅ Auto-Übersetzung abgeschlossen');
+        console.log('✅ [SAVE-DEBUG] Auto-Übersetzung abgeschlossen');
       }
     } catch (error) {
-      console.error('❌ Fehler beim Speichern mit Auto-Übersetzung:', error);
+      console.error('❌ [SAVE-DEBUG] Fehler beim Speichern mit Auto-Übersetzung:', error);
     } finally {
       setIsTranslating(false);
     }
@@ -70,13 +80,13 @@ export const useCVData = () => {
       }
     };
     
-    console.log('👁️ Aktualisiere Sichtbarkeit:', { section, field, visible });
+    console.log('👁️ [VISIBILITY-DEBUG] Aktualisiere Sichtbarkeit:', { section, field, visible });
     await visibilityData.setFieldVisibility(updatedVisibility);
   }, [fieldVisibility, visibilityData.setFieldVisibility]);
 
   // Track editing language
   const startEditing = useCallback(() => {
-    console.log('✏️ Bearbeitung startet in Sprache:', language);
+    console.log('✏️ [EDIT-DEBUG] Bearbeitung startet in Sprache:', language);
   }, [language]);
 
   return {
