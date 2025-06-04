@@ -12,7 +12,14 @@ let connectionTestedAndWorking = false
 export const getSupabase = (): SupabaseClient => {
   if (!supabaseClient) {
     console.log('🚀 Initialisiere Supabase mit fest konfigurierten Zugangsdaten...')
-    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    console.log('📍 Supabase URL:', SUPABASE_URL)
+    console.log('🔑 Anon Key vorhanden:', SUPABASE_ANON_KEY ? 'Ja' : 'Nein')
+    
+    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false
+      }
+    })
   }
   return supabaseClient
 }
@@ -22,31 +29,64 @@ export const isSupabaseConfigured = (): boolean => {
   return true
 }
 
-// Verbindungstest mit caching für bessere Performance
+// Verbindungstest mit verbesserter Fehlerbehandlung
 export const testSupabaseConnection = async (): Promise<boolean> => {
   // Wenn bereits erfolgreich getestet, direkt true zurückgeben
   if (connectionTestedAndWorking) {
+    console.log('✅ Supabase-Verbindung bereits getestet und funktioniert')
     return true
   }
 
   try {
     console.log('🔍 Teste Supabase-Verbindung...')
+    console.log('🌐 Current URL:', window.location.origin)
+    console.log('🌐 User Agent:', navigator.userAgent.substring(0, 50) + '...')
+    
     const supabase = getSupabase()
     
-    // Einfacher Test durch Abrufen einer einfachen Query
-    const { error } = await supabase.from('cv_data').select('id').limit(1)
+    // Einfacher Test durch Abrufen einer einfachen Query mit Timeout
+    console.log('📡 Sende Test-Query an Supabase...')
+    
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout nach 10 Sekunden')), 10000)
+    )
+    
+    const queryPromise = supabase.from('cv_data').select('id').limit(1)
+    
+    const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any
     
     if (error) {
-      console.warn('⚠️ Supabase-Verbindung hat Fehler:', error.message)
+      console.error('❌ Supabase-Verbindung hat Fehler:', error)
+      console.error('🔍 Error Details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      })
       connectionTestedAndWorking = false
       return false
     }
     
     console.log('✅ Supabase-Verbindung erfolgreich')
+    console.log('📊 Test-Daten erhalten:', data)
     connectionTestedAndWorking = true
     return true
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Supabase-Verbindung fehlgeschlagen:', error)
+    console.error('🔍 Fehler-Details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack?.substring(0, 200) + '...'
+    })
+    
+    // Prüfe spezifische Fehlerarten
+    if (error.message?.includes('NetworkError') || error.message?.includes('fetch')) {
+      console.error('🌐 Netzwerk-Fehler: Möglicherweise CORS oder Firewall-Problem')
+    }
+    if (error.message?.includes('Timeout')) {
+      console.error('⏱️ Timeout: Supabase antwortet nicht rechtzeitig')
+    }
+    
     connectionTestedAndWorking = false
     return false
   }
