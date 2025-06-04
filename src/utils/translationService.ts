@@ -1,235 +1,280 @@
-// Vereinfachte Übersetzungstabelle - nur Deutsch nach Englisch
-const translations: { [germanText: string]: string } = {
-  // Personal Info
-  'Leidenschaftlicher Frontend-Entwickler mit 5+ Jahren Erfahrung in React, TypeScript und modernen Web-Technologies. Spezialisiert auf responsive Design und Performance-Optimierung.': 'Passionate Frontend Developer with 5+ years of experience in React, TypeScript and modern web technologies. Specialized in responsive design and performance optimization.',
-  
-  // Better translations for common phrases
-  'Passionate Skilled Service Desk Agent with mehr als 5 Years Experience': 'Passionate Skilled Service Desk Agent with more than 5 years experience',
-  'Leidenschaftlicher qualifizierter Service Desk Agent mit mehr als 5 Jahren Erfahrung': 'Passionate skilled Service Desk Agent with more than 5 years experience',
-  
-  // Phrase patterns that need special handling
-  'mehr als': 'more than',
-  'mit mehr als': 'with more than',
-  
-  // Names (bleiben gleich)
-  'Max Mustermann': 'Max Mustermann',
-  'Marcel Test Test': 'Marcel Test Test',
-  
-  // Positions
-  'Senior Frontend Developer': 'Senior Frontend Developer',
-  'Frontend Developer': 'Frontend Developer',
-  'Service Desk Agent': 'Service Desk Agent',
-  
-  // Locations
-  'Berlin, Deutschland': 'Berlin, Germany',
-  'Deutschland': 'Germany',
-  
-  // Experience descriptions
-  'Entwicklung und Wartung von React-Anwendungen für Enterprise-Kunden. Implementierung von Design-Systemen und Performance-Optimierungen.': 'Development and maintenance of React applications for enterprise clients. Implementation of design systems and performance optimizations.',
-  'Erstellung responsiver Websites und Web-Anwendungen. Zusammenarbeit mit Design- und Backend-Teams in agilen Entwicklungsprozessen.': 'Creation of responsive websites and web applications. Collaboration with design and backend teams in agile development processes.',
-  
-  // Education
-  'Technische Universität Berlin': 'Technical University Berlin',
-  'Bachelor of Science - Informatik': 'Bachelor of Science - Computer Science',
-  'Schwerpunkt: Web-Entwicklung und Software Engineering. Abschlussnote: 1,5': 'Focus: Web Development and Software Engineering. Final grade: 1.5',
-  
-  // Time periods
-  'Heute': 'Present',
-  '2022 - Heute': '2022 - Present',
-  
-  // Languages
-  'Deutsch': 'German',
-  'Englisch': 'English',
-  'Französisch': 'French',
-  'Muttersprache': 'Native',
-  'Fließend (C1)': 'Fluent (C1)',
-  'Grundkenntnisse (A2)': 'Basic (A2)',
-  
-  // Projects
-  'Vollständiges Dashboard für Online-Shop-Verwaltung mit React und TypeScript': 'Complete dashboard for online shop management with React and TypeScript',
-  'Responsive Portfolio-Website mit modernem Design und Animationen': 'Responsive portfolio website with modern design and animations',
-  
-  // Certificates
-  'März 2023': 'March 2023',
-  'März 2026': 'March 2026',
-  'Januar 2023': 'January 2023',
-  'Amazon Web Services': 'Amazon Web Services',
-  'Google': 'Google',
-  
-  // Common custom phrases
-  'Guten Morgen': 'Good Morning',
-  'Das ist ein Test': 'This is a test',
-  'Hallo Welt': 'Hello World',
-  'ich bin sehr gut': 'I am very good',
-  'heute ist schön': 'today is nice',
-  'Das funktioniert gut': 'This works well',
-  'Sehr interessant': 'Very interesting',
-  'Toll gemacht': 'Well done',
-  'Perfekt': 'Perfect'
+
+// Simple translation mappings for common CV terms
+const translationMappings = {
+  'de-en': {
+    // Job titles and positions
+    'Softwareentwickler': 'Software Developer',
+    'Frontend-Entwickler': 'Frontend Developer',
+    'Backend-Entwickler': 'Backend Developer',
+    'Full-Stack-Entwickler': 'Full Stack Developer',
+    'Projektmanager': 'Project Manager',
+    'Data Scientist': 'Data Scientist',
+    'UI/UX Designer': 'UI/UX Designer',
+    'DevOps Engineer': 'DevOps Engineer',
+    'Systemadministrator': 'System Administrator',
+    'Qualitätssicherung': 'Quality Assurance',
+    'Teamleiter': 'Team Lead',
+    'Senior Entwickler': 'Senior Developer',
+    'Junior Entwickler': 'Junior Developer',
+    
+    // Companies and institutions
+    'Universität': 'University',
+    'Hochschule': 'University of Applied Sciences',
+    'Fachhochschule': 'University of Applied Sciences',
+    'Institut': 'Institute',
+    'GmbH': 'LLC',
+    'AG': 'Corp',
+    
+    // Education terms
+    'Bachelor of Science': 'Bachelor of Science',
+    'Master of Science': 'Master of Science',
+    'Diplom': 'Diploma',
+    'Informatik': 'Computer Science',
+    'Wirtschaftsinformatik': 'Business Informatics',
+    'Elektrotechnik': 'Electrical Engineering',
+    'Maschinenbau': 'Mechanical Engineering',
+    'Betriebswirtschaft': 'Business Administration',
+    
+    // Skills
+    'Programmierung': 'Programming',
+    'Webentwicklung': 'Web Development',
+    'Datenbanken': 'Databases',
+    'Projektmanagement': 'Project Management',
+    'Kommunikation': 'Communication',
+    'Teamarbeit': 'Teamwork',
+    'Problemlösung': 'Problem Solving',
+    'Analytisches Denken': 'Analytical Thinking',
+    
+    // Common terms
+    'Jahre Erfahrung': 'years of experience',
+    'Berufserfahrung': 'Professional Experience',
+    'Ausbildung': 'Education',
+    'Fähigkeiten': 'Skills',
+    'Sprachen': 'Languages',
+    'Projekte': 'Projects',
+    'Zertifikate': 'Certificates',
+    'Verantwortlichkeiten': 'Responsibilities',
+    'Erfolge': 'Achievements',
+    'Technologien': 'Technologies',
+    'Frameworks': 'Frameworks',
+    'Tools': 'Tools',
+    'seit': 'since',
+    'bis': 'until',
+    'heute': 'present',
+    'aktuell': 'current'
+  },
+  'en-de': {
+    // Reverse mappings
+    'Software Developer': 'Softwareentwickler',
+    'Frontend Developer': 'Frontend-Entwickler',
+    'Backend Developer': 'Backend-Entwickler',
+    'Full Stack Developer': 'Full-Stack-Entwickler',
+    'Project Manager': 'Projektmanager',
+    'Data Scientist': 'Data Scientist',
+    'UI/UX Designer': 'UI/UX Designer',
+    'DevOps Engineer': 'DevOps Engineer',
+    'System Administrator': 'Systemadministrator',
+    'Quality Assurance': 'Qualitätssicherung',
+    'Team Lead': 'Teamleiter',
+    'Senior Developer': 'Senior Entwickler',
+    'Junior Developer': 'Junior Entwickler',
+    
+    'University': 'Universität',
+    'University of Applied Sciences': 'Hochschule',
+    'Institute': 'Institut',
+    'LLC': 'GmbH',
+    'Corp': 'AG',
+    
+    'Computer Science': 'Informatik',
+    'Business Informatics': 'Wirtschaftsinformatik',
+    'Electrical Engineering': 'Elektrotechnik',
+    'Mechanical Engineering': 'Maschinenbau',
+    'Business Administration': 'Betriebswirtschaft',
+    
+    'Programming': 'Programmierung',
+    'Web Development': 'Webentwicklung',
+    'Databases': 'Datenbanken',
+    'Project Management': 'Projektmanagement',
+    'Communication': 'Kommunikation',
+    'Teamwork': 'Teamarbeit',
+    'Problem Solving': 'Problemlösung',
+    'Analytical Thinking': 'Analytisches Denken',
+    
+    'years of experience': 'Jahre Erfahrung',
+    'Professional Experience': 'Berufserfahrung',
+    'Education': 'Ausbildung',
+    'Skills': 'Fähigkeiten',
+    'Languages': 'Sprachen',
+    'Projects': 'Projekte',
+    'Certificates': 'Zertifikate',
+    'Responsibilities': 'Verantwortlichkeiten',
+    'Achievements': 'Erfolge',
+    'Technologies': 'Technologien',
+    'Frameworks': 'Frameworks',
+    'Tools': 'Tools',
+    'since': 'seit',
+    'until': 'bis',
+    'present': 'heute',
+    'current': 'aktuell'
+  }
 };
 
-// Verbesserte Wort-für-Wort Übersetzungen
-const wordTranslations: { [germanWord: string]: string } = {
-  // Common words
-  'mit': 'with',
-  'und': 'and',
-  'in': 'in',
-  'auf': 'on',
-  'für': 'for',
-  'von': 'of',
-  'als': 'than',
-  'mehr': 'more',
-  'Jahren': 'years',
-  'Jahre': 'years',
-  'Erfahrung': 'experience',
-  'Experience': 'experience',
-  'modernen': 'modern',
-  'Spezialisiert': 'Specialized',
-  'responsive': 'responsive',
-  'Design': 'design',
-  'Performance-Optimierung': 'performance optimization',
-  'Web-Technologies': 'web technologies',
-  'Leidenschaftlicher': 'Passionate',
-  'leidenschaftlicher': 'passionate',
-  'qualifizierter': 'skilled',
-  'Qualifizierter': 'Skilled',
-  'Entwicklung': 'Development',
-  'Wartung': 'maintenance',
-  'Implementierung': 'Implementation',
-  'Erstellung': 'Creation',
-  'Zusammenarbeit': 'Collaboration',
-  'Schwerpunkt': 'Focus',
-  'Abschlussnote': 'Final grade',
-  'Vollständiges': 'Complete',
-  'Dashboard': 'dashboard',
-  'Online-Shop-Verwaltung': 'online shop management',
-  'Portfolio-Website': 'portfolio website',
-  'Animationen': 'animations',
+// Detect language of text
+export const detectLanguage = (text: string): 'de' | 'en' => {
+  if (!text || text.trim().length === 0) return 'de';
   
-  // Simple words
-  'Guten': 'Good',
-  'Morgen': 'Morning',
-  'Das': 'This',
-  'ist': 'is',
-  'ein': 'a',
-  'eine': 'a',
-  'Test': 'test',
-  'Hallo': 'Hello',
-  'Welt': 'World',
-  'ich': 'I',
-  'bin': 'am',
-  'sehr': 'very',
-  'gut': 'good',
-  'schön': 'nice',
-  'heute': 'today',
-  'funktioniert': 'works',
-  'interessant': 'interesting',
-  'toll': 'great',
-  'gemacht': 'done',
-  'perfekt': 'perfect',
+  // German indicators
+  const germanWords = ['und', 'der', 'die', 'das', 'ist', 'haben', 'werden', 'mit', 'für', 'von', 'zu', 'auf', 'bei', 'durch', 'über', 'unter', 'zwischen', 'während', 'nach', 'vor', 'seit', 'bis', 'sowie', 'bzw', 'bzw.', 'ggf', 'ggf.', 'inkl', 'inkl.', 'ca', 'ca.', 'z.B.', 'usw', 'usw.', 'etc', 'etc.'];
+  const germanChars = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'];
   
-  // Service Desk specific
-  'Service': 'Service',
-  'Desk': 'Desk',
-  'Agent': 'Agent',
-  'Passionate': 'Passionate',
-  'Skilled': 'Skilled'
+  // English indicators
+  const englishWords = ['and', 'the', 'is', 'are', 'have', 'has', 'will', 'with', 'for', 'from', 'to', 'on', 'at', 'by', 'through', 'over', 'under', 'between', 'during', 'after', 'before', 'since', 'until', 'as', 'well', 'as', 'e.g.', 'etc', 'etc.', 'including', 'approximately'];
+  
+  const lowerText = text.toLowerCase();
+  
+  // Check for German characters
+  if (germanChars.some(char => text.includes(char))) {
+    return 'de';
+  }
+  
+  // Count German vs English words
+  let germanCount = 0;
+  let englishCount = 0;
+  
+  germanWords.forEach(word => {
+    if (lowerText.includes(word.toLowerCase())) germanCount++;
+  });
+  
+  englishWords.forEach(word => {
+    if (lowerText.includes(word.toLowerCase())) englishCount++;
+  });
+  
+  // Return based on word count, default to German
+  return englishCount > germanCount ? 'en' : 'de';
 };
 
-// Verbesserte Übersetzungsfunktion
+// Simple translation function using mappings
 export const translateText = (text: string, fromLang: 'de' | 'en', toLang: 'de' | 'en'): string => {
-  // Nur von Deutsch nach Englisch übersetzen
-  if (fromLang !== 'de' || toLang !== 'en') {
-    return text;
-  }
+  if (!text || fromLang === toLang) return text;
   
-  console.log(`Translating: "${text}" from German to English`);
+  const mappingKey = `${fromLang}-${toLang}` as keyof typeof translationMappings;
+  const mappings = translationMappings[mappingKey];
   
-  const trimmedText = text.trim();
-  if (!trimmedText) return text;
-  
-  // Erst versuchen, eine exakte Übereinstimmung zu finden
-  if (translations[trimmedText]) {
-    console.log(`Found exact translation: ${translations[trimmedText]}`);
-    return translations[trimmedText];
-  }
-  
-  // Dann versuchen, Teilübereinstimmungen zu finden (längste zuerst)
-  const sortedTranslations = Object.entries(translations).sort((a, b) => b[0].length - a[0].length);
+  if (!mappings) return text;
   
   let translatedText = text;
   
-  for (const [germanText, englishText] of sortedTranslations) {
-    if (text.toLowerCase().includes(germanText.toLowerCase())) {
-      const regex = new RegExp(germanText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-      translatedText = translatedText.replace(regex, englishText);
-      console.log(`Applied phrase translation: ${germanText} -> ${englishText}`);
-    }
-  }
-  
-  // Immer Wort-für-Wort Übersetzung für alle verbleibenden deutschen Wörter anwenden
-  console.log('Applying word-by-word translation for remaining German words');
-  
-  // Spezielle Behandlung für "mehr als" - zuerst als Phrase
-  translatedText = translatedText.replace(/mehr\s+als/gi, 'more than');
-  
-  // Dann Wort-für-Wort Übersetzung für alle Wörter
-  const words = translatedText.split(/(\s+|[.,;:!?()+-])/);
-  const translatedWords = words.map(word => {
-    const cleanWord = word.trim();
-    if (!cleanWord || /^[\s.,;:!?()+-]+$/.test(word)) {
-      return word; // Punktuation und Leerzeichen beibehalten
-    }
-    
-    // Prüfe sowohl den originalen als auch den lowercase Wert
-    const lowerWord = cleanWord.toLowerCase();
-    let translation = wordTranslations[cleanWord] || wordTranslations[lowerWord];
-    
-    if (translation) {
-      console.log(`Word translation: ${cleanWord} -> ${translation}`);
-      // Groß-/Kleinschreibung beibehalten
-      if (cleanWord === cleanWord.toUpperCase()) {
-        return translation.toUpperCase();
-      } else if (cleanWord[0] === cleanWord[0].toUpperCase()) {
-        return translation.charAt(0).toUpperCase() + translation.slice(1);
-      }
-      return translation;
-    }
-    
-    return word; // Original zurückgeben, wenn keine Übersetzung gefunden
+  // Replace exact matches first (case-insensitive)
+  Object.entries(mappings).forEach(([source, target]) => {
+    const regex = new RegExp(`\\b${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+    translatedText = translatedText.replace(regex, target);
   });
   
-  translatedText = translatedWords.join('');
+  // Basic sentence structure adjustments for German to English
+  if (fromLang === 'de' && toLang === 'en') {
+    // Remove common German prefixes/suffixes that don't translate well
+    translatedText = translatedText.replace(/\b(sehr|ganz|besonders)\s+/gi, '');
+    
+    // Adjust common German sentence patterns
+    translatedText = translatedText.replace(/\bich habe\b/gi, 'I have');
+    translatedText = translatedText.replace(/\bich bin\b/gi, 'I am');
+    translatedText = translatedText.replace(/\bich war\b/gi, 'I was');
+    translatedText = translatedText.replace(/\bverantwortlich für\b/gi, 'responsible for');
+    translatedText = translatedText.replace(/\bzuständig für\b/gi, 'responsible for');
+    translatedText = translatedText.replace(/\bim Bereich\b/gi, 'in the field of');
+    translatedText = translatedText.replace(/\bmehr als\b/gi, 'more than');
+    translatedText = translatedText.replace(/\bweniger als\b/gi, 'less than');
+  }
   
-  console.log(`Translation result: "${translatedText}"`);
+  // Basic sentence structure adjustments for English to German
+  if (fromLang === 'en' && toLang === 'de') {
+    translatedText = translatedText.replace(/\bI have\b/gi, 'ich habe');
+    translatedText = translatedText.replace(/\bI am\b/gi, 'ich bin');
+    translatedText = translatedText.replace(/\bI was\b/gi, 'ich war');
+    translatedText = translatedText.replace(/\bresponsible for\b/gi, 'verantwortlich für');
+    translatedText = translatedText.replace(/\bin the field of\b/gi, 'im Bereich');
+    translatedText = translatedText.replace(/\bmore than\b/gi, 'mehr als');
+    translatedText = translatedText.replace(/\bless than\b/gi, 'weniger als');
+  }
+  
   return translatedText;
 };
 
-export const translateCVData = (data: any, fromLang: 'de' | 'en', toLang: 'de' | 'en'): any => {
-  // Nur von Deutsch nach Englisch übersetzen
-  if (fromLang !== 'de' || toLang !== 'en') {
-    return data;
+// Translate CV data object
+export const translateCVData = async (cvData: any, targetLanguage: 'de' | 'en'): Promise<any> => {
+  console.log('Translating CV data to', targetLanguage);
+  
+  // Detect source language from the bio or first experience description
+  const sourceText = cvData.personalInfo?.bio || cvData.experiences?.[0]?.description || '';
+  const sourceLanguage = detectLanguage(sourceText);
+  
+  console.log('Detected source language:', sourceLanguage);
+  
+  if (sourceLanguage === targetLanguage) {
+    console.log('Source and target language are the same, no translation needed');
+    return cvData;
   }
   
-  const translateObject = (obj: any): any => {
-    if (typeof obj === 'string') {
-      return translateText(obj, fromLang, toLang);
-    }
-    
-    if (Array.isArray(obj)) {
-      return obj.map(translateObject);
-    }
-    
-    if (obj && typeof obj === 'object') {
-      const translated: any = {};
-      for (const [key, value] of Object.entries(obj)) {
-        translated[key] = translateObject(value);
-      }
-      return translated;
-    }
-    
-    return obj;
-  };
+  const translatedData = { ...cvData };
   
-  return translateObject(data);
+  // Translate personal info
+  if (translatedData.personalInfo) {
+    translatedData.personalInfo = {
+      ...translatedData.personalInfo,
+      profession: translateText(translatedData.personalInfo.profession || '', sourceLanguage, targetLanguage),
+      bio: translateText(translatedData.personalInfo.bio || '', sourceLanguage, targetLanguage)
+    };
+  }
+  
+  // Translate experiences
+  if (translatedData.experiences) {
+    translatedData.experiences = translatedData.experiences.map((exp: any) => ({
+      ...exp,
+      company: translateText(exp.company || '', sourceLanguage, targetLanguage),
+      position: translateText(exp.position || '', sourceLanguage, targetLanguage),
+      description: translateText(exp.description || '', sourceLanguage, targetLanguage)
+    }));
+  }
+  
+  // Translate education
+  if (translatedData.education) {
+    translatedData.education = translatedData.education.map((edu: any) => ({
+      ...edu,
+      institution: translateText(edu.institution || '', sourceLanguage, targetLanguage),
+      degree: translateText(edu.degree || '', sourceLanguage, targetLanguage),
+      description: translateText(edu.description || '', sourceLanguage, targetLanguage)
+    }));
+  }
+  
+  // Translate skills
+  if (translatedData.skills) {
+    translatedData.skills = translatedData.skills.map((skill: any) => ({
+      ...skill,
+      name: translateText(skill.name || '', sourceLanguage, targetLanguage)
+    }));
+  }
+  
+  // Translate projects
+  if (translatedData.projects) {
+    translatedData.projects = translatedData.projects.map((project: any) => ({
+      ...project,
+      name: translateText(project.name || '', sourceLanguage, targetLanguage),
+      description: translateText(project.description || '', sourceLanguage, targetLanguage),
+      technologies: project.technologies?.map((tech: string) => 
+        translateText(tech, sourceLanguage, targetLanguage)
+      ) || []
+    }));
+  }
+  
+  // Translate certificates
+  if (translatedData.certificates) {
+    translatedData.certificates = translatedData.certificates.map((cert: any) => ({
+      ...cert,
+      name: translateText(cert.name || '', sourceLanguage, targetLanguage),
+      issuer: translateText(cert.issuer || '', sourceLanguage, targetLanguage)
+    }));
+  }
+  
+  console.log('Translation completed');
+  return translatedData;
 };

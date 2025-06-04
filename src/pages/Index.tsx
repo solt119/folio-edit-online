@@ -21,6 +21,7 @@ const Index = () => {
     fieldVisibility,
     isLoading: cvLoading,
     error: cvError,
+    isTranslating,
     updatePersonalInfo,
     updateExperience,
     updateEducation,
@@ -84,6 +85,7 @@ const Index = () => {
         editingSection={editingSection}
         showVisibilitySettings={showVisibilitySettings}
         cvError={cvError}
+        isTranslating={isTranslating}
         onEdit={onEdit}
         onSave={handleSave}
         updatePersonalInfo={updatePersonalInfo}

@@ -10,6 +10,7 @@ import { ProjectsSection } from '@/components/cv/ProjectsSection';
 import { CertificatesSection } from '@/components/cv/CertificatesSection';
 import { CVData } from '@/types/cv';
 import { FieldVisibility } from '@/types/visibility';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CVContentProps {
   cvData: CVData;
@@ -18,6 +19,7 @@ interface CVContentProps {
   editingSection: string | null;
   showVisibilitySettings: boolean;
   cvError: string | null;
+  isTranslating?: boolean;
   onEdit: (section: string) => void;
   onSave: () => void;
   updatePersonalInfo: (field: any, value: string) => void;
@@ -37,6 +39,7 @@ export const CVContent: React.FC<CVContentProps> = ({
   editingSection,
   showVisibilitySettings,
   cvError,
+  isTranslating = false,
   onEdit,
   onSave,
   updatePersonalInfo,
@@ -48,8 +51,18 @@ export const CVContent: React.FC<CVContentProps> = ({
   updateCertificate,
   updateFieldVisibility
 }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="container mx-auto px-6 py-8 max-w-4xl">
+      {/* Translation status */}
+      {isTranslating && (
+        <div className="mb-4 p-4 bg-blue-600/20 border border-blue-600 rounded-lg text-blue-300 flex items-center gap-2">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+          <span>Automatische Übersetzung läuft...</span>
+        </div>
+      )}
+
       {/* Error message */}
       {cvError && (
         <div className="mb-4 p-4 bg-red-600/20 border border-red-600 rounded-lg text-red-300">
