@@ -5,12 +5,18 @@ let supabaseClient: SupabaseClient | null = null
 
 const getSupabaseUrl = () => {
   // First try environment variables, then localStorage
-  return import.meta.env.VITE_SUPABASE_URL || localStorage.getItem('VITE_SUPABASE_URL')
+  const envUrl = import.meta.env.VITE_SUPABASE_URL;
+  const localUrl = localStorage.getItem('VITE_SUPABASE_URL');
+  console.log('🔍 Checking Supabase URL - ENV:', envUrl ? 'SET' : 'NOT SET', 'LocalStorage:', localUrl ? 'SET' : 'NOT SET');
+  return envUrl || localUrl;
 }
 
 const getSupabaseAnonKey = () => {
   // First try environment variables, then localStorage
-  return import.meta.env.VITE_SUPABASE_ANON_KEY || localStorage.getItem('VITE_SUPABASE_ANON_KEY')
+  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const localKey = localStorage.getItem('VITE_SUPABASE_ANON_KEY');
+  console.log('🔍 Checking Supabase Key - ENV:', envKey ? 'SET' : 'NOT SET', 'LocalStorage:', localKey ? 'SET' : 'NOT SET');
+  return envKey || localKey;
 }
 
 export const getSupabase = (): SupabaseClient => {
@@ -31,12 +37,16 @@ export const getSupabase = (): SupabaseClient => {
 export const isSupabaseConfigured = (): boolean => {
   const supabaseUrl = getSupabaseUrl()
   const supabaseAnonKey = getSupabaseAnonKey()
-  return !!(supabaseUrl && supabaseAnonKey)
+  const configured = !!(supabaseUrl && supabaseAnonKey);
+  console.log('🔍 isSupabaseConfigured:', configured);
+  return configured;
 }
 
 // Check if configuration comes from environment variables
 export const isConfiguredViaEnv = (): boolean => {
-  return !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
+  const configuredViaEnv = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+  console.log('🔍 isConfiguredViaEnv:', configuredViaEnv);
+  return configuredViaEnv;
 }
 
 // For backward compatibility
