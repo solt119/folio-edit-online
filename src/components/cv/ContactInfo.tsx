@@ -44,38 +44,46 @@ export const ContactInfo: React.FC<ContactInfoProps> = ({
     );
   }
 
+  const contactItems = [
+    {
+      field: 'location' as keyof PersonalInfo,
+      icon: MapPin,
+      value: personalInfo.location
+    },
+    {
+      field: 'email' as keyof PersonalInfo,
+      icon: Mail,
+      value: personalInfo.email
+    },
+    {
+      field: 'phone' as keyof PersonalInfo,
+      icon: Phone,
+      value: personalInfo.phone
+    },
+    {
+      field: 'linkedin' as keyof PersonalInfo,
+      icon: Linkedin,
+      value: personalInfo.linkedin
+    },
+    {
+      field: 'github' as keyof PersonalInfo,
+      icon: Github,
+      value: personalInfo.github
+    }
+  ].filter(item => isVisible(item.field) && item.value && item.value.trim() !== '');
+
+  if (contactItems.length === 0) {
+    return null;
+  }
+
   return (
     <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-300">
-      {isVisible('location') && (
-        <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4" />
-          <span>{personalInfo.location}</span>
+      {contactItems.map(({ field, icon: Icon, value }) => (
+        <div key={field} className="flex items-center gap-2">
+          <Icon className="w-4 h-4" />
+          <span>{value}</span>
         </div>
-      )}
-      {isVisible('email') && (
-        <div className="flex items-center gap-2">
-          <Mail className="w-4 h-4" />
-          <span>{personalInfo.email}</span>
-        </div>
-      )}
-      {isVisible('phone') && (
-        <div className="flex items-center gap-2">
-          <Phone className="w-4 h-4" />
-          <span>{personalInfo.phone}</span>
-        </div>
-      )}
-      {isVisible('linkedin') && (
-        <div className="flex items-center gap-2">
-          <Linkedin className="w-4 h-4" />
-          <span>{personalInfo.linkedin}</span>
-        </div>
-      )}
-      {isVisible('github') && (
-        <div className="flex items-center gap-2">
-          <Github className="w-4 h-4" />
-          <span>{personalInfo.github}</span>
-        </div>
-      )}
+      ))}
     </div>
   );
 };

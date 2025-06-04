@@ -38,10 +38,10 @@ export const PersonalDetails: React.FC<PersonalDetailsProps> = ({
 
   return (
     <>
-      {isNameVisible && (
+      {isNameVisible && name && name.trim() !== '' && (
         <h1 className="text-4xl font-bold text-white">{name}</h1>
       )}
-      {isProfessionVisible && (
+      {isProfessionVisible && profession && profession.trim() !== '' && (
         <p className="text-xl text-blue-400">{profession}</p>
       )}
     </>

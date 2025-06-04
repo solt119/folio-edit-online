@@ -26,7 +26,8 @@ export const PersonalBio: React.FC<PersonalBioProps> = ({
     );
   }
 
-  if (!isVisible) return null;
+  // Hide if not visible or if bio is empty
+  if (!isVisible || !bio || bio.trim() === '') return null;
 
   const formatText = (text: string) => {
     const lines = text.split('\n');
