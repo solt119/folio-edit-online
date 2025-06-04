@@ -6,37 +6,29 @@ import { useLocalStorage } from './useLocalStorage';
 import { useDataUpdates } from './useDataUpdates';
 import { useSupabaseCVData } from './useSupabaseCVData';
 import { useSupabaseVisibility } from './useSupabaseVisibility';
-import { isSupabaseConfigured } from '@/lib/supabase';
 
 export const useCVData = () => {
   const { language } = useLanguage();
   const [currentEditingLanguage, setCurrentEditingLanguage] = useState<'de' | 'en'>(language);
 
-  // Use Supabase if configured, otherwise fall back to localStorage
+  // Always try to use Supabase, with automatic fallback to localStorage
   const supabaseData = useSupabaseCVData();
   const localStorageData = useLocalStorage();
   const visibilityData = useSupabaseVisibility();
 
-  const isUsingSupabase = isSupabaseConfigured();
-
-  // Choose data source based on Supabase configuration
-  const cvData = isUsingSupabase ? supabaseData.cvData : localStorageData.cvData;
+  // Use Supabase data as primary source
+  const cvData = supabaseData.cvData;
   const fieldVisibility = visibilityData.fieldVisibility;
 
-  // Save function that uses appropriate storage
+  // Save function that uses Supabase with fallback
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
-    if (isUsingSupabase) {
-      await supabaseData.saveCVData(newCvData);
-    } else {
-      // Fall back to localStorage method
-      localStorageData.saveCustomData({ [language]: newCvData });
-    }
-  }, [isUsingSupabase, supabaseData, localStorageData, language]);
+    await supabaseData.saveCVData(newCvData);
+  }, [supabaseData]);
 
   const updateFunctions = useDataUpdates({
     saveCustomDataWithTranslation,
     setFieldVisibility: visibilityData.setFieldVisibility,
-    setCvData: isUsingSupabase ? supabaseData.setCvData : localStorageData.setCvData
+    setCvData: supabaseData.setCvData
   });
 
   // Direct visibility update function
@@ -67,8 +59,8 @@ export const useCVData = () => {
     fieldVisibility,
     currentEditingLanguage,
     startEditing,
-    isLoading: isUsingSupabase ? (supabaseData.isLoading || visibilityData.isLoading) : false,
-    error: isUsingSupabase ? (supabaseData.error || visibilityData.error) : null,
+    isLoading: supabaseData.isLoading || visibilityData.isLoading,
+    error: supabaseData.error || visibilityData.error,
     ...updateFunctions,
     updateFieldVisibility
   };

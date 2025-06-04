@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
-import { getSupabase, isSupabaseConfigured, isSupabaseWorking } from '@/lib/supabase';
+import { getSupabase, testSupabaseConnection } from '@/lib/supabase';
 import { cvContentTranslations } from '@/utils/cvContentTranslations';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -13,15 +13,17 @@ export const useSupabaseCVData = () => {
 
   // Load CV data from Supabase
   const loadCVData = useCallback(async () => {
-    if (!isSupabaseConfigured() || !isSupabaseWorking()) {
-      console.log('📱 Supabase nicht verfügbar, verwende Standard-Daten');
-      setCvData(cvContentTranslations[language]);
-      setIsLoading(false);
-      return;
-    }
-
     try {
       setIsLoading(true);
+      const isWorking = await testSupabaseConnection();
+      
+      if (!isWorking) {
+        console.log('📱 Supabase nicht verfügbar, verwende Standard-Daten');
+        setCvData(cvContentTranslations[language]);
+        setIsLoading(false);
+        return;
+      }
+
       const supabase = getSupabase();
       
       const { data, error } = await supabase
@@ -53,13 +55,15 @@ export const useSupabaseCVData = () => {
 
   // Save CV data to Supabase
   const saveCVData = useCallback(async (newCvData: CVData) => {
-    if (!isSupabaseConfigured() || !isSupabaseWorking()) {
-      console.warn('Supabase nicht verfügbar, speichere nur lokal');
-      setCvData(newCvData);
-      return;
-    }
-
     try {
+      const isWorking = await testSupabaseConnection();
+      
+      if (!isWorking) {
+        console.warn('Supabase nicht verfügbar, speichere nur lokal');
+        setCvData(newCvData);
+        return;
+      }
+
       const supabase = getSupabase();
       
       const { error } = await supabase
