@@ -53,6 +53,37 @@ export const useCVData = () => {
     }
   }, [supabaseData, autoTranslateData, currentEditingLanguage]);
 
+  // Create initial translation when switching to a language that has no data
+  const createInitialTranslation = useCallback(async () => {
+    console.log('🔄 Erstelle initiale Übersetzung für Sprache:', language);
+    setIsTranslating(true);
+    
+    try {
+      const otherLanguage = language === 'de' ? 'en' : 'de';
+      
+      // Get current CV data (which should be from the other language or default)
+      const sourceData = cvData;
+      
+      if (sourceData) {
+        console.log('🔄 Übersetze von', otherLanguage, 'nach', language);
+        const translatedData = await autoTranslateData(sourceData, otherLanguage, {});
+        
+        if (translatedData[language]) {
+          console.log('💾 Speichere initiale Übersetzung für:', language);
+          await supabaseData.saveCVData(translatedData[language], language);
+          console.log('✅ Initiale Übersetzung erfolgreich erstellt');
+          
+          // Reload data to show the translated version
+          await supabaseData.refetch();
+        }
+      }
+    } catch (error) {
+      console.error('❌ Fehler bei initialer Übersetzung:', error);
+    } finally {
+      setIsTranslating(false);
+    }
+  }, [language, cvData, autoTranslateData, supabaseData]);
+
   // Handle language switching - load from Supabase for the new language
   useEffect(() => {
     if (language !== currentEditingLanguage) {
@@ -100,6 +131,7 @@ export const useCVData = () => {
     fieldVisibility,
     currentEditingLanguage,
     startEditing,
+    createInitialTranslation,
     isLoading: supabaseData.isLoading || visibilityData.isLoading || isTranslating,
     error: supabaseData.error || visibilityData.error,
     isTranslating,

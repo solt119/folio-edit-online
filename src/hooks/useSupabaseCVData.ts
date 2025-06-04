@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { CVData } from '@/types/cv';
 import { getSupabase, testSupabaseConnection, forceReconnection } from '@/lib/supabase';
 import { cvContentTranslations } from '@/utils/cvContentTranslations';
+import { translateCVData } from '@/utils/translationService';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export const useSupabaseCVData = () => {
@@ -11,7 +12,7 @@ export const useSupabaseCVData = () => {
   const [error, setError] = useState<string | null>(null);
   const { language } = useLanguage();
 
-  // Load CV data from Supabase
+  // Load CV data from Supabase with auto-translation fallback
   const loadCVData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -50,8 +51,35 @@ export const useSupabaseCVData = () => {
         setCvData(data.content);
         setError(null);
       } else {
-        console.log('📝 Keine CV-Daten in Supabase gefunden für Sprache:', language, '- verwende Standard-Daten');
-        setCvData(cvContentTranslations[language]);
+        console.log('📝 Keine CV-Daten in Supabase gefunden für Sprache:', language);
+        
+        // Check if data exists for the other language to create auto-translation
+        const otherLanguage = language === 'de' ? 'en' : 'de';
+        console.log('🔍 Prüfe ob Daten für andere Sprache existieren:', otherLanguage);
+        
+        const { data: otherLangData, error: otherError } = await supabase
+          .from('cv_data')
+          .select('*')
+          .eq('language', otherLanguage)
+          .single();
+          
+        if (otherLangData && !otherError) {
+          console.log('🔄 Erstelle Auto-Übersetzung von', otherLanguage, 'nach', language);
+          try {
+            const translatedData = await translateCVData(otherLangData.content, language);
+            
+            // Save the translated data
+            await saveCVData(translatedData, language);
+            setCvData(translatedData);
+            console.log('✅ Auto-Übersetzung erfolgreich erstellt und gespeichert');
+          } catch (translationError) {
+            console.error('❌ Auto-Übersetzung fehlgeschlagen:', translationError);
+            setCvData(cvContentTranslations[language]);
+          }
+        } else {
+          console.log('📝 Verwende Standard-Daten für Sprache:', language);
+          setCvData(cvContentTranslations[language]);
+        }
         setError(null);
       }
     } catch (err) {
