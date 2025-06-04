@@ -8,7 +8,7 @@ const SUPABASE_URL = 'https://vvmboyqgmhqctwnhgldf.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2bWJveXFnbWhxY3R3bmhnbGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNDYwNzUsImV4cCI6MjA0ODkyMjA3NX0.5Qm7N7J7XJPTJWKOBklnwXxQyF7YUy-D3H_1yF5-8cE'
 
 const getSupabaseUrl = () => {
-  // First try environment variables, then hardcoded values
+  // First try environment variables, then localStorage, then hardcoded values
   const envUrl = import.meta.env.VITE_SUPABASE_URL;
   const localUrl = localStorage.getItem('VITE_SUPABASE_URL');
   console.log('🔍 Checking Supabase URL - ENV:', envUrl ? 'SET' : 'NOT SET', 'LocalStorage:', localUrl ? 'SET' : 'NOT SET');
@@ -16,7 +16,7 @@ const getSupabaseUrl = () => {
 }
 
 const getSupabaseAnonKey = () => {
-  // First try environment variables, then hardcoded values
+  // First try environment variables, then localStorage, then hardcoded values
   const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   const localKey = localStorage.getItem('VITE_SUPABASE_ANON_KEY');
   console.log('🔍 Checking Supabase Key - ENV:', envKey ? 'SET' : 'NOT SET', 'LocalStorage:', localKey ? 'SET' : 'NOT SET');
@@ -46,10 +46,12 @@ export const isSupabaseConfigured = (): boolean => {
   return configured;
 }
 
-// Check if configuration comes from environment variables
+// Check if configuration comes from environment variables OR hardcoded values
 export const isConfiguredViaEnv = (): boolean => {
-  const configuredViaEnv = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
-  console.log('🔍 isConfiguredViaEnv:', configuredViaEnv);
+  const envConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+  const hardcodedConfigured = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+  const configuredViaEnv = envConfigured || hardcodedConfigured;
+  console.log('🔍 isConfiguredViaEnv:', configuredViaEnv, '(ENV:', envConfigured, 'Hardcoded:', hardcodedConfigured, ')');
   return configuredViaEnv;
 }
 
