@@ -58,21 +58,35 @@ export const useSupabaseVisibility = () => {
 
   // Save visibility settings to Supabase
   const saveVisibilitySettings = useCallback(async (newVisibility: FieldVisibility) => {
+    // Validate that newVisibility is not null/undefined and has the correct structure
+    if (!newVisibility || typeof newVisibility !== 'object') {
+      console.error('Invalid visibility data:', newVisibility);
+      return;
+    }
+
+    // Ensure the visibility object has the required structure
+    const validatedVisibility = {
+      personalInfo: newVisibility.personalInfo || defaultVisibility.personalInfo,
+      sections: newVisibility.sections || defaultVisibility.sections
+    };
+
     if (!isSupabaseConfigured()) {
       // Fall back to localStorage
-      localStorage.setItem('fieldVisibility', JSON.stringify(newVisibility));
-      setFieldVisibility(newVisibility);
+      localStorage.setItem('fieldVisibility', JSON.stringify(validatedVisibility));
+      setFieldVisibility(validatedVisibility);
       return;
     }
 
     try {
       const supabase = getSupabase();
       
+      console.log('Saving visibility with data:', { language, visibility: validatedVisibility });
+      
       const { error } = await supabase
         .from('visibility_settings')
         .upsert({
           language,
-          visibility: newVisibility
+          visibility: validatedVisibility
         }, { 
           onConflict: 'language' 
         });
@@ -81,17 +95,18 @@ export const useSupabaseVisibility = () => {
         console.error('Error saving visibility settings:', error);
         setError(error.message);
         // Fall back to localStorage on error
-        localStorage.setItem('fieldVisibility', JSON.stringify(newVisibility));
+        localStorage.setItem('fieldVisibility', JSON.stringify(validatedVisibility));
       } else {
-        setFieldVisibility(newVisibility);
+        setFieldVisibility(validatedVisibility);
         setError(null);
+        console.log('Visibility settings saved successfully');
       }
     } catch (err) {
       console.error('Error saving visibility settings:', err);
       setError('Fehler beim Speichern der Sichtbarkeitseinstellungen');
       // Fall back to localStorage on error
-      localStorage.setItem('fieldVisibility', JSON.stringify(newVisibility));
-      setFieldVisibility(newVisibility);
+      localStorage.setItem('fieldVisibility', JSON.stringify(validatedVisibility));
+      setFieldVisibility(validatedVisibility);
     }
   }, [language]);
 
