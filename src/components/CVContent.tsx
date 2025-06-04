@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { VisibilityControls } from '@/components/VisibilityControls';
 import { PersonalInfoSection } from '@/components/cv/PersonalInfoSection';
@@ -152,7 +151,7 @@ export const CVContent: React.FC<CVContentProps> = ({
       </div>
 
       {/* Projects - Fixed visibility condition */}
-      {(!!user || fieldVisibility.sections.projects) && (
+      {(user || fieldVisibility.sections.projects) && (
         <ProjectsSection
           projects={cvData.projects}
           isLoggedIn={!!user}
