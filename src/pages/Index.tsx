@@ -23,7 +23,7 @@ const Index = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [showLogin, setShowLogin] = useState(false);
   const [showVisibilitySettings, setShowVisibilitySettings] = useState(false);
-  const [supabaseConfiguredState, setSupabaseConfiguredState] = useState(false);
+  const [showSupabaseConfig, setShowSupabaseConfig] = useState(false);
   const { user, loading, signIn, signOut } = useAuth();
   const { t } = useLanguage();
   
@@ -40,17 +40,20 @@ const Index = () => {
     updateFieldVisibility
   } = useCVData();
 
-  useEffect(() => {
-    setSupabaseConfiguredState(isSupabaseConfigured());
-  }, []);
-
   const handleSupabaseConfigured = () => {
-    setSupabaseConfiguredState(true);
+    setShowSupabaseConfig(false);
     // Reload the page to reinitialize Supabase client
     window.location.reload();
   };
 
   const handleLogin = async (email: string, password: string) => {
+    // Check if Supabase is configured first
+    if (!isSupabaseConfigured()) {
+      setShowSupabaseConfig(true);
+      setShowLogin(false);
+      return;
+    }
+
     const { error } = await signIn(email, password);
     if (error) {
       toast({
@@ -100,8 +103,8 @@ const Index = () => {
     setEditingSection(editingSection === section ? null : section);
   };
 
-  // Show Supabase configuration if not configured
-  if (!supabaseConfiguredState) {
+  // Show Supabase configuration only when explicitly requested
+  if (showSupabaseConfig) {
     return <SupabaseConfig onConfigured={handleSupabaseConfigured} />;
   }
 
@@ -110,7 +113,7 @@ const Index = () => {
     return <LoginForm onLogin={handleLogin} loading={loading} onCancel={() => setShowLogin(false)} />;
   }
 
-  // Always show CV content
+  // Always show CV content - this is the main change
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
