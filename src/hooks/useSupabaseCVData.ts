@@ -10,9 +10,10 @@ export const useSupabaseCVData = () => {
   const [cvData, setCvData] = useState<CVData>(cvContentTranslations.de);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasEnglishColumn, setHasEnglishColumn] = useState<boolean | null>(null);
   const { language } = useLanguage();
 
-  // Load CV data from Supabase with enhanced column handling
+  // Load CV data from Supabase with fallback handling
   const loadCVData = useCallback(async (targetLanguage: 'de' | 'en') => {
     try {
       setIsLoading(true);
@@ -31,16 +32,53 @@ export const useSupabaseCVData = () => {
       console.log('✅ [LANG-DEBUG] Supabase-Verbindung erfolgreich');
       const supabase = getSupabase();
       
-      // Load the main record (always from the 'de' record which contains both columns)
-      console.log('📡 [LANG-DEBUG] Lade Daten aus Datenbank...');
-      const { data, error } = await supabase
-        .from('cv_data')
-        .select('content, content_en')
-        .eq('language', 'de')
-        .single();
+      let data, queryError;
+      
+      // First try with both columns if we haven't checked yet or know they exist
+      if (hasEnglishColumn !== false) {
+        console.log('📡 [LANG-DEBUG] Versuche Abfrage mit content_en Spalte...');
+        const result = await supabase
+          .from('cv_data')
+          .select('content, content_en')
+          .eq('language', 'de')
+          .single();
+        
+        data = result.data;
+        queryError = result.error;
+        
+        // If column doesn't exist, remember that and retry
+        if (queryError && queryError.code === '42703') {
+          console.log('⚠️ [LANG-DEBUG] content_en Spalte existiert nicht, verwende nur content');
+          setHasEnglishColumn(false);
+          
+          // Retry with only content column
+          const fallbackResult = await supabase
+            .from('cv_data')
+            .select('content')
+            .eq('language', 'de')
+            .single();
+          
+          data = fallbackResult.data;
+          queryError = fallbackResult.error;
+        } else if (!queryError) {
+          console.log('✅ [LANG-DEBUG] content_en Spalte existiert');
+          setHasEnglishColumn(true);
+        }
+      } else {
+        // We know content_en doesn't exist, use only content
+        console.log('📡 [LANG-DEBUG] Lade nur content Spalte (content_en nicht verfügbar)');
+        const result = await supabase
+          .from('cv_data')
+          .select('content')
+          .eq('language', 'de')
+          .single();
+        
+        data = result.data;
+        queryError = result.error;
+      }
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('❌ [LANG-DEBUG] Fehler beim Laden der CV-Daten:', error);
+      if (queryError && queryError.code !== 'PGRST116') {
+        console.error('❌ [LANG-DEBUG] Fehler beim Laden der CV-Daten:', queryError);
         setError('Supabase-Query-Fehler');
         setCvData(cvContentTranslations[targetLanguage]);
       } else if (data) {
@@ -52,16 +90,16 @@ export const useSupabaseCVData = () => {
           contentEnKeys: data.content_en ? Object.keys(data.content_en) : []
         });
 
-        // Select the correct content based on target language
+        // Select the correct content based on target language and availability
         let contentToUse;
         
         if (targetLanguage === 'en') {
-          console.log('🌍 [LANG-DEBUG] Sprache ist EN - prüfe content_en...');
-          if (data.content_en && Object.keys(data.content_en).length > 0) {
+          console.log('🌍 [LANG-DEBUG] Sprache ist EN - prüfe verfügbare Daten...');
+          if (hasEnglishColumn && data.content_en && Object.keys(data.content_en).length > 0) {
             console.log('✅ [LANG-DEBUG] content_en gefunden und verwendet');
             contentToUse = data.content_en;
           } else {
-            console.log('⚠️ [LANG-DEBUG] content_en leer/nicht gefunden, verwende Standard-EN');
+            console.log('⚠️ [LANG-DEBUG] content_en nicht verfügbar, verwende Standard-EN');
             contentToUse = cvContentTranslations.en;
           }
         } else {
@@ -95,7 +133,7 @@ export const useSupabaseCVData = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []); // Keine Dependencies um Endlosschleife zu vermeiden
+  }, [hasEnglishColumn]);
 
   // Save CV data to Supabase with column-specific saving
   const saveCVData = useCallback(async (newCvData: CVData, targetLanguage?: 'de' | 'en') => {
@@ -103,10 +141,6 @@ export const useSupabaseCVData = () => {
     
     try {
       console.log('💾 [SAVE-DEBUG] Speichere CV-Daten für Sprache:', saveLanguage);
-      console.log('📋 [SAVE-DEBUG] Zu speichernde Daten:', {
-        name: newCvData?.personalInfo?.name,
-        profession: newCvData?.personalInfo?.profession
-      });
       
       // Update local state immediately for current language
       if (saveLanguage === language) {
@@ -124,7 +158,7 @@ export const useSupabaseCVData = () => {
 
       const supabase = getSupabase();
       
-      // Determine which column to update
+      // Determine which column to update based on availability
       const updateData: any = {
         updated_at: new Date().toISOString()
       };
@@ -132,15 +166,18 @@ export const useSupabaseCVData = () => {
       if (saveLanguage === 'de') {
         updateData.content = newCvData;
         console.log('💾 [SAVE-DEBUG] Speichere in content (Deutsch)');
-      } else {
+      } else if (hasEnglishColumn) {
         updateData.content_en = newCvData;
         console.log('💾 [SAVE-DEBUG] Speichere in content_en (Englisch)');
+      } else {
+        console.log('⚠️ [SAVE-DEBUG] content_en Spalte nicht verfügbar, überspringe Speichern für EN');
+        return;
       }
       
       const { error } = await supabase
         .from('cv_data')
         .update(updateData)
-        .eq('language', 'de'); // Always update the German record since it contains both columns
+        .eq('language', 'de');
 
       if (error) {
         console.error('❌ [SAVE-DEBUG] Fehler beim Speichern:', error);
@@ -153,9 +190,9 @@ export const useSupabaseCVData = () => {
       console.error('❌ [SAVE-DEBUG] Fehler beim Speichern:', err);
       setError('Verbindungsfehler beim Speichern');
     }
-  }, [language]);
+  }, [language, hasEnglishColumn]);
 
-  // Load data when language changes - direkt mit Parameter
+  // Load data when language changes
   useEffect(() => {
     console.log('🌍 [EFFECT-DEBUG] useSupabaseCVData: Sprachwechsel erkannt - lade Daten neu für:', language);
     loadCVData(language);
