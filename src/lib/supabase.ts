@@ -4,10 +4,12 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
 let supabaseClient: SupabaseClient | null = null
 
 const getSupabaseUrl = () => {
+  // First try environment variables, then localStorage
   return import.meta.env.VITE_SUPABASE_URL || localStorage.getItem('VITE_SUPABASE_URL')
 }
 
 const getSupabaseAnonKey = () => {
+  // First try environment variables, then localStorage
   return import.meta.env.VITE_SUPABASE_ANON_KEY || localStorage.getItem('VITE_SUPABASE_ANON_KEY')
 }
 
@@ -30,6 +32,11 @@ export const isSupabaseConfigured = (): boolean => {
   const supabaseUrl = getSupabaseUrl()
   const supabaseAnonKey = getSupabaseAnonKey()
   return !!(supabaseUrl && supabaseAnonKey)
+}
+
+// Check if configuration comes from environment variables
+export const isConfiguredViaEnv = (): boolean => {
+  return !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
 }
 
 // For backward compatibility

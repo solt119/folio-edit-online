@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { LogOut, Edit, LogIn, Settings } from 'lucide-react';
@@ -9,7 +8,7 @@ import { SupabaseConfig } from '@/components/SupabaseConfig';
 import { VisibilityControls } from '@/components/VisibilityControls';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { isSupabaseConfigured } from '@/lib/supabase';
+import { isSupabaseConfigured, isConfiguredViaEnv } from '@/lib/supabase';
 import { useCVData } from '@/hooks/useCVData';
 import { PersonalInfoSection } from '@/components/cv/PersonalInfoSection';
 import { ExperienceSection } from '@/components/cv/ExperienceSection';
@@ -49,11 +48,20 @@ const Index = () => {
   };
 
   const handleLogin = async (email: string, password: string) => {
-    // Check if Supabase is configured first
+    // Check if Supabase is configured first, but only show config if not configured via env
     if (!isSupabaseConfigured()) {
-      setShowSupabaseConfig(true);
-      setShowLogin(false);
-      return;
+      if (!isConfiguredViaEnv()) {
+        setShowSupabaseConfig(true);
+        setShowLogin(false);
+        return;
+      } else {
+        toast({
+          title: t('login_failed'),
+          description: "Supabase configuration error",
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     const { error } = await signIn(email, password);
@@ -105,8 +113,8 @@ const Index = () => {
     setEditingSection(editingSection === section ? null : section);
   };
 
-  // Show Supabase configuration only when explicitly requested
-  if (showSupabaseConfig) {
+  // Show Supabase configuration only when explicitly requested and not configured via env
+  if (showSupabaseConfig && !isConfiguredViaEnv()) {
     return <SupabaseConfig onConfigured={handleSupabaseConfigured} />;
   }
 

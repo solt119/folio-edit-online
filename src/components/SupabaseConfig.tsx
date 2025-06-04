@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from '@/hooks/use-toast'
+import { isConfiguredViaEnv } from '@/lib/supabase'
 
 interface SupabaseConfigProps {
   onConfigured: () => void
@@ -12,6 +13,12 @@ interface SupabaseConfigProps {
 export const SupabaseConfig: React.FC<SupabaseConfigProps> = ({ onConfigured }) => {
   const [supabaseUrl, setSupabaseUrl] = useState('')
   const [supabaseAnonKey, setSupabaseAnonKey] = useState('')
+
+  // Don't show this component if already configured via environment variables
+  if (isConfiguredViaEnv()) {
+    onConfigured()
+    return null
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,7 +32,7 @@ export const SupabaseConfig: React.FC<SupabaseConfigProps> = ({ onConfigured }) 
       return
     }
 
-    // Store in localStorage temporarily
+    // Store in localStorage as fallback
     localStorage.setItem('VITE_SUPABASE_URL', supabaseUrl)
     localStorage.setItem('VITE_SUPABASE_ANON_KEY', supabaseAnonKey)
     
@@ -43,7 +50,12 @@ export const SupabaseConfig: React.FC<SupabaseConfigProps> = ({ onConfigured }) 
         <CardHeader className="text-center">
           <CardTitle className="text-2xl text-blue-400">Supabase Konfiguration</CardTitle>
           <p className="text-slate-400 text-sm">
-            Bitte geben Sie Ihre Supabase-Zugangsdaten ein
+            Bitte geben Sie Ihre Supabase-Zugangsdaten ein. 
+            Diese werden nur lokal in diesem Browser gespeichert.
+          </p>
+          <p className="text-yellow-400 text-xs mt-2">
+            Tipp: Für die Produktion sollten VITE_SUPABASE_URL und VITE_SUPABASE_ANON_KEY 
+            als Umgebungsvariablen gesetzt werden.
           </p>
         </CardHeader>
         <CardContent>
