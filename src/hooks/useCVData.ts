@@ -25,16 +25,17 @@ export const useCVData = () => {
   const cvData = supabaseData.cvData;
   const fieldVisibility = visibilityData.fieldVisibility;
 
-  // Enhanced save function that handles automatic translation ONLY when saving
+  // Enhanced save function that saves translated data to Supabase for both languages
   const saveCustomDataWithTranslation = useCallback(async (newCvData: CVData) => {
     console.log('Saving CV data with auto-translation for language:', currentEditingLanguage);
     setIsTranslating(true);
     
     try {
-      // First save to Supabase for current language
+      // First save current data to Supabase
       await supabaseData.saveCVData(newCvData);
+      console.log('Saved current language data to Supabase');
       
-      // Update cache and handle auto-translation ONLY when saving
+      // Update cache and handle auto-translation
       const updatedCustomData = await autoTranslateData(
         newCvData, 
         currentEditingLanguage, 
@@ -42,6 +43,25 @@ export const useCVData = () => {
       );
       
       setCustomDataCache(updatedCustomData);
+      
+      // Save translated data to Supabase for the other language
+      const otherLanguage = currentEditingLanguage === 'de' ? 'en' : 'de';
+      if (updatedCustomData[otherLanguage]) {
+        console.log('Saving translated data to Supabase for', otherLanguage);
+        
+        // Temporarily switch language context to save translated data
+        const originalLanguage = currentEditingLanguage;
+        setCurrentEditingLanguage(otherLanguage);
+        
+        // Create a temporary Supabase hook for the other language
+        const tempSupabase = { ...supabaseData };
+        await tempSupabase.saveCVData(updatedCustomData[otherLanguage]);
+        
+        // Switch back to original language
+        setCurrentEditingLanguage(originalLanguage);
+        
+        console.log('Translated data saved to Supabase for', otherLanguage);
+      }
       
       console.log('Save with auto-translation completed successfully');
     } catch (error) {
@@ -51,7 +71,7 @@ export const useCVData = () => {
     }
   }, [supabaseData, autoTranslateData, currentEditingLanguage, customDataCache]);
 
-  // Handle language switching WITHOUT automatic translation
+  // Handle language switching - load from Supabase for the new language
   useEffect(() => {
     const handleLanguageSwitch = async () => {
       if (language !== currentEditingLanguage && !isLanguageSwitching) {
@@ -67,20 +87,12 @@ export const useCVData = () => {
               ...customDataCache,
               [currentEditingLanguage]: currentData
             };
-            
-            // Check if we already have data for the target language in cache
-            if (newCache[language]) {
-              console.log('Using existing cached data for:', language);
-              supabaseData.setCvData(newCache[language]);
-            } else {
-              // Load data from Supabase for the target language (no translation)
-              console.log('Loading data from Supabase for:', language);
-              // The useSupabaseCVData hook will automatically load data for the new language
-              // We don't need to translate here, just let it load the existing data
-            }
-            
             setCustomDataCache(newCache);
           }
+          
+          // Load data for new language from Supabase
+          console.log('Loading data for new language from Supabase:', language);
+          await supabaseData.refetch(); // This will load data for the new language
           
           setCurrentEditingLanguage(language);
         } catch (error) {
